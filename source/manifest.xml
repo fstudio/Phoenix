@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+	<noInherit></noInherit>
+	<assemblyIdentity processorArchitecture="AMD64" type="win32" name="winword" version="15.0.0.0"></assemblyIdentity>
+	<description>Microsoft© Word</description>
+	<file name="offxml.dll">
+		<comClass clsid="{88d969e5-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.DOMDocument.5.0"></comClass>
+		<comClass clsid="{88d969e9-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.DSOControl.5.0"></comClass>
+		<comClass clsid="{88d969e6-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.FreeThreadedDOMDocument.5.0"></comClass>
+		<comClass clsid="{88d969f5-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.MXDigitalSignature.5.0"></comClass>
+		<comClass clsid="{88d969f0-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.MXHTMLWriter.5.0"></comClass>
+		<comClass clsid="{88d969f1-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.MXNamespaceManager.5.0"></comClass>
+		<comClass clsid="{88d969ef-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.MXXMLWriter.5.0"></comClass>
+		<comClass clsid="{88d969ee-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.SAXAttributes.5.0"></comClass>
+		<comClass clsid="{88d969ec-8b8b-4c3d-859e-af6cd158be0f}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.SAXXMLReader.5.0"></comClass>
+		<comClass clsid="{88d969eb-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.ServerXMLHTTP.5.0"></comClass>
+		<comClass clsid="{88d969ea-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.XMLHTTP.5.0"></comClass>
+		<comClass clsid="{88d969e7-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.XMLSchemaCache.5.0"></comClass>
+		<comClass clsid="{88d969e8-f192-11d4-a65f-0040963251e5}" threadingModel="both" tlbid="{F5078F18-C551-11D3-89B9-0000F81FE221}" progid="Msxml2.XSLTemplate.5.0"></comClass>
+	</file>
+	<trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+		<security>
+			<requestedPrivileges>
+				<requestedExecutionLevel level="asInvoker" uiAccess="false"></requestedExecutionLevel>
+			</requestedPrivileges>
+		</security>
+	</trustInfo>
+	<asmv3:application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+		<asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
+			<dpiAware>true</dpiAware>
+		</asmv3:windowsSettings>
+	</asmv3:application>
+	<dependency optional="yes">
+		<dependentAssembly>
+			<assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.1.0" publicKeyToken="6595b64144ccf1df" language="*" processorArchitecture="*"></assemblyIdentity>
+		</dependentAssembly>
+	</dependency>
+	<compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+		<application>
+			<!--The ID below indicates application support for Windows 7 -->
+			<supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></supportedOS>
+		</application>
+	</compatibility>
+</assembly>

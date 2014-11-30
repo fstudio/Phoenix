@@ -1,0 +1,6 @@
+#
+
+Plugin=CGet
+ExtendLib=Base,IO,HTTP
+API.Rev=1
+Source=CGet.c

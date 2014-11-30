@@ -1,0 +1,8 @@
+///
+///
+///
+#ifndef  PHOENIX_UNIVERSALCHARDET_NSCORE_H
+#define PHOENIX_UNIVERSALCHARDET_NSCORE_H
+
+
+#endif

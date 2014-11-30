@@ -1,0 +1,6 @@
+Phoenix -File Path ///Open a file
+Phoenix -Reset ///Clear Config
+Phoenix -Init ///run once
+Phoenix -Profile Phoenix.Profile  -File Path ////
+Phoenix -Setting -NoWindow
+Phoenix -Task -NoUI
