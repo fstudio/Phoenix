@@ -20,6 +20,7 @@ public:
     ~PhEditPhysicsFile();
     bool LoadPhysicsFile();
     std::wstring FormatPhysicsTextOut();
+	wchar_t *GetMemoryPtr(){return mFilePtr;}
 protected:
     bool GetPhysicsFileSize();
 };
