@@ -9,7 +9,7 @@
 
 class PhoenixThread{
 private:
-    unsigned Pid;
+    unsigned tid;
     LPVOID m_param;
     PTHREADMAIN m_func;
 public:
@@ -20,14 +20,14 @@ public:
 
 PhoenixThread::PhoenixThread(PTHREADMAIN mfun,LPVOID param):m_param(param),
 m_func(mfun),
-Pid(0)
+tid(0)
 {
 
 }
 //Create a Thread
 bool PhoenixThread::Run()
 {
-    HANDLE hThread = CreateThread(NULL, 0, m_func, m_param, 0, &Pid);
+    HANDLE hThread = CreateThread(NULL, 0, m_func, m_param, 0, &tid);
     if(!hThread){
         return false;
     }
@@ -38,7 +38,7 @@ bool PhoenixThread::Run()
 //Kill this Thread
 bool PhoenixThread::Exit()
 {
-    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, Pid);
+    HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, tid);
     if (hProcess)
     {
             TerminateProcess(hProcess, 13);
