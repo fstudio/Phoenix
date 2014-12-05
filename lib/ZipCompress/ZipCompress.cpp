@@ -1,4 +1,4 @@
-#include "ZipCompress.h"
+#include <ZipCompress/ZipCompress.h>
 #include "zlib.h"
 #include "zip.h"
 #include "unzip.h"
