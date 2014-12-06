@@ -1,6 +1,6 @@
 ////
 #include "PhoXmlLite.h"
-#include "ProfileParserFileXml.h"
+#include <XmlLite/ProfileParserFileXml.h>
 #pragma warning(disable : 4127) // conditional expression is constant
 #define CHKHR(stmt)                                                            \
   do {                                                                         \
