@@ -24,15 +24,18 @@ typedef struct LineLinkTags{
 /// load memory begin LineLink *head=(LineLink*)malloc(sizeof(LineLink));..head->start=mstart;
 
 #ifdef UNICODE
-#define PhoTextLine PhoTextLineA
+#define PhoTextLine PhoTextLineW
 #else
 #define PhoTextLine PhoTextLineA
 #endif
 
 #ifdef __cpluplus
-class Document{
+class TextDocument{
+private:
+    LineLink linelink;
+    int ParsePhyMemoryFile();
 public:
-    Document();
+    TextDocument();
 };
 #endif
 

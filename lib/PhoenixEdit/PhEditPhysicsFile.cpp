@@ -11,9 +11,10 @@
 #include <map>
 #define MAX_MAP_SIZE_FILE 64*1024*1024*16
 
+#include <Edit/Physics.h>
 
 std::map<int,PhEditPhysicsFile> PhfileMap;
-#include "PhoenixInterface.h"
+
 
 
 

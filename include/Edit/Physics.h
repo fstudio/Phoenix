@@ -5,6 +5,8 @@
 * E-mail:<forcemz@outlook.com>
 * @2014.09
 **********************************************************************************************************/
+#ifndef PHOENIX_EDIT_PHYSICS_H
+#define PHOENIX_EDIT_PHYSICS_H
 #ifndef _PHOENIX_BASE_
 #include <Phoenix.h>
 #endif
@@ -26,3 +28,5 @@ protected:
 };
 
 
+
+#endif
