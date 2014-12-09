@@ -3,6 +3,10 @@
 #define PHOENIX_EDIT_BASE_H
 #include <stddef.h>
 
+#define  NEWLINE_CR  0x0d
+#define  NEWLINE_CRLF 0x0d0a
+#define  NEWLINE_LF 0x0a
+
 typedef struct PhoTextLineW__{
     wchar_t *start;
     size_t len;
@@ -17,6 +21,7 @@ typedef struct PhoTextLineA__{
 typedef struct LineLinkTags{
    void *start;
    size_t dataSize;
+   unsigned short newLine;
    LineLinkTags *Pre;
    LineLinkTags *Next;
 }LineLink;
