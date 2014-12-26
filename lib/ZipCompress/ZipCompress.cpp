@@ -47,6 +47,15 @@ bool ZipCompress::CreateCompressFile(std::wstring sourcefile,/*OutDir*/std::wstr
     if(_waccess_s(sourcefile.c_str(),4)!=0)
         return false;
     //
+    if(_waccess_s(zipfile.c_str(),1)==0)
+    {
+         if(MessageThrow(L"The Zip File already exists, whether you need to replace ",REPORT_ASK))
+         {
+            //Delete File
+            if(DeleteFileW(zipfile.c_str())!=TRUE)
+                return false;
+         }
+    }
     return true;
 }
 bool ZipCompress::UnCompressToBuffer(std::wstring zipfile,BYTE*dest,size_t *destlen)
@@ -62,7 +71,7 @@ bool ZipCompress::UnCompressToDisk(std::wstring zipfile,std::wstring folder)
     return true;
 }
 
-ZipAsynchronousCompress::ZipAsynchronousCompress()
+ZipAsynchronousCompress::ZipAsynchronousCompress(std::wstring filepath)
 {
 
 }
@@ -72,3 +81,8 @@ ZipAsynchronousCompress::~ZipAsynchronousCompress()
 
 }
 
+void ZipAsynchronousCompress::SetAsynchronousNotify(std::function<bool(int)> fun)
+{
+    ///
+    this->NotifyFunction=fun;
+}

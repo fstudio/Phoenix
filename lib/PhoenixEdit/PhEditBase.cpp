@@ -28,3 +28,13 @@ int  WINAPI ParserByteToLineMode(BYTE *b,size_t len)
     }
     return 0;
 }
+
+TextDocument::TextDocument()
+{
+    ///
+}
+
+int TextDocument::ParsePhyMemoryFile()
+{
+    return 0;
+}
