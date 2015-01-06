@@ -21,7 +21,7 @@ BEGIN
             VALUE "FileDescription", "Phoenix AutoComplete Base Clang"
             VALUE "FileVersion", "1.0"
             VALUE "InternalName", "Phoenix.AutoComplete.dll"
-            VALUE "LegalCopyright", "Copyright © 2014 The Force Studio.All rights reserved."
+            VALUE "LegalCopyright", "Copyright © 2015 The Force Studio.All rights reserved."
             VALUE "OriginalFilename", "Phoenix.AutoComplete.dll"
             VALUE "ProductName", "Phoenix AutoComplete"
             VALUE "ProductVersion", "1.0.0.0"

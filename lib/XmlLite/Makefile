@@ -1,8 +1,8 @@
 #
 
-TARGET=ProfileXParser.lib
+TARGET=ProfileManager.lib
 INCDIR= -I../../include
-OBJECTS=ProfileParserFileXml.obj
+OBJECTS=ProfileManager.obj
 
 all:$(TARGET)
 

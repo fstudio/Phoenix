@@ -1,6 +1,6 @@
 ////
 #include "PhoXmlLite.h"
-#include <XmlLite/ProfileParserFileXml.h>
+#include <XmlLite/ProfileManager.h>
 #pragma warning(disable : 4127) // conditional expression is constant
 #define CHKHR(stmt)                                                            \
   do {                                                                         \
@@ -167,16 +167,19 @@ private:
   HANDLE _hFile;
   LONG _refcount;
 };
+
+///////////
+
 namespace Profile {
-ProfileParserBaseXml::ProfileParserBaseXml(std::wstring profile)
+ProfileManager::ProfileManager(std::wstring profile)
     : configfile(profile), beFaild(false) {
   if (!BeLoadAndRead()) {
     beFaild = true;
     return;
   }
 }
-bool ProfileParserBaseXml::BeLoadAndRead() { return true; }
-std::wstring ProfileParserBaseXml::Get(std::wstring key) {
+bool ProfileManager::BeLoadAndRead() { return true; }
+std::wstring ProfileManager::Get(std::wstring key) {
   // if find key
   return kvmap[key];
 }
