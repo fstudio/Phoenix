@@ -38,6 +38,7 @@ bool ParserCommandLine::ParserBegin()
 ///////////////////////////////////////////////////////////////////
 bool ParserCommandLineW::ParserPowerShellStyleBegin()
 {
+    this->pStatus=true;
     return true;
 }
 

@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <functional>
+#include <assert.h>
 
 namespace Phoenix{
     enum PARSER_CMDLINE_STYLE
@@ -18,6 +19,7 @@ private:
     int m_Argc;
     char **m_Argv;
     int dwError;
+    bool pStatus;
     std::map<std::string,std::string> OpCode;
     std::map<std::string,std::function<int(std::string)>> Task;
     std::vector<std::string> OpValue;
@@ -27,9 +29,10 @@ public:
     {
 		this->style=i;
     }
-    ParserCommandLine(int Argc,char **Argv):dwError(0)
+    ParserCommandLine(int Argc,char **Argv):dwError(0),pStatus(false)
     {
-        //
+        assert(Argv);
+        m_Argv=Argv;
     }
     bool ParserBegin();
 private:
@@ -44,6 +47,7 @@ private:
     int m_Argc;
     wchar_t **m_Argv;
     int dwError;
+    bool pStatus;
     std::map<std::wstring,std::wstring> OpCode;
     std::map<std::string,std::function<int(std::wstring)>> Task;
     std::vector<std::wstring> OpValue;
@@ -53,9 +57,10 @@ public:
     {
         this->style=i;
     }
-    ParserCommandLineW(int Argc,wchar_t **Argv):dwError(0)
+    ParserCommandLineW(int Argc,wchar_t **Argv):dwError(0),pStatus(false)
     {
-        //
+        assert(Argv);
+        m_Argv=Argv;
     }
     bool ParserBegin();
 private:
