@@ -17,9 +17,10 @@ DWORD WINAPI ZipCompressThread(LPVOID lParam)
 }
 
 
-ZipCompress::ZipCompress():iRet(0)
+ZipCompress::ZipCompress(bool iskeep):iRet(0),isdefault(iskeep)
 {
     //
+    this->MessageThrow=nullptr;
     InitializeZip();
 }
 
@@ -47,7 +48,7 @@ bool ZipCompress::CreateCompressFile(std::wstring sourcefile,/*OutDir*/std::wstr
     if(_waccess_s(sourcefile.c_str(),4)!=0)
         return false;
     //
-    if(_waccess_s(zipfile.c_str(),1)==0)
+    if(_waccess_s(zipfile.c_str(),1)==0&&MessageThrow!=nullptr)
     {
          if(MessageThrow(L"The Zip File already exists, whether you need to replace ",REPORT_ASK))
          {

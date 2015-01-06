@@ -14,7 +14,7 @@ class ZipCompress{
             REPORT_WARNING=1,
             REPORT_ASK=2
         };
-        ZipCompress();
+        ZipCompress(bool iskeep);
         ~ZipCompress();
         void SetMessageThrow(std::function<bool(std::wstring,int)> fun)
         {
@@ -22,6 +22,7 @@ class ZipCompress{
         }
     private:
         int iRet;
+        bool isdefault;
         std::function<bool(std::wstring,int)> MessageThrow;
     public:
         bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::wstring zipfile);
