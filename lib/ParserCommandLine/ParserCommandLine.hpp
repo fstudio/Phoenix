@@ -35,6 +35,8 @@ public:
         m_Argv=Argv;
     }
     bool ParserBegin();
+    bool PushCommandTask(std::function<int(std::string)> task,std::string param);
+    bool ExecuteTask();
 private:
     bool ParserPowerShellStyleBegin();
     bool ParserPOSIXStyleBegin();
@@ -68,3 +70,4 @@ private:
     bool ParserPOSIXStyleBegin();
     bool ParserDOSStyleBegin();
 };
+
