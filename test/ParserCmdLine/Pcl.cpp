@@ -1,9 +1,9 @@
-#include "ParserCommandLine.h"
+#include "ParserCommandLine.hpp"
 
 int main(int argc,char** argv)
 {
 	ParserCommandLine cmd(argc,argv);
 	cmd.SetParserStyle(Phoenix::PCL_POSIX_NORMAL_STYLE);
-	cmd.ParserStart();
+	cmd.ParserBegin();
 	return 0;
 }
