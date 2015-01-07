@@ -5,7 +5,8 @@
 * E-mail:<forcemz@outlook.com>
 * @2014.09
 **********************************************************************************************************/
-
+#ifndef PHOENIX_UI_H
+#define PHOENIX_UI_H
 
 #ifdef _WIN32
 #define PHOENIXWINDOWCLASS L"Phoenix.UI.Window"
@@ -46,3 +47,5 @@ public:
     PhoenixUITab();
     bool ReSize();
 };
+
+#endif

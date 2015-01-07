@@ -25,7 +25,7 @@ private:
     unsigned erc;
     unsigned dwRet;
 public:
-    std::map<std:;wstring, std::wstring> pclMap;
+    std::map<std:;wstring, std::wstring> cmdMap;
     std::vector<std::wstring> filevector;
     ProcessCommandLine(int Argc,const wchar_t* Argv[]):m_Argc(Argc),erc(0),dwRet(0)
     {
@@ -43,7 +43,7 @@ protected:
         std::pair< std::map<std::wstring,std::wstring>::iterator,bool> bRet;
         if(m_Argc<=1)
         {
-            pclMap.insert(std::map<std::wstring, std::wstring>::value_type(L"-Default",L"untitled"));
+            cmdMap.insert(std::map<std::wstring, std::wstring>::value_type(L"-Default",L"untitled"));
         }
         int i=1;
         while(i<m_Argc)
@@ -52,13 +52,13 @@ protected:
             {
                 if(m_Argv[i+1][0]==L'-')
                 {
-                    pclMap.insert(std::map<std::wstring, std::wstring>::value_type(m_Argv[i],L"Normal"));
+                    cmdMap.insert(std::map<std::wstring, std::wstring>::value_type(m_Argv[i],L"Normal"));
                     i++
                     erc++;
                     dwRet+=0x0001;
                 }
                 //-LoadConfig C:\Config.config
-                bRet=pclMap.insert(std::map<std::wstring, std::wstring>::value_type(m_Argv[i],m_Argv[i+1]));
+                bRet=cmdMap.insert(std::map<std::wstring, std::wstring>::value_type(m_Argv[i],m_Argv[i+1]));
                 if(wcscmp_s(m_Argv[i],20,L"-FileAdd")==0)
                 {
                      filevector.insert(std::vector<std::wstring>::value_type(m_Argv[i+1]));
@@ -68,11 +68,11 @@ protected:
                 if(m_Argv[i][0]==L'-')
                 {
                     erc++;
-                    pclMap.insert(std::map<std::wstring,std::wstring>::value_type(m_Argv[i],L"Normal"));
+                    cmdMap.insert(std::map<std::wstring,std::wstring>::value_type(m_Argv[i],L"Normal"));
                     dwRet=0x0010;
                     //return false;
                 }else{
-                    bRet=pclMap.insert(std::map<std::wstring, std::wstring>::value_type(L"-FileAdd",m_Argv[i]));
+                    bRet=cmdMap.insert(std::map<std::wstring, std::wstring>::value_type(L"-FileAdd",m_Argv[i]));
                     if(!bRet.second )
                     {
                         filevector.insert(std::vector<std::wstring>::value_type(m_Argv[i]));
@@ -124,18 +124,18 @@ bool PhoenixCreateMutex()
     return true;
 }
 
-bool PhoenixRadio(ProcessCommandLine* pCml)
+bool PhoenixRadio(ProcessCommandLine* cmd)
 {
     return true;
 }
 
 
 
-int WINAPI PhoenixUIModel(ProcessCommandLine* pCml)
+int WINAPI PhoenixUIModel(ProcessCommandLine* cmd)
 {
     if(!PhoenixCreateMutex())
     {
-         if(PhoenixRadio(pCml))
+         if(PhoenixRadio(cmd))
             return 0;
         return 1;
     }
@@ -205,6 +205,7 @@ DWORD  WINAPI   WaitForParentExitThread(LPVOID lParam)
 //UI Process start
 DWORD WINAPI  SupervisionChildProcess(LPVOID lParam)
 {
+	//if(ChildProcessMap)
     return 0;
 }
 
@@ -229,7 +230,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     ProcessCommandLine cmdline(__argc,__wargv);
-    if(cmdline.pclMap.find(L"-Task")!=cmdline.pclMap.end())
+    if(cmdline.cmdMap.find(L"-Task")!=cmdline.cmdMap.end())
         return PhoenixTaskModel(&cmdline);
     return PhoenixUIModel(&cmdline);
 }

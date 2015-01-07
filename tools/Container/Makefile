@@ -1,0 +1,3 @@
+
+
+LIBNAME=Shlwapi.lib
