@@ -9,7 +9,7 @@ struct DoExchangeDataTags{
 
 class DoExchangeData{
 	public:
-	DoExchangedData();
+	DoExchangeData();
 	private:
 	std::function<bool(int)> fun;
 };

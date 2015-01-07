@@ -29,7 +29,7 @@ public:
     {
 		this->style=i;
     }
-    ParserCommandLine(int Argc,char **Argv):dwError(0),pStatus(false)
+    ParserCommandLine(int Argc,char **Argv):dwError(0),pStatus(false),m_Argc(Argc)
     {
         assert(Argv);
         m_Argv=Argv;
@@ -51,7 +51,7 @@ private:
     int dwError;
     bool pStatus;
     std::map<std::wstring,std::wstring> OpCode;
-    std::map<std::string,std::function<int(std::wstring)>> Task;
+    std::map<std::wstring,std::function<int(std::wstring)>> Task;
     std::vector<std::wstring> OpValue;
     unsigned style;
 public:
@@ -59,13 +59,15 @@ public:
     {
         this->style=i;
     }
-    ParserCommandLineW(int Argc,wchar_t **Argv):dwError(0),pStatus(false)
+    ParserCommandLineW(int Argc,wchar_t **Argv):dwError(0),pStatus(false),m_Argc(Argc)
     {
         assert(Argv);
         m_Argv=Argv;
     }
     bool ParserBegin();
+	bool PushCommandTask(std::function<int(std::wstring)> task, std::wstring param);
 private:
+	bool ExecuteTask();
     bool ParserPowerShellStyleBegin();
     bool ParserPOSIXStyleBegin();
     bool ParserDOSStyleBegin();

@@ -11,7 +11,7 @@ int TaskTest(std::string ab)
 int main(int argc,char** argv)
 {
 	ParserCommandLine cmd(argc,argv);
-	cmd.SetParserStyle(Phoenix::PCL_POSIX_NORMAL_STYLE);
+	cmd.SetParserStyle(Phoenix::PCL_POWERSHELL_STYLE);
 	cmd.PushCommandTask(TaskTest,"-help");
 	cmd.ParserBegin();
 	cmd.ExecuteTask();
