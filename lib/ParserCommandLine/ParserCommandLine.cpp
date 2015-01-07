@@ -35,6 +35,22 @@ bool ParserCommandLine::ParserBegin()
     return false;
 }
 
+bool ParserCommandLine::PushCommandTask(std::function<int(std::string)> task,std::string param)
+{
+    if(task==nullptr)
+        return false;
+
+    return true;
+}
+
+bool ParserCommandLine::ExecuteTask()
+{
+    std::map<std::string,std::string>::iterator it;
+    for(it=OpCode.begin();it!=OpCode.end();++it)
+        (Task[it->first])(it->second);
+    return true;
+}
+
 ///////////////////////////////////////////////////////////////////
 bool ParserCommandLineW::ParserPowerShellStyleBegin()
 {
