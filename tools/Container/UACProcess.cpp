@@ -33,6 +33,8 @@ inline void SafeRelease(Interface **ppInterfaceToRelease) {
     ASSERT(FALSE);                                                             \
     goto ClenUp;                                                               \
   }
+
+
 HRESULT WINAPI TaskUACRunNonElevated(LPCWSTR pszPath, LPCWSTR pszParameters,
                                      LPCWSTR pszDirectory) {
   // If Your User is Administrator (Windows Default) Task run dafault by
