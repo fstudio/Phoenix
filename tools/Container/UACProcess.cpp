@@ -2,6 +2,7 @@
 #include "Precompiled.h"
 #include <taskschd.h>
 #include <comdef.h>
+#include <Sddl.h>
 
 //////////////////////////////////////////////////////////
 // Release COM reasource
@@ -258,6 +259,45 @@ cleanup:
   CloseHandle(hShellProcess);
   return hr;
 }
+
+
+BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine)
+{
+    BOOL b;
+    HANDLE hToken;
+    HANDLE hNewToken;
+    //PWSTR szProcessName = L"LowClient";
+    PWSTR szIntegritySid = L"S-1-16-4096";
+    PSID pIntegritySid = NULL;
+    TOKEN_MANDATORY_LABEL TIL = {0};
+    PROCESS_INFORMATION ProcInfo = {0};
+    STARTUPINFO StartupInfo = {0};
+    ULONG ExitCode = 0;
+
+    b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED,
+    &hToken);
+    b = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL,
+    SecurityImpersonation, TokenPrimary, &hNewToken);
+    b = ConvertStringSidToSid(szIntegritySid, &pIntegritySid);
+    TIL.Label.Attributes = SE_GROUP_INTEGRITY;
+    TIL.Label.Sid = pIntegritySid;
+
+    // Set process integrity levels
+    b = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
+    sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
+
+    // Set process UI privilege level
+    /*b = SetTokenInformation(hNewToken, TokenIntegrityLevel,
+    &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
+
+    // To create a new low-integrity processes
+    b = CreateProcessAsUser(hNewToken, NULL, const_cast<wchar_t *>(lpCmdLine), NULL, NULL,
+    FALSE, 0, NULL, NULL, &StartupInfo, &ProcInfo);
+    return b;
+}
+
+
+
 
 HRESULT WINAPI CreateProcessWithNonElevated(LPCWSTR exePath, LPCWSTR cmdArgs,
                                             LPCWSTR workDirectory) {

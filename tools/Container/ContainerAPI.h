@@ -11,4 +11,6 @@ _Inout_ PROCESS_INFORMATION &pi);
 HRESULT WINAPI CreateProcessWithNonElevated(LPCWSTR exePath, LPCWSTR cmdArgs,
 LPCWSTR workDirectory);
 
+BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine);
+
 #endif
