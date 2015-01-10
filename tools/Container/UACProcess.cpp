@@ -3,6 +3,7 @@
 #include <taskschd.h>
 #include <comdef.h>
 #include <Sddl.h>
+#include <string.h>
 
 //////////////////////////////////////////////////////////
 // Release COM reasource
@@ -30,11 +31,10 @@ inline void SafeRelease(Interface **ppInterfaceToRelease) {
 #endif //_tsizeof
 
 #define DO(action)                                                             \
-  if (FAILED(action)) {                                                        \
-    ASSERT(FALSE);                                                             \
+  if (FAILED( action )) {                                                        \
+    ASSERT( FALSE );                                                             \
     goto ClenUp;                                                               \
   }
-
 
 HRESULT WINAPI TaskUACRunNonElevated(LPCWSTR pszPath, LPCWSTR pszParameters,
                                      LPCWSTR pszDirectory) {
@@ -48,7 +48,6 @@ HRESULT WINAPI TaskUACRunNonElevated(LPCWSTR pszPath, LPCWSTR pszParameters,
   // ITaskSettings2 iTask;
 
   HRESULT hr = S_OK;
-
   ITaskService *iTaskService = nullptr;
   ITaskFolder *iRootFolder = nullptr;
   ITaskDefinition *iTask = nullptr;
@@ -63,12 +62,12 @@ HRESULT WINAPI TaskUACRunNonElevated(LPCWSTR pszPath, LPCWSTR pszParameters,
   IExecAction *iExecAction = nullptr;
   IRegisteredTask *iRegisteredTask = nullptr;
 
-  LPCWSTR pszTaskName = L"PhoenixRunAsNonElevatedUserTask";
+  LPCWSTR pszTaskName = L"Phoenix.Container-CreateNonElevatedProcess-Task-APIv1";
 
-  DO(hr = CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,
-                           IID_ITaskService, (void **)&iTaskService));
-  DO(iTaskService->Connect(_variant_t(), _variant_t(), _variant_t(),
-                           _variant_t()));
+  DO(hr = CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,IID_ITaskService, (void **)&iTaskService));
+  //WCHAR szError=
+
+  DO(iTaskService->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t()));
 
   DO(iTaskService->GetFolder(_bstr_t(L"\\"), &iRootFolder));
   iRootFolder->DeleteTask(_bstr_t(pszTaskName), 0);
@@ -160,7 +159,16 @@ ClenUp:
   SafeRelease(&iRegisteredTask);
   return hr;
 }
-
+/*
+* HRESULT WINAPI CreateProcessWithShellToken();
+* @param:
+*  exePath
+*  cmdArgs
+*  workdir
+* startinfo
+* processinfo
+* @return Zero success
+*/
 HRESULT WINAPI
 CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
                             _In_ LPCWSTR workDirectory, _In_ STARTUPINFOW &si,
@@ -241,9 +249,10 @@ CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
     goto cleanup;
   }
   // Start the target process with the new token.
-  ret = CreateProcessWithTokenW(hPrimaryToken, 0, exePath,
-                                const_cast<wchar_t *>(cmdArgs), 0, nullptr,
+  wchar_t *cmdArgsT = _wcsdup(cmdArgs);
+  ret = CreateProcessWithTokenW(hPrimaryToken, 0, exePath, cmdArgsT, 0, nullptr,
                                 workDirectory, &si, &pi);
+  free(cmdArgsT);
   if (!ret) {
     dwLastErr = GetLastError();
     hr = 8;
@@ -260,47 +269,52 @@ cleanup:
   return hr;
 }
 
+BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
+  BOOL b;
+  HANDLE hToken;
+  HANDLE hNewToken;
+  // PWSTR szProcessName = L"LowClient";
+  PWSTR szIntegritySid = L"S-1-16-4096";
+  PSID pIntegritySid = NULL;
+  TOKEN_MANDATORY_LABEL TIL = {0};
+  PROCESS_INFORMATION ProcInfo = {0};
+  STARTUPINFO StartupInfo = {0};
+  ULONG ExitCode = 0;
 
-BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine)
-{
-    BOOL b;
-    HANDLE hToken;
-    HANDLE hNewToken;
-    //PWSTR szProcessName = L"LowClient";
-    PWSTR szIntegritySid = L"S-1-16-4096";
-    PSID pIntegritySid = NULL;
-    TOKEN_MANDATORY_LABEL TIL = {0};
-    PROCESS_INFORMATION ProcInfo = {0};
-    STARTUPINFO StartupInfo = {0};
-    ULONG ExitCode = 0;
+  b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
+  b = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityImpersonation,
+                       TokenPrimary, &hNewToken);
+  b = ConvertStringSidToSid(szIntegritySid, &pIntegritySid);
+  TIL.Label.Attributes = SE_GROUP_INTEGRITY;
+  TIL.Label.Sid = pIntegritySid;
 
-    b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED,
-    &hToken);
-    b = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL,
-    SecurityImpersonation, TokenPrimary, &hNewToken);
-    b = ConvertStringSidToSid(szIntegritySid, &pIntegritySid);
-    TIL.Label.Attributes = SE_GROUP_INTEGRITY;
-    TIL.Label.Sid = pIntegritySid;
+  // Set process integrity levels
+  b = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
+                          sizeof(TOKEN_MANDATORY_LABEL) +
+                              GetLengthSid(pIntegritySid));
 
-    // Set process integrity levels
-    b = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
-    sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid));
-
-    // Set process UI privilege level
-    /*b = SetTokenInformation(hNewToken, TokenIntegrityLevel,
-    &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
-
-    // To create a new low-integrity processes
-    b = CreateProcessAsUser(hNewToken, NULL, const_cast<wchar_t *>(lpCmdLine), NULL, NULL,
-    FALSE, 0, NULL, NULL, &StartupInfo, &ProcInfo);
-    return b;
+  // Set process UI privilege level
+  /*b = SetTokenInformation(hNewToken, TokenIntegrityLevel,
+  &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
+  wchar_t *lpCmdLineT = _wcsdup(lpCmdLine);
+  // To create a new low-integrity processes
+  b = CreateProcessAsUser(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
+                          NULL, NULL, &StartupInfo, &ProcInfo);
+  free(lpCmdLineT);
+  return b;
 }
 
-
+HRESULT WINAPI CreateProcessInvokeBase(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+    HRESULT hr=S_OK;
+    return hr;
+}
 
 
 HRESULT WINAPI CreateProcessWithNonElevated(LPCWSTR exePath, LPCWSTR cmdArgs,
                                             LPCWSTR workDirectory) {
+
+
   wchar_t userName[MAX_PATH] = {0};
   DWORD BufferSize = MAX_PATH;
   GetUserNameW(userName, &BufferSize);
