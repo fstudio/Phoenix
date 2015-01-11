@@ -4,6 +4,7 @@
 #include <comdef.h>
 #include <Sddl.h>
 #include <string.h>
+#include "ContainerAPI.h"
 
 //////////////////////////////////////////////////////////
 // Release COM reasource
@@ -304,9 +305,22 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   return b;
 }
 
-HRESULT WINAPI CreateProcessInvokeBase(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+HRESULT WINAPI CreateProcessInvokeBase(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory,unsigned level)
 {
+    if(exePath==nullptr&&cmdArgs==nullptr)
+        return S_FALSE;
     HRESULT hr=S_OK;
+    switch(level){
+        case Phoenix::CONTAINER_STANDARD_RLEVEL:
+        break;
+        case Phoenix::CONTAINER_GUEST_RLEVEL:
+        break;
+        case Phoenix::CONTAINER_LOW_RLEVEL:
+        break;
+        default:
+        return S_FALSE;
+    }
+
     return hr;
 }
 

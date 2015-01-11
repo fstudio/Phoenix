@@ -1,14 +1,26 @@
 #Makefile
 TARGET=Container.exe
+DBGTARGET=ContainerD.exe
 LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib
 CC=cl
 LD=link
 RC=rc
-CFLAGS=-nologo -DNODEBUG -DUNICODE -D_UNICODE -O1 -Oi -MT 
-CXXFLAGS=-TP  -W4 -EHsc -Zc:forScope -Zc:wchar_t
+CFLAGS=-nologo  -DUNICODE -D_UNICODE -TC -W3 
+CXXFLAGS=-nologo  -DUNICODE -D_UNICODE -TP  -W4 -EHsc -Zc:forScope -Zc:wchar_t
+CXXDEBUG=-Od -MTd -DDEBUG
+CXXNDEBUG=-O1 -Oi -MT -DNDEBUG 
+
+
 LDFLAGS=/NOLOGO -OPT:REF  
 OBJS=Precompiled.obj UACProcess.obj Host.obj 
 
+!IFDEF DEBUG
+CXXFLAGS=$(CXXFLAGS) $(CXXDEBUG)
+CCFLAGS=$(CCFLAGS) $(CXXDEBUG)
+!ELSE
+CXXFLAGS=$(CXXFLAGS) $(CXXNDEBUG)
+CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
+!ENDIF
 
 
 all:$(TARGET)
@@ -20,7 +32,8 @@ Container.res:
 	$(RC) Container.rc
 
 {.}.cpp.obj::
-	$(CC) $(CFLAGS) $(CXXFLAGS) -c $<
+	$(CC) $(CXXFLAGS) -c $<
+	
 
 clean:
 	-del *.obj *.res *.exe

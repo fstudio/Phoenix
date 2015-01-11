@@ -18,7 +18,7 @@ private:
 
 public:
   Container() {}
-  bool Initiaize() {
+  bool Initialize() {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     return true;
   }
@@ -30,10 +30,23 @@ public:
 
 /// Windows JobObject sample.
 /// SetInformationJobObject
+#ifdef DEBUG
+int wmian(int argc,wchar_t** argv)
+{
+	Container container;
+	HRESULT hr=S_OK;
+	if(!container.Initialize())
+		return -1;
+	container.Stop();
+	return 0;
+}
+
+#else
 
 int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
   Container container;
-  if (!container.Initiaize())
+  HRESULT hr=S_OK;
+  if (!container.Initialize())
     return -1;
   /*HRESULT hr = CreateProcessWithNonElevated(
       L"C:/Windows/System32/WindowsPowerShell/v1.0/powershell_ise.exe", nullptr,
@@ -43,3 +56,4 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
   container.Stop();
   return hr;
 }
+#endif
