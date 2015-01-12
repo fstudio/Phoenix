@@ -1,5 +1,6 @@
 
 #include "Precompiled.h"
+#include <string>
 #include <taskschd.h>
 #include <comdef.h>
 #include <Sddl.h>

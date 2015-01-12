@@ -1,6 +1,7 @@
 ////Container
 #include "Precompiled.h"
 #include "ContainerAPI.h"
+#include <string>
 
 const wchar_t *ContainerHostJobObject = L"Phoenix.Container.JobObject.APIv1\0";
 

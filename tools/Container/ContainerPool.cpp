@@ -1,5 +1,6 @@
 ////
 #include "Precompiled.h"
+#include <string>
 #include <list>
 
 

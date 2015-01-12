@@ -1,0 +1,2 @@
+Build libtcc.lib.
+lib /def:libtcc\libtcc.def /out:libtcc.lib
