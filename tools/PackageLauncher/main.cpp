@@ -7,8 +7,18 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string>
+#include <Windows.h>
 #include "libtcc.h"
 
+bool GetDefaultSearchFolder(char *outdir)
+{
+    return false;
+}
+
+bool GetDefualtLibraryPath(char *libdir)
+{
+    return false;
+}
 
 int Launcher(const char* source,const char* incdir,const char* libdir,const char* addlib,bool isScriptModule)
 {

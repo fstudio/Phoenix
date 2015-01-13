@@ -1,13 +1,15 @@
 /*********************************************************************************************************
 *   Phoneix Plugin Runtime
-*   Note: GC.c This File is GC Feature
+*   Note: Http.c This File is IO
 *   Data: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include <stddef.h>
+#ifndef PHOENIX_PACKAGE_IO_H
+#define PHOENIX_PACKAGE_IO_H
+#include "rtdefs.h"
+PKG_BEGIN_DECL
+////Feature.
 
-void *PRAlloc(size_t)
-{
-  return NULL;
-}
+PKG_END_DECL
 
+#endif

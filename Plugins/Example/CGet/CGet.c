@@ -1,16 +1,16 @@
 /*
 *  Phoenix Package Example
 *  C lang base,use TinyCC compile
-*  
+*  CGet Demo download Internat file.
 */
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 #include <windows.h>
-#include <PhoPluginAPI.h>
-#include <PhoHTTP.h>
+#include <Runtime.h>
+#include <HTTP.h>
 
-PHGEXPORT int PackageInitialize(int argc,char *argv[])
+PKGEXTERN int PackageInitialize(int argc,char *argv[])
 {
 	return 0;
 }

@@ -1,13 +1,11 @@
 /*********************************************************************************************************
 *   Phoneix Plugin Runtime
-*   Note: GC.c This File is GC Feature
+*   Note: Http.c This File is Http Library
 *   Data: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include <stddef.h>
+#ifndef PHONEIX_BUILDER_H
+#define PHONEIX_BUILDER_H
 
-void *PRAlloc(size_t)
-{
-  return NULL;
-}
 
+#endif
