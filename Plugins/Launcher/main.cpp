@@ -1,3 +1,9 @@
+/*********************************************************************************************************
+*   Phoneix Plugin Simple Launcher Host
+*   Note: Launcher Main
+*   Data: 2015.01.12
+*   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
+**********************************************************************************************************/
 #include <iostream>
 #include <stdlib.h>
 #include <string>

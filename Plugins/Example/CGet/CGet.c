@@ -1,7 +1,7 @@
 /*
-Phoenix Package Example 
-C lang base,use TinyCC compile 
-
+*  Phoenix Package Example
+*  C lang base,use TinyCC compile
+*  
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,7 +10,7 @@ C lang base,use TinyCC compile
 #include <PhoPluginAPI.h>
 #include <PhoHTTP.h>
 
-PHGEXPORT int PackageInit(int argc,char *argv[])
+PHGEXPORT int PackageInitialize(int argc,char *argv[])
 {
 	return 0;
 }
