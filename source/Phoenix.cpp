@@ -184,11 +184,11 @@ DWORD  WINAPI   WaitForParentExitThread(LPVOID lParam)
     LONG status;
     PROCESS_BASIC_INFORMATION pbi;
     HMODULE hMod = GetModuleHandle(L"NTDLL.DLL");
-    NTQUERYINFORMATIONPROCESS NtQueryInformationProcess = (NTQUERYINFORMATIONPROCESS)GetProcAddress(hMod, 
-        "NtQueryInformationProcess");
+    NTQUERYINFORMATIONPROCESS NtQueryInformationProcess = (NTQUERYINFORMATIONPROCESS)GetProcAddress(hMod,"NtQueryInformationProcess");
     if(NtQueryInformationProcess==NULL)
     {
         CloseHandle(hProcess);
+        ///FreeLibrary(hMod);
         CloseHandle(hMod);
         return 1;
     }
@@ -196,10 +196,12 @@ DWORD  WINAPI   WaitForParentExitThread(LPVOID lParam)
     dwParentPid=(DWORD)pbi.Reserved3;
     CloseHandle(hProcess);
     ////Wait..
-
+    ///FreeLibrary(hMod);
     //MsgWaitForMultipleObjects()
     //MsgWaitForMultipleObjectsEx()
     //Exit
+    //NTDLL always be called . so ....
+
     return 0;
 }
 //UI Process start

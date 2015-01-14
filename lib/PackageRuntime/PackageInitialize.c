@@ -5,12 +5,17 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <memory.h>
+#include <Runtime.h>
 int PackageInitialize(int Argc,char **Argv);
 
 int main(int argc,char **argv)
 {
     ///Resource Allocate.
+    if(!ComponentInitialize())
+        return -1;
     int ret=PackageInitialize(argc,argv);
     ///Resource Free
+    if(!ComponentUnInitialze())
+        return -1;
     return ret;
 }
