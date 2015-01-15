@@ -8,11 +8,7 @@
 **********************************************************************************************************/
 #include <Phoenix.h>
 #include <string>
+#include <UniversalChardet/UniversalChardet.h>
 #include "base/nsUniversalDetector.h"
 
-
-class PhoenixUniversalChardet{
-public:
-    PhoenixUniversalChardet();
-};
 
