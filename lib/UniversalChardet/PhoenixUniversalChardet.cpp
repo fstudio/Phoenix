@@ -12,3 +12,10 @@
 #include "base/nsUniversalDetector.h"
 
 
+
+
+
+extern "C" const char* UniversalGetCharSet(const char *text,size_t len)
+{
+    return nullptr;
+}

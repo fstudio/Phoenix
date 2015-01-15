@@ -8,14 +8,27 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_UNIVERSALCHARDET_H
 #define PHOENIX_UNIVERSALCHARDET_H
+#include <string>
 
 #ifdef __cplusplus
-class PhoenixUniversalChardet{
+class UniversalChardet{
+private:
+    std::wstring m_cheset;
 public:
-    PhoenixUniversalChardet();
+    UniversalChardet(std::string Content);
+    ~UniversalChardet();
+    std::wstring GetCharSet();
 };
-
-
 #endif
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+const char* UniversalGetCharSet(const char *text,size_t len);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif
