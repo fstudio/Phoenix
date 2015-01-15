@@ -7,7 +7,7 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_WINDOWS_RUNTIME_H
 #define PHOENIX_WINDOWS_RUNTIME_H
- 
+
 #ifndef  ENABLE_WINRT
 #error This File Must Use Windows Runtime Properties
 #endif
@@ -78,6 +78,14 @@ Link
   used to sign the winmd  file  
 
 */
+
+namespace Phoenix{
+  ///
+  class Objects{
+  public:
+    Objects();
+  };
+}
 
 #endif
 

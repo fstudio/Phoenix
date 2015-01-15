@@ -12,7 +12,12 @@
 #include "base/nsUniversalDetector.h"
 
 
-
+UniversalChardet::UniversalChardet(std::string Content)
+{
+    ///
+    if(Content.empty())
+        return ;
+}
 
 
 extern "C" const char* UniversalGetCharSet(const char *text,size_t len)
