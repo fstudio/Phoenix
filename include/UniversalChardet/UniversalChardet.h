@@ -13,11 +13,13 @@
 #ifdef __cplusplus
 class UniversalChardet{
 private:
-    std::wstring m_cheset;
+    std::wstring m_charset;
+    bool status;
 public:
-    UniversalChardet(std::string Content);
+    UniversalChardet(std::string data);
     ~UniversalChardet();
-    std::wstring GetCharSet();
+    std::wstring GetCharset();
+    bool GetStatus(){return this->status;}
 };
 #endif
 
