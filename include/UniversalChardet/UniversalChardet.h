@@ -29,7 +29,7 @@ public:
 extern "C"{
 #endif
 const char* UniversalGetCharSet(const char *text,size_t len);
-
+const wchar_t*  UniversalGetCharSetW(const char *text,size_t len);
 #ifdef __cplusplus
 }
 #endif

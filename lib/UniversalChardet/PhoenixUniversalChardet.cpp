@@ -19,27 +19,85 @@
 
 #ifdef _WIN32
 static bool StringToWideString(const std::string &str,std::wstring &wstr)
- {
-     int nLen = (int)str.length();
-     wstr.resize(nLen,L' ');
-     int nResult = MultiByteToWideChar(CP_ACP,0,(LPCSTR)str.c_str(),nLen,(LPWSTR)wstr.c_str(),nLen);
-     if (nResult == 0)
-     {
-         return false;
-     }
-     return true;
+{
+    int  len = 0;
+    len = str.size();
+    int  unicodeLen = ::MultiByteToWideChar(CP_ACP,
+        0,
+        str.c_str(),
+        -1,
+        NULL,
+        0 );
+    if(unicodeLen<=0)
+        return false;
+    wchar_t *  pUnicode;
+    pUnicode = new  wchar_t[unicodeLen+1];
+    memset(pUnicode,0,(unicodeLen+1)*sizeof(wchar_t));
+    ::MultiByteToWideChar(CP_ACP,
+        0,
+        str.c_str(),
+        -1,
+        (LPWSTR)pUnicode,
+        unicodeLen);
+    wstr=pUnicode;
+    delete  pUnicode;
+    return true;
  }
- static bool WideStringToString(const std::wstring &wstr,std::string &str)
- {
-     int nLen = (int)wstr.length();
-     str.resize(nLen,' ');
-     int nResult = WideCharToMultiByte(CP_ACP,0,static_cast<LPCWSTR>(wstr.c_str()),nLen,const_cast<LPSTR>(str.c_str()),nLen,NULL,NULL);
-     if (nResult == 0)
-     {
-         return false;
-     }
-     return true;
- }
+static bool WideStringToString(const std::wstring &wstr,std::string &str)
+{
+    char*     pElementText;
+    int    iTextLen;
+    // wide char to multi char
+    if(wstr.size()<=0)
+        return false;
+    iTextLen = WideCharToMultiByte( CP_ACP,
+        0,
+        wstr.c_str(),
+        -1,
+        NULL,
+        0,
+        NULL,
+        NULL);
+    pElementText = new char[iTextLen + 1];
+    memset(pElementText, 0, sizeof(char)*(iTextLen+1));
+    ::WideCharToMultiByte( CP_ACP,
+        0,
+        wstr.c_str(),
+        -1,
+        pElementText,
+        iTextLen,
+        NULL,
+        NULL);
+    str= pElementText;
+    delete[] pElementText;
+    return true;
+}
+////WinAPI Done
+#else
+
+static bool StringToWideString(const std::string &str,std::wstring &wstr)
+{
+    const char* _Source = s.c_str();
+    size_t _Dsize = s.size() + 1;
+    wchar_t *_Dest = new wchar_t[_Dsize];
+    wmemset(_Dest, 0, _Dsize);
+    mbstowcs(_Dest,_Source,_Dsize);
+    wstr= _Dest;
+    delete []_Dest;
+    return true;
+}
+static bool WideStringToString(const std::wstring &wstr,std::string &str)
+{
+    const wchar_t* _Source = ws.c_str();
+    size_t _Dsize = 2*ws.size() + 1;
+    char *_Dest = new char[_Dsize];
+    memset(_Dest,0,_Dsize);
+    wcstombs(_Dest,_Source,_Dsize);
+    str = _Dest;
+    delete []_Dest;
+    return false;
+}
+/////Other System Done
 #endif
 
 class PhoenixUniversalDetector : public nsUniversalDetector
@@ -121,7 +179,27 @@ extern "C" const char* UniversalGetCharSet(const char *text,size_t len)
         return nullptr;
     }
     Phdet->DataEnd();
-    strcpy_s(charset,Phdet->m_charset.c_str(),Phdet->m_charset)
+    strcpy_s(charset,256,Phdet->m_charset.c_str());
+    delete Phdet;
+    return charset;
+}
+
+extern "C" const wchar_t*  UniversalGetCharSetW(const char *text,size_t len)
+{
+    static wchar_t charset[256]={0};
+    if(date.empty())
+        return ;
+    PhoenixUniversalDetector *Phdet=new PhoenixUniversalDetector();
+    if(Phdet->HandleData(data.c_str(),date.length())!=NS_OK)
+    {
+        delete Phdet;
+        return nullptr;
+    }
+    Phdet->DataEnd();
+    //strcpy_s(charset,Phdet->m_charset.c_str(),Phdet->m_charset)
+    std::wstring s;
+    StringToWideString(Phdet->m_charset,s);
+    wcscpy_s(charset,s.c_str(),256,Phdet->m_charset.c_str())
     delete Phdet;
     return charset;
 }
