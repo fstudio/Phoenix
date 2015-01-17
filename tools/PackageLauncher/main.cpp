@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string>
 #include <Windows.h>
-#include "libtcc.h"
+#include <libWrapper.h>
 
 bool GetDefaultSearchFolder(char *outdir)
 {
@@ -22,10 +22,10 @@ bool GetDefualtLibraryPath(char *libdir)
 
 int Launcher(const char* source,const char* incdir,const char* libdir,const char* addlib,bool isScriptModule)
 {
-	TCCState *s=tcc_new();
+	CompilerStatus *s=CompilerNew();
 	if(s==nullptr)
 		return -1;
-	tcc_delete(s);
+	CompilerDelete(s);
 	return 0;
 }
 

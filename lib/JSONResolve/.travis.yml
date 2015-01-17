@@ -1,9 +1,0 @@
-
-language: cpp
-
-compiler:
- - gcc
- - clang
-
-script: cmake -G "Unix Makefiles" && make && cd ./test && cmake -G "Unix Makefiles" && make && ./mjsontest
-

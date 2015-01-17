@@ -5,6 +5,7 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <Windows.h>
+#include <wincrypt.h>
 
 extern char* getHttpRequest(unsigned method,const char* url,const char body)
 {

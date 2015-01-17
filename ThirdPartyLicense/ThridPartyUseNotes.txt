@@ -1,0 +1,14 @@
+Include:
+Firefox UniversalChardet
+SQLite 
+JSONSL
+rapidjson
+libclang
+manualgc
+zlib
+
+
+Note:
+Tiny C Compiler use LGPLv2.1 License
+We use tcc Offical Precompiled binary and Dynamic libraries . 
+header is not have copyright.

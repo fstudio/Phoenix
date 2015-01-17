@@ -1,4 +1,13 @@
 ###Makefile
+
+CC=cl
+LD=link
+RC=rc
+LIB=lib
+
+CXXFLAGS=/TP
+LDFLAGS=-dll
+
 DLLNAME=Synatx.HighLight.dll
 LIBNAME=Synatx.HighLightST.lib
 
