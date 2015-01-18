@@ -8,6 +8,7 @@ manualgc
 zlib
 log4z
 tinyxml2
+wtl
 
 Note:
 Tiny C Compiler use LGPLv2.1 License
