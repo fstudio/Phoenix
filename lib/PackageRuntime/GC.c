@@ -5,8 +5,9 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <stddef.h>
+#include <Runtime/GC.h>
 
-void *PRAlloc(size_t x)
+PKGEXTERN void *PRAlloc(size_t x)
 {
   return NULL;
 }

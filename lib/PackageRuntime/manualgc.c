@@ -480,7 +480,7 @@ stack_push(int handle)
 
 /* gc brackets open */
 
-void
+PKGEXTERN void
 gc_enter()
 {
 	stack_expand();
@@ -490,7 +490,7 @@ gc_enter()
 
 /* gc brackets close , extend some pointers' lifetime */
 
-void
+PKGEXTERN void
 gc_leave(void *p,...)
 {
 	void **head;
@@ -556,7 +556,7 @@ stack_pack()
 
 /* link or unlink two pointer */
 
-void
+PKGEXTERN void
 gc_link(void *parent,void *prev,void *now)
 {
 	int parent_id;
@@ -578,7 +578,7 @@ gc_link(void *parent,void *prev,void *now)
 
 /* init struct E */
 
-void
+PKGEXTERN void
 gc_init()
 {
 	int i;
@@ -613,7 +613,7 @@ gc_init()
 
 /* release all the resource used in gc */
 
-void
+PKGEXTERN void
 gc_exit()
 {
 	int i;
@@ -706,7 +706,7 @@ gc_mark(int root)
 
 /* collect the memory block can no longer be otherwise accessed */
 
-void
+PKGEXTERN void
 gc_collect()
 {
 	int i;
@@ -743,7 +743,7 @@ gc_collect()
 
 /* only for debug, print all the relationship of all nodes */
 
-void
+PKGEXTERN void
 gc_dryrun()
 {
 	int i;
@@ -787,7 +787,7 @@ gc_dryrun()
 
 /* allocate a memory block , and create a node map to it. node will link to parent */
 
-void*
+PKGEXTERN void*
 gc_malloc(size_t sz,void *parent,void (*finalizer)(void *))
 {
 	void *ret=CRTMalloc(sz);
@@ -825,7 +825,7 @@ gc_weak_table(void *parent)
 
 /* iterate the weak container */
 
-void* 
+PKGEXTERN void* 
 gc_weak_next(struct gc_weak_table *cont,int *iter)
 {
 	int i,j;
@@ -871,7 +871,7 @@ gc_weak_next(struct gc_weak_table *cont,int *iter)
 
 /* clone a memory block , this will copy all the edges linked to orginal node */
 
-void*
+PKGEXTERN void*
 gc_clone(void *from,size_t sz)
 {
 	int from_id=map_id(from);
@@ -890,7 +890,7 @@ gc_clone(void *from,size_t sz)
 
 /* realloc a memory block , all the edages linked to it will be retained */
 
-void*
+PKGEXTERN void*
 gc_realloc(void *p,size_t sz,void *parent)
 {
 	void *ret;
