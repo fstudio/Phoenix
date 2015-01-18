@@ -1,11 +1,10 @@
 /*********************************************************************************************************
-*   Phoneix Plugin Runtime
+*   Phoneix Package Runtime
 *   Note: PackagrRuntime.c This File is Runtime Init.
 *   Data: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-///CoInitialize(NULL);
-
+#include <Runtime/Runtime.h>
 #include <Windows.h>
 #include <Objbase.h>
 
@@ -13,10 +12,9 @@ PKGEXTERN bool ComponentInitialize()
 {
     return (CoInitialize(NULL)==S_OK);
 }
-PKGEXTERN bool ComponentUnInitialze()
+PKGEXTERN void ComponentUnInitialze()
 {
     CoUninitialize();
-    return (GetLastError()==0);
 }
 
 PKGEXTERN bool ComponentInitializeEx()

@@ -13,7 +13,7 @@
 typedef struct CharlieUUID{
    uint32_t Data1;
    uint16_t Data2;
-   uint16_t Data3
+   uint16_t Data3;
    uint8_t Data4[8];
 }CharlieUUID;
 
@@ -23,7 +23,7 @@ PKG_BEGIN_DECL
 PKGEXTERN int CharlieUUIDRandom(CharlieUUID *uuid);
 PKGEXTERN int CharlieUUIDFormatFormString(const char *uuidString,CharlieUUID *uuid);
 PKGEXTERN int CharlieUUIDFormatToString(const CharlieUUID *uuid,char *stringBuffer);
-PKGEXTERN bool CharlieUUIDIsEquals(const CharlieUUID *uuid1,const CharlieUUID *uuid2)
+PKGEXTERN bool CharlieUUIDIsEquals(const CharlieUUID *uuid1,const CharlieUUID *uuid2);
 PKG_END_DECL
 
 

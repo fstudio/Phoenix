@@ -13,7 +13,7 @@ typedef  int(*ZIP_CALLBACK)(char*);
 
 PKG_BEGIN_DECL
 ////Feature.
-PKGEXTERN int ComperssFolderFiles(const char* folder)
+PKGEXTERN int ComperssFolderFiles(const char* folder);
 PKG_END_DECL
 
 #endif

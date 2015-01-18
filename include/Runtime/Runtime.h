@@ -18,7 +18,7 @@ PKG_BEGIN_DECL
 ///#include "HTTP.h"
 PKGEXTERN bool ComponentInitialize();
 PKGEXTERN void ComponentUnInitialze();
-PKGEXTERN bool ComponentInitializeEx()
+PKGEXTERN bool ComponentInitializeEx();
 PKG_END_DECL
 
 #endif

@@ -60,6 +60,8 @@ typedef int ssize_t;
  * We require a /DJSONSL_DLL so that users already using this as a static
  * or embedded library don't get confused
  */
+ #include <Runtime/rtdefs.h>
+ #define JSONSL_DLL DLLEXPORT
 #if defined(_WIN32) && defined(JSONSL_DLL)
 #define JSONSL_API __declspec(dllexport)
 #else

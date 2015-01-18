@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 * PhoenixWindows.h
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
-* Note:
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
+* Note: Phoenix Editor Windows Platform Header.
 * E-mail:<forcemz@outlook.com>
 * @2014.08
 **********************************************************************************************************/

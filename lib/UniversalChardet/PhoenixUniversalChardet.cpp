@@ -6,9 +6,9 @@
 * E-mail:<forcemz@outlook.com>
 * @2014.08
 **********************************************************************************************************/
-#include <Phoenix.h>
 #include <string>
 #include <cstdlib>
+#include <cstdio>
 #include <cstring>
 #ifdef _WIN32
 #include <Windows.h>

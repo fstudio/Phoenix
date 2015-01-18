@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Plugin Runtime
+*   Phoneix Package Runtime
 *   Note: UUID
 *   Data: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
@@ -40,7 +40,7 @@ PKGEXTERN int CharlieUUIDFormatFormString(const char *s,CharlieUUID *uuid)
         return -1;
     if ((s[8]!='-') || (s[13]!='-') || (s[18]!='-') || (s[23]!='-'))
         return 1;
-    for (i=0; i<36; i++)
+    for (auto i=0; i<36; i++)
     {
         if ((i == 8)||(i == 13)||(i == 18)||(i == 23)) continue;
         if (s[i] > 'f' || (!hex2bin[s[i]] && s[i] != '0')) return 2;
@@ -76,13 +76,15 @@ PKGEXTERN int CharlieUUIDFormatToString(const CharlieUUID *uuid,char *stringBuff
         uuid->Data4[4],
         uuid->Data4[5],
         uuid->Data4[6],
-        uuid->Data4[7])
+        uuid->Data4[7]);
     return 0;
 }
 
 PKGEXTERN bool CharlieUUIDIsEquals(const CharlieUUID *uuid1,const CharlieUUID *uuid2)
 {
-    if(uuid1==NULL&&uuid2==NULL)
+    if(uuid1==uuid2)
         return true;
+    if(uuid1==NULL||uuid2==NULL)
+        return false;
     return  (memcmp(uuid1,uuid2,sizeof(CharlieUUID))==0);
 }
