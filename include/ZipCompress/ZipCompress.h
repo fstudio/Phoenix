@@ -32,6 +32,33 @@ class ZipCompress{
         bool UnCompressToDisk(std::wstring zipfile,std::wstring folder);
 };
 
+////////By default ZipCompiressA use by PackageRuntime.
+class ZipCompressA{
+public:
+    enum MessageReportCode{
+        REPORT_FAILD=0,
+        REPORT_WARNING=1,
+        REPORT_ASK=2
+    };
+    ZipCompressA(bool iskeep);
+    ~ZipCompressA();
+    void SetMessageThrow(std::function<bool(std::string,int)> fun)
+    {
+        this->MessageThrow=fun;
+    }
+private:
+    int iRet;
+    bool isdefault;
+    std::function<bool(std::string,int)> MessageThrow;
+public:
+    bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::string zipfile);
+    bool CreateCompressBufferToBuffer(BYTE *buffer,size_t *bsize,BYTE *dest,size_t *dsize);
+    bool CreateCompressFile(std::string sourcefile,/*OutDir*/std::string zipfile);
+    bool UnCompressToBuffer(std::string zipfile,BYTE*dest,size_t *destlen);
+    bool UnCompressToDisk(std::string zipfile,std::string folder);
+};
+
+
 //Asynchronous Compress:
 class ZipAsynchronousCompress{
 private:

@@ -7,8 +7,21 @@
 #include <stddef.h>
 #include <Runtime/GC.h>
 
-PKGEXTERN void *PRAlloc(size_t x)
+
+
+PKGEXTERN void PRGC_Init()
+{
+    ///Init.
+}
+
+PKGEXTERN void *PRGC_Alloc(size_t mmSize)
 {
   return NULL;
 }
 
+PKGEXTERN void *PRGC_Malloc(size_t mmSize)
+{
+  if(mmSize==0)
+    return NULL;
+  return NULL;
+}
