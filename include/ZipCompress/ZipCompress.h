@@ -1,3 +1,9 @@
+/*********************************************************************************************************
+*   Phoneix ZipCompress Features
+*   Note: ZipCompress.h
+*   Data: 2015.01.18
+*   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
+**********************************************************************************************************/
 #ifndef ZIPCOMPRESS_H
 #define ZIPCOMPRESS_H
 #include <string>

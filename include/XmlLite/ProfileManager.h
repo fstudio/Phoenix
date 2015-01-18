@@ -1,6 +1,9 @@
-/*
-*
-*/
+/*********************************************************************************************************
+*   Phoneix XmlLite  Features
+*   Note: ProfileManager.h
+*   Data: 2015.01.06
+*   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
+**********************************************************************************************************/
 
 #ifndef PHO_XML_PROFIEPARSER_H
 #define PHO_XML_PROFILEPARSER_H

@@ -6,7 +6,8 @@ rapidjson
 libclang
 manualgc
 zlib
-
+log4z
+tinyxml2
 
 Note:
 Tiny C Compiler use LGPLv2.1 License

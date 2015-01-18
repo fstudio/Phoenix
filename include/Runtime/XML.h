@@ -7,6 +7,8 @@
 #ifndef PHONEIX_PACKAGE_RUNTIME_XML_H
 #define PHONEIX_PACKAGE_RUNTIME_XML_H
 #include "rtdefs.h"
+
+typedef void* XmlResolve_t;
 PKG_BEGIN_DECL
 ////Feature.
 

@@ -1,5 +1,10 @@
-////
-#include "PhoXmlLite.h"
+/*********************************************************************************************************
+*   Phoneix XmlLite  Features
+*   Note: ProfileManager.cpp
+*   Data: 2015.01.17
+*   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
+**********************************************************************************************************/
+#include "XmlLiteInternal.h"
 #include <XmlLite/ProfileManager.h>
 #pragma warning(disable : 4127) // conditional expression is constant
 #define CHKHR(stmt)                                                            \

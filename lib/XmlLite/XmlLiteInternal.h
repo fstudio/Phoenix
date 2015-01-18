@@ -1,22 +1,22 @@
 /*********************************************************************************************************
-*   Phoneix Package Builder tools
-*   Note: builder.cc
-*   Data: 2015.01.18
+*   Phoneix XmlLite  Features
+*   Note: PhpXmlLite.h
+*   Data: 2015.01.17
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 
-#include <iostream>
-#include <string>
+
+#ifndef PHOENIX_XMLLITE_H
+#define PHOENIX_XMLLITE_H
+#include <ole2.h>
+#include <xmllite.h>
+#include <stdio.h>
+#include <shlwapi.h>
+
+// "<applicationSettings>"
 
 
 
-int ApplicationInit()
-{
-  return 0;
-}
 
-int wmain(int argc,wchar_t *argv[])
-{
-  return ApplicationInit();
-}
 
+#endif
