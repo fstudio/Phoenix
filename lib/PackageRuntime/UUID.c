@@ -36,7 +36,7 @@ PKGEXTERN int CharlieUUIDRandom(CharlieUUID *uuid)
 }
 PKGEXTERN int CharlieUUIDFormatFormString(const char *s,CharlieUUID *uuid)
 {
-    if(uuid==NULL||s==NULL)
+    if(uuid==NULL||s==NULL||strlen(s)<36)
         return -1;
     if ((s[8]!='-') || (s[13]!='-') || (s[18]!='-') || (s[23]!='-'))
         return 1;
