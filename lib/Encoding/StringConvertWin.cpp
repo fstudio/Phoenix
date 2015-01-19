@@ -10,7 +10,7 @@
 
 
 
-std::wstring MultiCharToUnicode(const std::string &str) {
+std::wstring MultiByteToUnicode(const std::string &str) {
   int len = 0;
   len = str.length();
   int unicodeLen = ::MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
@@ -25,7 +25,7 @@ std::wstring MultiCharToUnicode(const std::string &str) {
 
   return rt;
 }
-std::string UnicodeToMultiChar(const std::wstring &str) {
+std::string UnicodeToMultiByte(const std::wstring &str) {
   char *pElementText;
   int iTextLen;
   // wide char to multi char

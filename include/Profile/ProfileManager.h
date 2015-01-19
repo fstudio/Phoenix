@@ -33,13 +33,13 @@ public:
     wcscat_s(szPath, L".config");
     ProfileManager(std::wstring(szPath));
   }
-  std::wstring Get(std::wstring key);
-  std::string Get(std::string key);
-  std::string Get(const char *key);
-  bool Set(std::wstring key, std::wstring value);
-  bool Set(std::string key, std::string value);
-  bool CreateNewConfig(std::wstring filename);
-  bool OpenOtherConfig(std::wstring configpath);
+  std::wstring Get(std::wstring &key);
+  std::string Get(std::string &key);
+  //std::string Get(const char *key);
+  bool Set(std::wstring& key, std::wstring& value);
+  bool Set(std::string& key, std::string& value);
+  bool CreateNewConfig(std::wstring& filename);
+  bool OpenOtherConfig(std::wstring& configpath);
   bool IsParserFaild(){return beFaild;};
 };
 

@@ -5,7 +5,10 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include "XmlLiteInternal.h"
-#include <XmlLite/ProfileManager.h>
+#include <Profile/ProfileManager.h>
+#include <Encoding/Encode.h>
+
+
 #pragma warning(disable : 4127) // conditional expression is constant
 #define CHKHR(stmt)                                                            \
   do {                                                                         \
@@ -183,9 +186,38 @@ ProfileManager::ProfileManager(std::wstring profile)
     return;
   }
 }
-bool ProfileManager::BeLoadAndRead() { return true; }
-std::wstring ProfileManager::Get(std::wstring key) {
+bool ProfileManager::BeLoadAndRead()
+{
+  return true;
+}
+std::wstring ProfileManager::Get(std::wstring& key) {
   // if find key
+  auto iter=kvmap.find(key);
+  if(iter==kvmap.end())
+    return L"";
   return kvmap[key];
 }
+
+std::string ProfileManager::Get(std::string &key)
+{
+  std::wstring wkey=MultiByteToUnicode(key);
+  auto iter=kvmap.find(wkey);
+  if(iter==kvmap.end())
+    return "";
+  return UnicodeToMultiByte(kvmap[wkey]);
+}
+
+bool ProfileManager::Set(std::wstring& key, std::wstring& value)
+{
+  kvmap[key]=value;
+  return true;
+}
+
+bool ProfileManager::Set(std::string& key, std::string& value)
+{
+  std::wstring wkey=MultiByteToUnicode(key);
+  kvmap[wkey]=MultiByteToUnicode(value);
+  return true;
+}
+
 }

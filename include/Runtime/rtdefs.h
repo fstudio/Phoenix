@@ -14,9 +14,15 @@
 #   else
 #       define PKGEXTERN
 #   endif
+#define PACKAGEEXPORT __declspec(dllexport)
 #else
 #   define PKGEXTERN extern
+#define PACKAGEEXPORT 
 #endif
+
+
+
+
 
 #ifdef __cplusplus
 # define PKG_BEGIN_DECL extern "C" {

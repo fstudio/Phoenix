@@ -10,8 +10,8 @@
 #ifdef __cplusplus
 #include <string>
 #ifdef _WIN32
-std::wstring MultiCharToUnicode(const std::string &str);
-std::string UnicodeToMultiChar(const std::wstring &str);
+std::wstring MultiByteToUnicode(const std::string &str);
+std::string UnicodeToMultiByte(const std::wstring &str);
 std::wstring UTF8ToUnicode(const std::string &str);
 std::string UincodeToUTF8(const std::wstring &str);
 #endif
