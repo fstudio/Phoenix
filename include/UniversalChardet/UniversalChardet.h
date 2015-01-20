@@ -11,6 +11,24 @@
 #include <string>
 
 #ifdef __cplusplus
+namespace Character_{
+#else
+typedef struct Character{
+#endif
+
+enum Phoenix_Character_SET_{
+    CharacterSET_ASCII=0,
+    CharacterSET_UTF8=1,
+    CharacterSET_UTF16LE=2,
+    CharacterSET_UTF16BE=3
+};
+#ifdef __cplusplus
+}
+#else
+}Character;
+#endif
+
+#ifdef __cplusplus
 class UniversalChardet{
 private:
     std::wstring wcharset;
@@ -23,6 +41,7 @@ public:
     std::string GetCharset();
     bool GetStatus(){return this->status;}
 };
+
 #endif
 
 #ifdef __cplusplus

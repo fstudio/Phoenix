@@ -20,9 +20,10 @@ namespace Profile {
 class ProfileManager {
 private:
   std::map<std::wstring, std::wstring> kvmap;
+  std::map<std::wstring, std::wstring> appsettingkv;
   std::wstring configfile;
-  bool BeWriteAndSave();
-  bool BeLoadAndRead();
+  bool BeWriteProfile();
+  bool BeReadProfile();
   bool beFaild;
 public:
   ProfileManager(std::wstring profile);

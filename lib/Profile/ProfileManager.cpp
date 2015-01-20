@@ -7,6 +7,53 @@
 #include "XmlLiteInternal.h"
 #include <Profile/ProfileManager.h>
 #include <Encoding/Encode.h>
+#include <Shlwapi.h>
+
+
+/*
+  IStream *pXmlStream=nullptr;
+  IXmlReader *pReader=nullptr;
+  XmlNodeType xmlnode;
+  const WCHAR* pwszPrefix;
+  const WCHAR* pwszLocalName;
+  const WCHAR* pwszValue;
+  UINT cwchPrefix;
+  std::wstring wsd, wsk, wIsdy;
+  HRESULT hr = S_OK;
+  if (FAILED(hr = SHCreateStreamOnFile(this->wxml.c_str(), STGM_READ, &pXmlStream)))
+    HR(hr);
+  if (FAILED(hr = CreateXmlReader(__uuidof(IXmlReader), (void**) &pReader, NULL)))
+    HR(hr);
+  if (FAILED(hr = pReader->SetProperty(XmlReaderProperty_DtdProcessing, DtdProcessing_Prohibit)))
+    HR(hr);
+  if (FAILED(hr = pReader->SetInput(pXmlStream)))
+    HR(hr);
+  while (S_OK == pReader->Read(&xmlnode))
+  {
+    switch (xmlnode)
+    {
+    case XmlNodeType_Element:
+      pReader->GetPrefix(&pwszPrefix, &cwchPrefix);
+      pReader->GetLocalName(&pwszLocalName, NULL);
+      //MessageBox(nullptr, pwszLocalName, L"LocalName", MB_OK);
+      break;
+    case XmlNodeType_EndElement:
+      break;
+    case XmlNodeType_Text:
+      pReader->GetValue(&pwszValue, NULL);
+      kv.insert(std::map<std::wstring, std::wstring>::value_type(pwszLocalName, pwszValue));
+      //MessageBox(nullptr, pwszValue, L"Text", MB_OK);
+      break;
+    case XmlNodeType_Whitespace:
+      //pReader->GetValue(&pwszValue, NULL);
+      //MessageBox(nullptr, pwszValue, L"xx", MB_OK);
+      break;
+    default:
+      break;
+    }
+  }
+
+*/
 
 
 #pragma warning(disable : 4127) // conditional expression is constant
@@ -181,35 +228,46 @@ private:
 namespace Profile {
 ProfileManager::ProfileManager(std::wstring profile)
     : configfile(profile), beFaild(false) {
-  if (!BeLoadAndRead()) {
+  if (!BeReadProfile()) {
     beFaild = true;
     return;
   }
 }
-bool ProfileManager::BeLoadAndRead()
+bool ProfileManager::BeReadProfile()
+{
+  if(!PathFileExistsW(configfile.c_str()))
+  {
+    ///CreateTemplate config.
+  }
+  return true;
+}
+
+
+bool ProfileManager::BeWriteProfile()
 {
   return true;
 }
+
 std::wstring ProfileManager::Get(std::wstring& key) {
   // if find key
-  auto iter=kvmap.find(key);
-  if(iter==kvmap.end())
+  auto iter=appsettingkv.find(key);
+  if(iter==appsettingkv.end())
     return L"";
-  return kvmap[key];
+  return appsettingkv[key];
 }
 
 std::string ProfileManager::Get(std::string &key)
 {
   std::wstring wkey=MultiByteToUnicode(key);
-  auto iter=kvmap.find(wkey);
-  if(iter==kvmap.end())
+  auto iter=appsettingkv.find(wkey);
+  if(iter==appsettingkv.end())
     return "";
-  return UnicodeToMultiByte(kvmap[wkey]);
+  return UnicodeToMultiByte(appsettingkv[wkey]);
 }
 
 bool ProfileManager::Set(std::wstring& key, std::wstring& value)
 {
-  kvmap[key]=value;
+  appsettingkv[key]=value;
   return true;
 }
 
