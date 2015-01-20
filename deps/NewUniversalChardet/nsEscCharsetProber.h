@@ -8,7 +8,8 @@
 
 #include "nsCharSetProber.h"
 #include "nsCodingStateMachine.h"
-#include "nsAutoPtr.h"
+#include <memory>
+//#include "nsAutoPtr.h"
 
 class nsEscCharSetProber: public nsCharSetProber {
 public:
@@ -23,7 +24,7 @@ public:
 protected:
   void      GetDistribution(uint32_t aCharLen, const char* aStr);
   
-  nsAutoPtr<nsCodingStateMachine> mCodingSM;
+  std::auto_ptr<nsCodingStateMachine> mCodingSM;
   nsProbingState mState;
   const char *  mDetectedCharset;
 };

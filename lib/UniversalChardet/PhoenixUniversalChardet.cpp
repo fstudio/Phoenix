@@ -145,7 +145,7 @@ UniversalChardet::UniversalChardet(std::string data):status(false),m_charset("un
         return ;
     }
     Phdet->DataEnd();
-    this->m_charset=Phdet->m_charset;
+    this->m_charset=Phdet->GetCharset();
     delete Phdet;
     StringToWideString(m_charset,wcharset)
     this->status=true;
@@ -170,10 +170,10 @@ std::wstring UniversalChardet::GetCharsetW()
 extern "C" const char* UniversalGetCharSet(const char *text,size_t len)
 {
     static char charset[256]={0};
-        if(date.empty())
+        if(data.empty())
         return ;
     PhoenixUniversalDetector *Phdet=new PhoenixUniversalDetector();
-    if(Phdet->HandleData(data.c_str(),date.length())!=NS_OK)
+    if(Phdet->HandleData(data.c_str(),data.length())!=NS_OK)
     {
         delete Phdet;
         return nullptr;
@@ -187,10 +187,10 @@ extern "C" const char* UniversalGetCharSet(const char *text,size_t len)
 extern "C" const wchar_t*  UniversalGetCharSetW(const char *text,size_t len)
 {
     static wchar_t charset[256]={0};
-    if(date.empty())
+    if(data.empty())
         return ;
     PhoenixUniversalDetector *Phdet=new PhoenixUniversalDetector();
-    if(Phdet->HandleData(data.c_str(),date.length())!=NS_OK)
+    if(Phdet->HandleData(data.c_str(),data.length())!=NS_OK)
     {
         delete Phdet;
         return nullptr;

@@ -1,0 +1,21 @@
+#nginxvcs svn access module
+#Make static library
+### Target libnvcs.a
+TARGETNAME=chardet
+CC=clang
+CXX=clang++
+CXXFLAGS= -std=c++11 -Wall  -Wextra -c -O2 -Wunused-variable -fsanitize=address -fno-omit-frame-pointer
+LDFLAGS= -fsanitize=address 
+CXXOBJ=chardet.o CharDistribution.o JpCntx.o nsCharSetProber.o nsEscCharsetProber.o nsEscSM.o nsEUCJPProber.o nsLatin1Prober.o nsMBCSGroupProber.o nsMBCSSM.o nsSJISProber.o nsUniversalDetector.o nsUTF8Prober.o
+
+all:$(TARGETNAME)
+
+$(TARGETNAME):$(CXXOBJ)
+	$(CXX) $(LDFLAGS) $(CXXOBJ) -o $(TARGETNAME)
+
+
+$(CXXOBJ): %.o: %.cpp
+	$(CXX) $(CXXFLAGS)  $< -o $@
+
+clean:
+	-rm   *.o chardet

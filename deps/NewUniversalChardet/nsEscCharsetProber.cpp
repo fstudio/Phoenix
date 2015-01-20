@@ -9,7 +9,7 @@
 
 nsEscCharSetProber::nsEscCharSetProber()
 {
-  mCodingSM = new nsCodingStateMachine(&ISO2022JPSMModel);
+  mCodingSM = std::auto_ptr<nsCodingStateMachine>(new nsCodingStateMachine(&ISO2022JPSMModel));
   mState = eDetecting;
   mDetectedCharset = nullptr;
 }
