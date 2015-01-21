@@ -2,6 +2,8 @@
 *   Phoneix Package Runtime
 *   Note: Http.c This File is Http Library
 *   Data: 2015.01.13
+*   Author: Force.Charlie
+*   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <Runtime/Http.h>

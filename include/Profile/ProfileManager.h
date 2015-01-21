@@ -2,6 +2,8 @@
 *   Phoneix XmlLite  Features
 *   Note: ProfileManager.h
 *   Data: 2015.01.06
+*   Author: Force.Charlie
+*   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 
@@ -17,8 +19,10 @@
 #endif
 
 namespace Profile {
+class XmlIntegratedAnalyzer;
 class ProfileManager {
 private:
+  XmlIntegratedAnalyzer *xiaptr;
   std::map<std::wstring, std::wstring> kvmap;
   std::map<std::wstring, std::wstring> appsettingkv;
   std::wstring configfile;
@@ -34,6 +38,7 @@ public:
     wcscat_s(szPath, L".config");
     ProfileManager(std::wstring(szPath));
   }
+  ~ProfileManager();
   std::wstring Get(std::wstring &key);
   std::string Get(std::string &key);
   //std::string Get(const char *key);

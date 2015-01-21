@@ -30,6 +30,14 @@
 
 #endif
 
+
+typedef struct VersionTags_{
+   unsigned marjo;
+   unsigned min;
+   unsigned patch;
+   unsigned buildtimes;
+}version_t;
+
 typedef DWORD (WINAPI *PTHREADMAIN)(
     LPVOID lpThreadParameter
     );

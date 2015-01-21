@@ -2,6 +2,8 @@
 *   Phoneix XmlLite  Features
 *   Note: ProfileManager.cpp
 *   Data: 2015.01.17
+*   Author: Force.Charlie
+*   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include "XmlLiteInternal.h"
@@ -223,29 +225,63 @@ private:
   LONG _refcount;
 };
 
+
+
 ///////////
 
 namespace Profile {
+class XmlIntegratedAnalyzer{
+private:
+  std::wstring m_xmlfile;
+public:
+  XmlIntegratedAnalyzer(std::wstring xmlfile):m_xmlfile(xmlfile)
+  {
+  }
+  ~XmlIntegratedAnalyzer()
+  {
+    //Release COM Interface
+  }
+  bool Reader(std::map<std::wstring,std::wstring> &appsettingkv)
+  {
+    if(!PathFileExistsW(m_xmlfile.c_str()))
+    {
+      return false;
+    }
+    return true;
+  }
+  bool Writer(std::map<std::wstring,std::wstring> &appsettingkv)
+  {
+    return true;
+  }
+};
+
+
+
 ProfileManager::ProfileManager(std::wstring profile)
     : configfile(profile), beFaild(false) {
+      xiaptr=new XmlIntegratedAnalyzer(this->configfile);
   if (!BeReadProfile()) {
     beFaild = true;
     return;
   }
 }
+
+ProfileManager::~ProfileManager()
+{
+  xiaptr->Writer(this->appsettingkv);
+  if(xiaptr)
+    delete xiaptr;
+}
+
 bool ProfileManager::BeReadProfile()
 {
-  if(!PathFileExistsW(configfile.c_str()))
-  {
-    ///CreateTemplate config.
-  }
-  return true;
+  return xiaptr->Reader(appsettingkv);
 }
 
 
 bool ProfileManager::BeWriteProfile()
 {
-  return true;
+  return xiaptr->Writer(appsettingkv);
 }
 
 std::wstring ProfileManager::Get(std::wstring& key) {

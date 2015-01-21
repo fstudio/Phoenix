@@ -1,20 +1,9 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime
-*   Note: Xml Parser
-*   Data: 2015.01.13
+*   Phoneix IntegrateAnalyzer  Features
+*   Note: XmlIntegrateAnalyzer.cpp
+*   Data: 2015.01.21
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#ifndef PHONEIX_PACKAGE_RUNTIME_XML_H
-#define PHONEIX_PACKAGE_RUNTIME_XML_H
-#include "rtdefs.h"
-
-typedef void* XmlResolve_t;
-PKG_BEGIN_DECL
-////Feature.
-
-PKG_END_DECL
-
-
-#endif
+#include <Analyzer/IntegrateAnalyzer.h>
