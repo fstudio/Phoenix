@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix XmlLite  Features
+*   Phoneix Xml Base Profile  Features
 *   Note: ProfileManager.h
 *   Data: 2015.01.06
 *   Author: Force.Charlie

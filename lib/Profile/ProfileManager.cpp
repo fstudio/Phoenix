@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix XmlLite  Features
+*   Phoneix Profile  Features
 *   Note: ProfileManager.cpp
 *   Data: 2015.01.17
 *   Author: Force.Charlie
