@@ -28,25 +28,22 @@ private:
   std::wstring configfile;
   bool BeWriteProfile();
   bool BeReadProfile();
-  bool beFaild;
+  bool beFailed;
+
 public:
   ProfileManager(std::wstring profile);
-  ProfileManager() {
-    wchar_t szPath[30276] = {0};
-    /////nullptr
-    GetModuleFileNameW(nullptr, szPath, 30276);
-    wcscat_s(szPath, L".config");
-    ProfileManager(std::wstring(szPath));
-  }
+  ProfileManager();
   ~ProfileManager();
   std::wstring Get(std::wstring &key);
+  std::wstring CharGet(const wchar_t *str);
+  std::string CharGet(const char *str);
   std::string Get(std::string &key);
-  //std::string Get(const char *key);
-  bool Set(std::wstring& key, std::wstring& value);
-  bool Set(std::string& key, std::string& value);
-  bool CreateNewConfig(std::wstring& filename);
-  bool OpenOtherConfig(std::wstring& configpath);
-  bool IsParserFaild(){return beFaild;};
+  // std::string Get(const char *key);
+  bool Set(std::wstring &key, std::wstring &value);
+  bool Set(std::string &key, std::string &value);
+  bool CreateNewConfig(std::wstring &filename);
+  bool OpenOtherConfig(std::wstring &configpath);
+  bool IsParserFaild() { return beFailed; };
 };
 
 typedef ProfileManager ConfiguretionManager;
