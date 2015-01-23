@@ -9,20 +9,29 @@
 #ifndef PHOENIX_INIRESOLVE_HPP
 #define PHOENIX_INIRESOLVE_HPP
 #include <string>
-#include <list>
+#include <vector>
 #include <map>
 
 
 template<class T>//T  wstring or string
 class IniResolve{
-private:
+public:
+    struct ParamKV{
+        T key;
+        T value;
+        ParamKV(T k, T v) :key(k), value(v)
+        {
+            ////
+        }
+    };
+protected:
     T m_iniFile;
-    std::map<T,std::map<T,T>> iniNodeKV;///Node as a map->
+    std::map<T, std::vector<ParamKV>> treeMode;///Node as a map->
 public:
     IniResolve(T &inifile);
 };
 
-class POENIX_NO_VTABLE IniResolveUnicode:public IniResolve<std::wstring>{
+class  IniResolveUnicode :public IniResolve<std::wstring>{
 public:
     IniResolveUnicode();
 };
