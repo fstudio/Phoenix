@@ -24,6 +24,14 @@ b=e
 name=value
 ;sections
 **/
+typedef enum{
+    INIRESOLVE_ENCODING_ANSI=1,
+    INIRESOLVE_ENCODING_UTF8_WITHOUTBOM,
+    INIRESOLVE_ENCODING_UTF8_WITHBOM,
+    INIRESOLVE_ENCODING_UTF16LE,
+    INIRESOLVE_ENCODING_UTF16BE
+}IniResolveFileEncoding;
+
 
 template<class T>//T  wstring or string
 class IniResolve{
@@ -36,15 +44,39 @@ public:
             ////
         }
     };
+    enum INI_LINE_TYPEINFO{
+        INI_LINE_TYPEINFO_COMMENTS=0,
+        INI_LINE_TYPEINFO_SECTIONS=1,
+        INI_LINE_TYPEINFO_PARAMETERS=3
+    };
 protected:
     T m_iniFile;
     std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
+    std::map<unsigned,T> commentsMap;
     unsigned CheckIniFileEncoding(const char *buffer,size_t bufferSize)
     {
+        ///BOM Marker Checher.
+        if(bufferSize>=3)
+        {
+            if(buffer[0]==0xEF&&buffer[1]==0xBB&&buffer[2]==0xBF)
+                return INIRESOLVE_ENCODING_UTF8_WITHBOM;
+            if(buffer[0]==0xEF&&buffer[1]==0xFE)
+                return INIRESOLVE_ENCODING_UTF16LE;
+            if(buffer[0]==0xFF&&buffer[1]==0xFE)
+                return INIRESOLVE_ENCODING_UTF16BE;
+        }
+        ///UniversalChardet Checker UTF8 without BOM or ANSII CodePage
         return 0;
     }
 public:
+    ////This Get String Type:
+    typedef typename T::value_type Character;
+    typedef typename T::pointer CharacterPtr;
     typedef typename T::const_pointer StringConstPtr;
+    typedef typename T::reference StringRef;
+    typedef typename T::const_reference StringConstRef;
+
+    ////
     IniResolve(T &inifile):m_iniFile(inifile)
     {
         //
@@ -74,6 +106,13 @@ public:
     {
         return Set(T(section),T(name),T(value),innode);
     }
+    bool IniTextResolveAnalyzer(/*_Not_NULL_*/StringConstPtr str,size_t size)
+    {
+        if(str==nullptr||size<=0)
+            return false;
+        size_t line=0;
+        return true;
+    }
 };
 
 
@@ -83,6 +122,7 @@ public:
     {
         ////
     }
+    bool Loader();
 };
 
 class IniResolveMultiByte :public IniResolve<std::string>{
@@ -90,6 +130,7 @@ public:
     IniResolveMultiByte(std::string inifile):IniResolve<std::string>(inifile){
         ///
     }
+    bool Loader();
 };
 
 /**
@@ -116,7 +157,10 @@ public:
     }
 };
 
-
+class SmapleCfgResolveUnicode:public SmapleCfgResolve<std::wstring>{
+public:
+    bool Loader();
+};
 
 
 #endif
