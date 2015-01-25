@@ -1,9 +1,9 @@
 /*********************************************************************************************************
-* PhEditPhysicsFile.cpp
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
-* Note:
+* StorageFile.cpp
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
+* Note: Phoenix StorageFile Code
 * E-mail:<forcemz@outlook.com>
-* @2014.09
+* @2015.25
 **********************************************************************************************************/
 #include <Phoenix.h>
 #include <stdint.h>
@@ -11,16 +11,38 @@
 #include <map>
 #define MAX_MAP_SIZE_FILE 64*1024*1024*16
 
-#include <Editor/Physics.h>
-
-std::map<int,PhEditPhysicsFile> PhfileMap;
-
+#include <Editor/StorageFile.h>
+#include <UniversalChardet/UniversalChardet.h>
 
 
+StorageFile::StorageFile(std::wstring relPath):m_relPath(relPath),mSize(0),IsModified(false),mFilePtr(nullptr)
+{
+    ///
+}
+StorageFile::~StorageFile()
+{
+    if(!mFilePtr)
+    {
+        delete[] mFilePtr;
+    }
+}
 
+bool StorageFile::OriginEncodingDeter()
+{
+    return false;
+}
 
+bool StorageFile::ConvertEncodingSava(unsigned encoding)
+{
+    switch(encoding)
+    {
+        default:
+        break;
+    }
+    return false;
+}
 
-bool PhEditPhysicsFile::GetPhysicsFileSize()
+bool StorageFile::GetStoreFileSize()
 {
     HANDLE hFile;
     LARGE_INTEGER FileSize;
@@ -38,9 +60,9 @@ bool PhEditPhysicsFile::GetPhysicsFileSize()
     return true;
 }
 
-bool PhEditPhysicsFile::LoadPhysicsFile()
+bool StorageFile::LoadFile()
 {
-    if(!this->GetPhysicsFileSize())
+    if(!this->GetStoreFileSize())
     {
         return false;
     }
@@ -48,12 +70,4 @@ bool PhEditPhysicsFile::LoadPhysicsFile()
     //ReadFile()
     //ReadFileEx()
     return true;
-}
-
-PhEditPhysicsFile::~PhEditPhysicsFile():mSize(0),IsModified(false)
-{
-    if(!mFilePtr)
-    {
-        delete[] mFilePtr;
-    }
 }

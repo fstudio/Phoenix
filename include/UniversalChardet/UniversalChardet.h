@@ -11,9 +11,9 @@
 #include <string>
 
 #ifdef __cplusplus
-namespace Character_{
+namespace CharacterSet{
 #else
-typedef struct Character{
+typedef struct CharacterSet__{
 #endif
 
 enum Phoenix_Character_SET_{
@@ -25,7 +25,7 @@ enum Phoenix_Character_SET_{
 #ifdef __cplusplus
 }
 #else
-}Character;
+}CharacterSet;
 #endif
 
 #ifdef __cplusplus
