@@ -25,6 +25,7 @@ public:
     bool LoadFile();
     std::wstring FormatTextOut();
     wchar_t *GetMemoryPtr(){return mFilePtr;}
+    uint64_t GetFilePtrSize(){return mSize;}
     unsigned GetOriginEncoding(){return this->originEncoding;}
     bool ConvertEncodingSava(unsigned encoding);
 protected:

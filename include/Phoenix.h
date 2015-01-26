@@ -38,7 +38,7 @@ typedef struct VersionTags_{
    unsigned buildtimes;
 }version_t;
 
-typedef DWORD (WINAPI *PTHREADMAIN)(
+typedef DWORD (WINAPI *ExecuteFunction)(
     LPVOID lpThreadParameter
     );
 

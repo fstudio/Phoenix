@@ -14,7 +14,7 @@
 #include <Processthreadsapi.h>
 #include "PhoenixUI.h"
 
-//class PhoenixWindow;
+//class UIWindow;
 static std::map<int,HINSTANCE> ChildProcessMap;
 
 class ProcessCommandLine{
