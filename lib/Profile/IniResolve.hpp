@@ -90,17 +90,41 @@ public:
         auto &v=treeMode[section];
         auto iter=v.begin();
         auto end=v.end();
+        std::vector<T> va;
         for(;iter!=end;iter++)
         {
             if(iter->name==sname)
-                return iter->value;
+                va.push_back(iter->value);
         }
+        if(va.size()>=1)
+            return va[innode];
         return T(5,0);
     }
     bool Set(T section,T name,T value,unsigned innode=0)
     {
+        if(section.empty()||name.empty())
+            return false;
         auto &v=treeMode[section];
-        return false;
+        auto iter=v.begin();
+        auto end=v.end();
+        unsigned i=0;
+        for(;iter!=end;iter++)
+        {
+            if(iter->name=name)
+            {
+                if(value.empty()){
+                    v.erase(iter);
+                    return true;
+                }
+                if(i<innode){
+                    i++;
+                }else{
+                    iter->value=value;
+                }
+                ////DONE
+            }
+        }
+        return true;
     }
     bool Set(StringConstPtr section,StringConstPtr name,StringConstPtr value,unsigned innode=0)
     {
