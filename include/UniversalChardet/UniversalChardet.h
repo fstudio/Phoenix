@@ -41,7 +41,8 @@ public:
     std::string GetCharset();
     bool GetStatus(){return this->status;}
 };
-
+int UniversalChardetFromFilePath(std::wstring filePath,bool &mark);
+int UniversalChardetFromFilePath(std::string filePath,bool &mark);
 #endif
 
 #ifdef __cplusplus

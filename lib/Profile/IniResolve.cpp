@@ -11,6 +11,8 @@
 #error "Only Support Windows"
 #endif
 #include <Windows.h>
+///MultiByteToUnicode
+#include <Encoding/Encode.h>
 
 static const char bom_utf8[] = {0xEF,0xBB,0xBF};
 
@@ -53,7 +55,7 @@ static bool  IniResolveFileAccess(const std::wstring &path)
     return true;
 }
 
-static bool IniResolveFileAccessA(const std::string &path)
+static bool IniResolveFileAccess(const std::string &path)
 {
     WIN32_FILE_ATTRIBUTE_DATA attr_data;
     if(GetFileAttributesExA(path.c_str(),GetFileExInfoStandard,&attr_data)!=TRUE)
@@ -68,13 +70,36 @@ static bool IniResolveFileAccessA(const std::string &path)
     return false;
 }
 
-template <typename Character>
-bool IniResolveFileOpen(const Character filePath,Character *buffer,size_t bufferSize)
+static wchar_t* IniResolveReaderW(/*_In_*/HANDLE hFile,uint64_t mSize)
 {
-    if(filePath==nullptr||buffer==nullptr)
-        return false;
-    return false;
+    auto p=(wchar_t *)malloc(mSize/2+1);
+    DWORD dw;
+    if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
+    {
+        free(p);
+        return nullptr;
+    }
+    return p;
 }
+
+static char* IniResolveReaderA(HANDLE hFile,uint64_t mSize)
+{
+    auto p=(char *)malloc(mSize+1);
+    DWORD dw;
+    if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
+    {
+        free(p);
+        return nullptr;
+    }
+    return p;
+}
+
+static void IniResolveMemoryFree(void *p)
+{
+    if(p)
+        free(p);
+}
+
 
 ////
 bool IniResolveUnicode::Loader()
@@ -83,8 +108,8 @@ bool IniResolveUnicode::Loader()
         return false;
     if(!IniResolveFileAccess(this->m_iniFile))
         return false;
-    //if(PathIsExists(m_iniFile.c_str()))
-    char  detBuffer[4096]={0};
+    if(!this->CheckIniFileChardet())
+        return false;
     HANDLE hFile=nullptr;
     return false;
 }
@@ -94,11 +119,35 @@ bool IniResolveMultiByte::Loader()
     //
     if(m_iniFile.empty())
         return false;
-    if(!IniResolveFileAccessA(this->m_iniFile))
+    if(!IniResolveFileAccess(this->m_iniFile))
         return false;
-    //if(PathIsExists(m_iniFile.c_str()))
-    char  detBuffer[4096]={0};
-    HANDLE hFile=nullptr;
+    if(!this->CheckIniFileChardet())
+        return false;
+    HANDLE hFile;
+    LARGE_INTEGER FileSize;
+    hFile=CreateFileW(rePath.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    if(hFile==INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    GetFileSizeEx(hFile,&FileSize);
+    auto mSize=FileSize.QuadPart;
+    if(mSize>0x4000000)//64MB
+    {
+        ///
+        CloseHandle(hFile);
+        return false;
+    }
+    switch(this->codePage)
+    {
+        case 1200:
+        break;
+        case 1201:
+        break;
+        case 65001:
+        default:
+        break;
+    }
     return false;
 }
 

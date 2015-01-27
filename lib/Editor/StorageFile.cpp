@@ -46,7 +46,7 @@ bool StorageFile::GetStoreFileSize()
 {
     HANDLE hFile;
     LARGE_INTEGER FileSize;
-    hFile=CreateFileW(rePath.c_str(),GENRIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    hFile=CreateFileW(rePath.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
     if(hFile!=INVALID_HANDLE_VALUE)
     {
         GetFileSizeEx(hFile,&FileSize);

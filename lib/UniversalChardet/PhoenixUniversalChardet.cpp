@@ -185,8 +185,41 @@ static int GetCharsetCodePageFormChar(const char *p)
     }
     return 0;
 }
-
-
+////ANSI
+int UniversalChardetFromFilePath(std::string filePath,bool &mark)
+{
+    FILE *fp=nullptr;
+    if(fopen_s(&fp,filePath.c_str(),"r")!=0)
+        return -1;
+    char buffer[65536]={0};
+    if(fread_s(buffer,65536,1,65536,fp)<0)
+    {
+        fclose(fp);
+        return -2;
+    }
+    fclose(fp);
+    if(buffer[0]==0xEF&&buffer[1]==0xBB&&buffer[2]==0xBF)
+    {
+        mark=true;
+        return 65001;
+    }
+    if(buffer[0]==0xEF&&buffer[1]==0xFE)
+        return 1200;
+    if(buffer[0]==0xFF&&buffer[1]==0xFE)
+        return 1201;
+    static char charset[256]={0};
+    PhoenixUniversalDetector *Phdet=new PhoenixUniversalDetector();
+    if(Phdet->HandleData(data.c_str(),data.length())!=NS_OK)
+    {
+        delete Phdet;
+        return -3;
+    }
+    Phdet->DataEnd();
+    strcpy_s(charset,256,Phdet->m_charset.c_str());
+    delete Phdet;
+    return GetCharsetCodePageFormChar(p);
+}
+//WideChar
 int UniversalChardetFromFilePath(std::wstring filePath,bool &mark)
 {
     FILE *fp=nullptr;
