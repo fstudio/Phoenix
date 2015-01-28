@@ -69,11 +69,24 @@ static bool IniResolveFileAccess(const std::string &path)
     }
     return false;
 }
+///HeapCreate
+//::HeapAlloc(GetProcessHeap(),0,mSize)
+static bool IniResolveReaderLine(HANDLE hFile,wchar_t *mvPtr,wchar_t *buffer)
+{
+    return false;
+}
+static bool IniResolveReaderLine(HANDLE hFile,char *mvPtr,char *buffer)
+{
+    return false;
+}
 
 static wchar_t* IniResolveReaderW(/*_In_*/HANDLE hFile,uint64_t mSize)
 {
-    auto p=(wchar_t *)malloc(mSize/2+1);
+    auto p=static_cast<wchar_t *>(malloc(mSize/2+1));
     DWORD dw;
+    LARGE_INTEGER liCurrentPosition = { 0 };
+    ////Set FilePointerEx.
+    SetFilePointerEx(hFile,liCurrentPosition,&liCurrentPosition,FILE_BEGIN);
     if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
     {
         free(p);
@@ -84,8 +97,11 @@ static wchar_t* IniResolveReaderW(/*_In_*/HANDLE hFile,uint64_t mSize)
 
 static char* IniResolveReaderA(HANDLE hFile,uint64_t mSize)
 {
-    auto p=(char *)malloc(mSize+1);
+    auto p=static_cast<char *>(malloc(mSize+1));
     DWORD dw;
+    LARGE_INTEGER liCurrentPosition = { 0 };
+    ////Set FilePointerEx.
+    SetFilePointerEx(hFile,liCurrentPosition,&liCurrentPosition,FILE_BEGIN);
     if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
     {
         free(p);

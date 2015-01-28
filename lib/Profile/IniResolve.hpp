@@ -53,6 +53,11 @@ protected:
     T m_iniFile;
     std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
     std::map<unsigned,T> commentsMap;
+    typedef struct CurrentSection{
+        T sectionName;
+        std::vector<T>*  vPtr;
+    };
+    CurrentSection *cs;
     unsigned codePage;
     bool isBom;
     bool CheckIniFileChardet()
@@ -74,7 +79,14 @@ public:
     ////
     IniResolve(T &inifile):m_iniFile(inifile),isBom(false)
     {
+        cs=static_cast<CurrentSection *>malloc(sizeof(CurrentSection));
+        memset(cs,0,sizeof(CurrentSection));///Zero fill.
         //
+    }
+    ~IniResolve()
+    {
+        if(cs)
+            free(cs);
     }
     T Get(StringConstPtr section,StringConstPtr name,unsigned innode=0)
     {
@@ -129,6 +141,12 @@ public:
     {
         if(str==nullptr||size<=0)
             return false;
+        auto i=0;
+        CharacterPtr p;
+        while(i<size)
+        {
+            ///
+        }
         return true;
     }
 };
