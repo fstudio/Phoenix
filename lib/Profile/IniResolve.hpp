@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <regex>
 #include <UniversalChardet/UniversalChardet.h>
 /**
 #this comments .
@@ -33,9 +34,32 @@ typedef enum{
 }IniResolveFileEncoding;
 //Legolas
 
+
+////disable
+
+#define REG_SECTION_W L"^\\[([\\w\\s]*\\])$"
+#define REG_NV_W L"^(\\w*\\s*)=(\\s*\\w*)"
+#define REG_COMMENTS_W L"^;.*$"
+#define REG_SECTION_A "^\\[([\\w\\s]*\\])"
+#define REG_NV_A "^(\\w*\\s*)=(\\s*\\w*)"
+#define REG_COMMENTS_A "^;.*$"
+
+
+/*
+RAW
+\[[\w\s]*\][^\[]*   ;all section
+^\[([\w\s]*\])$      ;section
+^(\w*\s*)=(\s*\w*)$    ;Name value
+^;.*$ ;comments
+*/
 template<class T>//T  wstring or string
 class IniResolve{
 public:
+    typedef typename T::value_type Character;
+    typedef typename T::pointer CharacterPtr;
+    typedef typename T::const_pointer StringConstPtr;
+    typedef typename T::reference StringRef;
+    typedef typename T::const_reference StringConstRef;
     struct ParametersNV{
         T name;
         T value;
@@ -69,15 +93,8 @@ protected:
         return true;
     }
 public:
-    ////This Get String Type:
-    typedef typename T::value_type Character;
-    typedef typename T::pointer CharacterPtr;
-    typedef typename T::const_pointer StringConstPtr;
-    typedef typename T::reference StringRef;
-    typedef typename T::const_reference StringConstRef;
-
-    ////
-    IniResolve(T &inifile):m_iniFile(inifile),isBom(false)
+    IniResolve(T &inifile):m_iniFile(inifile),
+    isBom(false)
     {
         cs=static_cast<CurrentSection *>malloc(sizeof(CurrentSection));
         memset(cs,0,sizeof(CurrentSection));///Zero fill.
@@ -137,6 +154,30 @@ public:
     {
         return Set(T(section),T(name),T(value),innode);
     }
+    bool IniTextResolveAnalyzerLine(const T &str)
+    {
+        size_t pos;
+        /// ; 0x3B # 0x23
+        if(str[0]==static_cast<Character>(';')||str[0]==static_cast<Character>('#')||(str[0]=='/'&&str.size()>2&&str[1]=='/'))
+        {
+            commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),str));
+        }else if(str[0]==static_cast<Character>('[')&&(pos=str.find(static_cast<Character>(']')))!=T::npos) //[ 0x5B ] 0x5D
+        {
+            std::vector<T> v;
+            T sn=str.substr(1,pos-1);
+            treeMode.insert(std::pair<T,std::vector<T>>(sn,v));
+            cs.sectionName=sn;
+            cs->vPtr=&treeMode[sn];
+            ///.
+        }else if((pos=str.find_first_of(static_cast<Character>('=')))!=T::npos) // = 0x3D : 0x3A
+        {
+            ///
+            ParametersNV pNv(str.substr(0,pos-1),str.substr(pos+1,str.size()-pos-1));
+            cs->vPtr.push_back(pNv);
+            //cs->vPtr.insert(std::pair);
+        }
+        return false;
+    }
     bool IniTextResolveAnalyzerLine(/*_Not_NULL_*/StringConstPtr str,size_t size)
     {
         if(str==nullptr||size<=0)
@@ -146,13 +187,48 @@ public:
         while(i<size)
         {
             ///
+            if(str[0]=='#'||str[0]==';'||(size>2&&str[0]=='/'&&str[1]=='/'))
+            {
+                //Comments
+            }else if(str[0]=='[')
+            {
+                ////
+            }else
+            {
+                ///
+            }
         }
         return true;
+    }
+    bool IniTextResolveAnalyzer(CharacterPtr cPtr,size_t size)
+    {
+        if(cPtr==nullptr||size=0)
+            return false;
+        size_t i=0;
+        bool b=false;
+        Character mPtr=cPtr;
+        Character Pre=cPtr;
+        while(*mPtr!=0&&*mPtr!=EOF&&i<size)
+        {
+            if(*mPtr=='\r')
+            {
+                ////Set CRLF
+            }
+            while(*mPtr=='\n')
+            {
+                this->IniTextResolveAnalyzerLine(const_cast<StringConstPtr>(Pre),mPtr-Pre);
+                Pre=mPtr;
+            }
+            i++;
+            mPtr++;
+        }
     }
 };
 
 
 class  IniResolveUnicode :public IniResolve<std::wstring>{
+private:
+    bool GetTransactedLine(std::string &raw,std::wstring &det);
 public:
     IniResolveUnicode(std::wstring inifile):IniResolve<std::wstring>(inifile)
     {
@@ -162,7 +238,10 @@ public:
 };
 
 class IniResolveMultiByte :public IniResolve<std::string>{
+private:
+    bool GetTransactedLine(std::wstring &raw,std::string &det);
 public:
+    ////Init Regex.
     IniResolveMultiByte(std::string inifile):IniResolve<std::string>(inifile){
         ///
     }

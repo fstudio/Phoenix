@@ -13,6 +13,7 @@
 #include <Windows.h>
 ///MultiByteToUnicode
 #include <Encoding/Encode.h>
+#include <functional>
 
 static const char bom_utf8[] = {0xEF,0xBB,0xBF};
 
@@ -69,6 +70,14 @@ static bool IniResolveFileAccess(const std::string &path)
     }
     return false;
 }
+
+//std::function<void(void)> ff2 = std::bind(&Foo::f1, &foo);
+static int IniResolveStandrandReaderLineW(FILE *fp,std::function<bool(wchar_t *,size_t)> parserLinefun)
+{
+    //FIXME
+    return 0;
+}
+
 ///HeapCreate
 //::HeapAlloc(GetProcessHeap(),0,mSize)
 static bool IniResolveReaderLine(HANDLE hFile,wchar_t *mvPtr,wchar_t *buffer)
@@ -164,6 +173,7 @@ bool IniResolveMultiByte::Loader()
         default:
         break;
     }
+    CloseHandle(hFile);
     return false;
 }
 
