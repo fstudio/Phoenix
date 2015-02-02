@@ -121,7 +121,11 @@ public:
                 va.push_back(iter->value);
         }
         if(va.size()>=1)
+        {
+            if(innode>va.size())
+                return va[va.size()-1];
             return va[innode];
+        }
         return T(5,0);
     }
     bool Set(T section,T name,T value,unsigned innode=0)
@@ -158,7 +162,7 @@ public:
     {
         size_t pos;
         /// ; 0x3B # 0x23
-        if(str[0]==static_cast<Character>(';')||str[0]==static_cast<Character>('#')||(str[0]=='/'&&str.size()>2&&str[1]=='/'))
+        if(str.at(0)==static_cast<Character>(';')||str.at(0)==static_cast<Character>('#')||(str.at(0)=='/'&&str.size()>2&&str.at(1)=='/'))
         {
             commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),str));
         }else if(str[0]==static_cast<Character>('[')&&(pos=str.find(static_cast<Character>(']')))!=T::npos) //[ 0x5B ] 0x5D
@@ -229,6 +233,8 @@ public:
 class  IniResolveUnicode :public IniResolve<std::wstring>{
 private:
     bool GetTransactedLine(std::string &raw,std::wstring &det);
+    bool ForeachReaderLineA();
+    bool ForeachReaderLineW();
 public:
     IniResolveUnicode(std::wstring inifile):IniResolve<std::wstring>(inifile)
     {
@@ -240,6 +246,8 @@ public:
 class IniResolveMultiByte :public IniResolve<std::string>{
 private:
     bool GetTransactedLine(std::wstring &raw,std::string &det);
+    bool ForeachReaderLineA();
+    bool ForeachReaderLineW();
 public:
     ////Init Regex.
     IniResolveMultiByte(std::string inifile):IniResolve<std::string>(inifile){

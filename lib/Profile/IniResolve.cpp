@@ -11,6 +11,8 @@
 #error "Only Support Windows"
 #endif
 #include <Windows.h>
+#include <cstdio>
+#include <wchar.h>
 ///MultiByteToUnicode
 #include <Encoding/Encode.h>
 #include <functional>
@@ -71,77 +73,92 @@ static bool IniResolveFileAccess(const std::string &path)
     return false;
 }
 
-//std::function<void(void)> ff2 = std::bind(&Foo::f1, &foo);
-static int IniResolveStandrandReaderLineW(FILE *fp,std::function<bool(wchar_t *,size_t)> parserLinefun)
+////
+bool IniResolveUnicode::ForeachReaderLineA()
 {
-    //FIXME
-    return 0;
-}
-
-///HeapCreate
-//::HeapAlloc(GetProcessHeap(),0,mSize)
-static bool IniResolveReaderLine(HANDLE hFile,wchar_t *mvPtr,wchar_t *buffer)
-{
-    return false;
-}
-static bool IniResolveReaderLine(HANDLE hFile,char *mvPtr,char *buffer)
-{
-    return false;
-}
-
-static wchar_t* IniResolveReaderW(/*_In_*/HANDLE hFile,uint64_t mSize)
-{
-    auto p=static_cast<wchar_t *>(malloc(mSize/2+1));
-    DWORD dw;
-    LARGE_INTEGER liCurrentPosition = { 0 };
-    ////Set FilePointerEx.
-    SetFilePointerEx(hFile,liCurrentPosition,&liCurrentPosition,FILE_BEGIN);
-    if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
+    std::wstring ws;
+    FILE *fp;
+    char Line[65536]={0}; ///MaxLine.
+    int nc;
+    int i=0;
+    if(wfopen_s(&fp,this->rePath.c_str(),"rw")!=0)
+        return false;
+    while(!feof(fp))
     {
-        free(p);
-        return nullptr;
+        nc=fgetc(fp);
+        if(nc==EOF)
+        {
+            break;
+        }else{
+            if(nc!=0xEF&&nc!=0xBB&&nc!=0xBF)///remove BOM.
+                Line[i++]=static_cast<char>(nc);
+        }
+        switch(nc)
+        {
+            case '\r':
+            Line[i--]='\0';
+            break;
+            case '\n':
+            {
+                Line[i--]='\0';
+                this->GetTransactedLine(std::string(Line),ws);
+                this->IniTextResolveAnalyzerLine(ws);
+                i=0;
+            }
+            break;
+            default:
+            break;
+        }
     }
-    return p;
+    fclose(fp);
+    return true;
 }
-
-static char* IniResolveReaderA(HANDLE hFile,uint64_t mSize)
+bool IniResolveUnicode::ForeachReaderLineW()
 {
-    auto p=static_cast<char *>(malloc(mSize+1));
-    DWORD dw;
-    LARGE_INTEGER liCurrentPosition = { 0 };
-    ////Set FilePointerEx.
-    SetFilePointerEx(hFile,liCurrentPosition,&liCurrentPosition,FILE_BEGIN);
-    if(!ReadFile(static_cast<HANDLE>(hFile),p,mSize,&dw,nullptr))
+    wchar_t Line[65536]={0}; ///MaxLine.
+    int nc;
+    int i=0;
+    if(wfopen_s(&fp,this->rePath.c_str(),"rw")!=0)
+        return false;
+    while(!feof(fp))
     {
-        free(p);
-        return nullptr;
+        nc=fgetwc(fp);
+        if(nc==WEOF)
+        {
+            break;
+        }else{
+            if(nc!=0xFEFF&&nc!=0xFFFE)
+                Line[i++]=static_cast<wchar_t>(nc);
+        }
+        switch(nc)
+        {
+            case '\r':
+            Line[i--]='\0';
+            break;
+            case '\n':
+            {
+                Line[i--]='\0';
+                this->IniTextResolveAnalyzerLine(Line,wcslen(Line));
+                i=0;
+            }
+            break;
+            default:
+            break;
+        }
     }
-    return p;
+    fclose(fp);
+    return true;
 }
-
-static void IniResolveMemoryFree(void *p)
+bool IniResolveUnicode::GetTransactedLine(std::string &raw,std::wstring &det)
 {
-    if(p)
-        free(p);
+    det=MultiByteToUnicode(raw,this->codePage);
+    return !det.empty();
 }
 
 
 ////
 bool IniResolveUnicode::Loader()
 {
-    if(m_iniFile.empty())
-        return false;
-    if(!IniResolveFileAccess(this->m_iniFile))
-        return false;
-    if(!this->CheckIniFileChardet())
-        return false;
-    HANDLE hFile=nullptr;
-    return false;
-}
-
-bool IniResolveMultiByte::Loader()
-{
-    //
     if(m_iniFile.empty())
         return false;
     if(!IniResolveFileAccess(this->m_iniFile))
@@ -157,10 +174,9 @@ bool IniResolveMultiByte::Loader()
     }
     GetFileSizeEx(hFile,&FileSize);
     auto mSize=FileSize.QuadPart;
+    CloseHandle(hFile);
     if(mSize>0x4000000)//64MB
     {
-        ///
-        CloseHandle(hFile);
         return false;
     }
     switch(this->codePage)
@@ -173,9 +189,58 @@ bool IniResolveMultiByte::Loader()
         default:
         break;
     }
-    CloseHandle(hFile);
     return false;
 }
+
+////////////////////////////////////////////////////////////////
+bool IniResolveMultiByte::ForeachReaderLineA()
+{
+    return false;
+}
+bool IniResolveMultiByte::ForeachReaderLineW()
+{
+    return false;
+}
+
+
+bool IniResolveMultiByte::Loader()
+{
+    //
+    if(m_iniFile.empty())
+        return false;
+    if(!IniResolveFileAccess(this->m_iniFile))
+        return false;
+    if(!this->CheckIniFileChardet())
+        return false;
+    HANDLE hFile;
+    LARGE_INTEGER FileSize;
+    hFile=CreateFileA(rePath.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    if(hFile==INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    GetFileSizeEx(hFile,&FileSize);
+    auto mSize=FileSize.QuadPart;
+    CloseHandle(hFile);
+    if(mSize>0x4000000)//64MB
+    {
+        ///
+
+        return false;
+    }
+    switch(this->codePage)
+    {
+        case 1200:
+        break;
+        case 1201:
+        break;
+        case 65001:
+        default:
+        break;
+    }
+    return false;
+}
+
 
 
 
