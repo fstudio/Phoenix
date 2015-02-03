@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <list>
 #include <UniversalChardet/UniversalChardet.h>
 /**
 #this comments .
@@ -77,11 +78,8 @@ protected:
     T m_iniFile;
     std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
     std::map<unsigned,T> commentsMap;
-    typedef struct CurrentSection{
-        T sectionName;
-        std::vector<T>*  vPtr;
-    };
-    CurrentSection *cs;
+    T currentSection;
+    std::vector<ParametersNV>* currentPtr;
     unsigned codePage;
     bool isBom;
     bool CheckIniFileChardet()
@@ -96,14 +94,10 @@ public:
     IniResolve(T &inifile):m_iniFile(inifile),
     isBom(false)
     {
-        cs=static_cast<CurrentSection *>malloc(sizeof(CurrentSection));
-        memset(cs,0,sizeof(CurrentSection));///Zero fill.
         //
     }
     ~IniResolve()
     {
-        if(cs)
-            free(cs);
     }
     T Get(StringConstPtr section,StringConstPtr name,unsigned innode=0)
     {
@@ -167,17 +161,17 @@ public:
             commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),str));
         }else if(str[0]==static_cast<Character>('[')&&(pos=str.find(static_cast<Character>(']')))!=T::npos) //[ 0x5B ] 0x5D
         {
-            std::vector<T> v;
+            std::vector<ParametersNV> v;
             T sn=str.substr(1,pos-1);
-            treeMode.insert(std::pair<T,std::vector<T>>(sn,v));
-            cs.sectionName=sn;
-            cs->vPtr=&treeMode[sn];
+            treeMode.insert(std::map<T,std::vector<ParametersNV>>::value_type(sn,v));
+           currentSection=sn;
+            currentPtr=&treeMode[sn];
             ///.
         }else if((pos=str.find_first_of(static_cast<Character>('=')))!=T::npos) // = 0x3D : 0x3A
         {
             ///
             ParametersNV pNv(str.substr(0,pos-1),str.substr(pos+1,str.size()-pos-1));
-            cs->vPtr.push_back(pNv);
+            currentPtr->push_back(pNv);
             //cs->vPtr.insert(std::pair);
         }
         return false;
@@ -232,7 +226,7 @@ public:
 
 class  IniResolveUnicode :public IniResolve<std::wstring>{
 private:
-    bool GetTransactedLine(std::string &raw,std::wstring &det);
+    bool GetTransactedLine(std::string raw,std::wstring &det);
     bool ForeachReaderLineA();
     bool ForeachReaderLineW();
 public:
@@ -245,7 +239,7 @@ public:
 
 class IniResolveMultiByte :public IniResolve<std::string>{
 private:
-    bool GetTransactedLine(std::wstring &raw,std::string &det);
+    bool GetTransactedLine(std::wstring raw,std::string &det);
     bool ForeachReaderLineA();
     bool ForeachReaderLineW();
 public:

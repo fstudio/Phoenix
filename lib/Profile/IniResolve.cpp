@@ -6,18 +6,20 @@
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include "IniResolve.hpp"
 #ifndef _WIN32
 #error "Only Support Windows"
 #endif
 #include <Windows.h>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <wchar.h>
 ///MultiByteToUnicode
 #include <Encoding/Encode.h>
 #include <functional>
+#include "IniResolve.hpp"
 
-static const char bom_utf8[] = {0xEF,0xBB,0xBF};
+static const unsigned char bom_utf8[] = {0xEF,0xBB,0xBF};
 
 static inline void IniResolveWriteMarker(HANDLE hFile,IniResolveFileEncoding encoding)
 {
@@ -26,7 +28,7 @@ static inline void IniResolveWriteMarker(HANDLE hFile,IniResolveFileEncoding enc
     switch (encoding)
     {
     case INIRESOLVE_ENCODING_ANSI:
-    case INIRESOLVE_ENCODING_UTF8_WITHOUTBOM
+    case INIRESOLVE_ENCODING_UTF8_WITHOUTBOM:
       break;
     case INIRESOLVE_ENCODING_UTF8_WITHBOM:
         WriteFile(hFile, bom_utf8, sizeof(bom_utf8), &dwBytesWritten, NULL);
@@ -81,8 +83,13 @@ bool IniResolveUnicode::ForeachReaderLineA()
     char Line[65536]={0}; ///MaxLine.
     int nc;
     int i=0;
-    if(wfopen_s(&fp,this->rePath.c_str(),"rw")!=0)
+    if(_wfopen_s(&fp,this->m_iniFile.c_str(),L"rw")!=0)
         return false;
+    ////Skip UTF-8 BOM
+    if(this->codePage=65001)
+    {
+        fseek(fp,3L,SEEK_SET);
+    }
     while(!feof(fp))
     {
         nc=fgetc(fp);
@@ -90,8 +97,7 @@ bool IniResolveUnicode::ForeachReaderLineA()
         {
             break;
         }else{
-            if(nc!=0xEF&&nc!=0xBB&&nc!=0xBF)///remove BOM.
-                Line[i++]=static_cast<char>(nc);
+            Line[i++]=static_cast<char>(nc);
         }
         switch(nc)
         {
@@ -115,11 +121,14 @@ bool IniResolveUnicode::ForeachReaderLineA()
 }
 bool IniResolveUnicode::ForeachReaderLineW()
 {
+    FILE *fp=nullptr;
     wchar_t Line[65536]={0}; ///MaxLine.
     int nc;
     int i=0;
-    if(wfopen_s(&fp,this->rePath.c_str(),"rw")!=0)
+    if(_wfopen_s(&fp,this->m_iniFile.c_str(),L"rw")!=0)
         return false;
+    ////Skip UTF16BE LE BOM
+    fseek(fp,2L,SEEK_SET);
     while(!feof(fp))
     {
         nc=fgetwc(fp);
@@ -127,8 +136,7 @@ bool IniResolveUnicode::ForeachReaderLineW()
         {
             break;
         }else{
-            if(nc!=0xFEFF&&nc!=0xFFFE)
-                Line[i++]=static_cast<wchar_t>(nc);
+            Line[i++]=static_cast<wchar_t>(nc);
         }
         switch(nc)
         {
@@ -149,7 +157,7 @@ bool IniResolveUnicode::ForeachReaderLineW()
     fclose(fp);
     return true;
 }
-bool IniResolveUnicode::GetTransactedLine(std::string &raw,std::wstring &det)
+bool IniResolveUnicode::GetTransactedLine(std::string raw,std::wstring &det)
 {
     det=MultiByteToUnicode(raw,this->codePage);
     return !det.empty();
@@ -167,7 +175,7 @@ bool IniResolveUnicode::Loader()
         return false;
     HANDLE hFile;
     LARGE_INTEGER FileSize;
-    hFile=CreateFileW(rePath.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    hFile=CreateFileW(m_iniFile.c_str(),GENERIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
     if(hFile==INVALID_HANDLE_VALUE)
     {
         return false;
@@ -193,13 +201,94 @@ bool IniResolveUnicode::Loader()
 }
 
 ////////////////////////////////////////////////////////////////
+////MultiByte.
+
+bool IniResolveMultiByte::GetTransactedLine(std::wstring raw,std::string &det)
+{
+    det=UnicodeToMultiByte(raw,codePage);
+    return !det.empty();
+}
+
 bool IniResolveMultiByte::ForeachReaderLineA()
 {
-    return false;
+    FILE *fp;
+    char Line[65536]={0}; ///MaxLine.
+    int nc;
+    int i=0;
+    if(fopen_s(&fp,this->m_iniFile.c_str(),"rw")!=0)
+        return false;
+    ////Skip UTF-8 BOM
+    if(this->codePage=65001)
+    {
+        fseek(fp,3L,SEEK_SET);
+    }
+    while(!feof(fp))
+    {
+        nc=fgetc(fp);
+        if(nc==EOF)
+        {
+            break;
+        }else{
+            Line[i++]=static_cast<char>(nc);
+        }
+        switch(nc)
+        {
+            case '\r':
+            Line[i--]='\0';
+            break;
+            case '\n':
+            {
+                Line[i--]='\0';
+                this->IniTextResolveAnalyzerLine(Line,strlen(Line));
+                i=0;
+            }
+            break;
+            default:
+            break;
+        }
+    }
+    fclose(fp);
+    return true;
 }
 bool IniResolveMultiByte::ForeachReaderLineW()
 {
-    return false;
+    FILE *fp=nullptr;
+    wchar_t Line[65536]={0}; ///MaxLine.
+    int nc;
+    int i=0;
+    std::string s;
+    if(fopen_s(&fp,this->m_iniFile.c_str(),"rw")!=0)
+        return false;
+    ////Skip UTF16BE LE BOM
+    fseek(fp,2L,SEEK_SET);
+    while(!feof(fp))
+    {
+        nc=fgetwc(fp);
+        if(nc==WEOF)
+        {
+            break;
+        }else{
+            Line[i++]=static_cast<wchar_t>(nc);
+        }
+        switch(nc)
+        {
+            case '\r':
+            Line[i--]='\0';
+            break;
+            case '\n':
+            {
+                Line[i--]='\0';
+                GetTransactedLine(std::wstring(Line),s);
+                this->IniTextResolveAnalyzerLine(s);
+                i=0;
+            }
+            break;
+            default:
+            break;
+        }
+    }
+    fclose(fp);
+    return true;
 }
 
 
@@ -214,7 +303,7 @@ bool IniResolveMultiByte::Loader()
         return false;
     HANDLE hFile;
     LARGE_INTEGER FileSize;
-    hFile=CreateFileA(rePath.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    hFile=CreateFileA(m_iniFile.c_str(),GENERIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
     if(hFile==INVALID_HANDLE_VALUE)
     {
         return false;
@@ -240,8 +329,6 @@ bool IniResolveMultiByte::Loader()
     }
     return false;
 }
-
-
 
 
 
