@@ -35,24 +35,6 @@ typedef enum{
 }IniResolveFileEncoding;
 //Legolas
 
-
-////disable
-
-#define REG_SECTION_W L"^\\[([\\w\\s]*\\])$"
-#define REG_NV_W L"^(\\w*\\s*)=(\\s*\\w*)"
-#define REG_COMMENTS_W L"^;.*$"
-#define REG_SECTION_A "^\\[([\\w\\s]*\\])"
-#define REG_NV_A "^(\\w*\\s*)=(\\s*\\w*)"
-#define REG_COMMENTS_A "^;.*$"
-
-
-/*
-RAW
-\[[\w\s]*\][^\[]*   ;all section
-^\[([\w\s]*\])$      ;section
-^(\w*\s*)=(\s*\w*)$    ;Name value
-^;.*$ ;comments
-*/
 template<class T>//T  wstring or string
 class IniResolve{
 public:
@@ -76,6 +58,7 @@ public:
     };
 protected:
     T m_iniFile;
+    bool Modify;
     std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
     std::map<unsigned,T> commentsMap;
     T currentSection;
@@ -92,6 +75,7 @@ protected:
     }
 public:
     IniResolve(T &inifile):m_iniFile(inifile),
+    Modify(false),
     isBom(false)
     {
         //
@@ -235,6 +219,8 @@ public:
         ////
     }
     bool Loader();
+    bool Save();//Sava With Origin Encoding
+    bool SavaWithUTF16LE();//Sava With Uncode.
 };
 
 class IniResolveMultiByte :public IniResolve<std::string>{
@@ -248,6 +234,9 @@ public:
         ///
     }
     bool Loader();
+    bool Sava();
+    bool SavaWithUTF8();//Sava With UTF-8 default has BOM.
+    bool SavaWithUTF8NoBOM();
 };
 
 /**
