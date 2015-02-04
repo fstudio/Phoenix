@@ -61,6 +61,7 @@ protected:
     bool Modify;
     std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
     std::map<unsigned,T> commentsMap;
+    std::vector<ParametersNV> anonymousNV;
     T currentSection;
     std::vector<ParametersNV>* currentPtr;
     unsigned codePage;
@@ -79,6 +80,7 @@ public:
     isBom(false)
     {
         //
+        currentPtr=&(this->anonymousNV);
     }
     ~IniResolve()
     {
@@ -89,6 +91,17 @@ public:
     }
     T Get(T section,T sname,unsigned innode=0)
     {
+        if(section.empty)
+        {
+            auto it=anonymousNV.begin();
+            auto end=anonymousNV.end();
+            for(;it!=end;it++)
+            {
+                it->name==sname;
+                return it->value;
+            }
+            return std::string();
+        }
         auto iter=treeMode.find(section);
         if(iter==treeMode.end())
         {
@@ -113,15 +126,36 @@ public:
     }
     bool Set(T section,T name,T value,unsigned innode=0)
     {
-        if(section.empty()||name.empty())
+        if(name.empty())
             return false;
+        if(section.empty())
+        {
+            auto it=anonymousNV.begin();
+            auto end=anonymousNV.end();
+            for(;it!=end;it++)
+            {
+                if(it->name==name)
+                {
+                    it->value=value;
+                    return true;
+                }
+            }
+            ParametersNV nv(name,value);
+            anonymousNV.push_back(nv);
+            return true;
+        }
+        auto it=treeMode.find(section);
+        if(it==treeMode.end()){
+            std::vector<ParametersNV> v;
+            treeMode.insert(std::map<T, decltype(v)>::value_type(section,v));
+        }
         auto &v=treeMode[section];
         auto iter=v.begin();
         auto end=v.end();
         unsigned i=0;
         for(;iter!=end;iter++)
         {
-            if(iter->name=name)
+            if(iter->name==name)
             {
                 if(value.empty()){
                     v.erase(iter);
@@ -139,7 +173,46 @@ public:
     }
     bool Set(StringConstPtr section,StringConstPtr name,StringConstPtr value,unsigned innode=0)
     {
+        if(section.empty())
+        {
+            return Set(T(),T(name),T(value),innode);/// T()null
+        }
         return Set(T(section),T(name),T(value),innode);
+    }
+    uint64_t EscapeCharacterReplace(Character *c,size_t len)///return 0 not parser.
+    {
+        if(c[0]!='\\'&&len<2)
+            return 0;
+        switch(c[1])
+        {
+            case '\\':
+            return '\\';
+            case '0':
+            return '\0';
+            case 'a':
+            return '\a';
+            case 'b':
+            return '\b';
+            case 't':
+            return '\t';
+            case 'r':
+            return '\r';
+            case 'n':
+            return '\n';
+            case ';':
+            return ';';
+            case '=':
+            return '=';
+            case ':':
+            return ':';
+            case 'x':
+            {
+                //
+            }
+            default:
+            break;
+        }
+        return 0;
     }
     bool IniTextResolveAnalyzerLine(const T &str)
     {
@@ -158,12 +231,10 @@ public:
             ///.
         }else if((pos=str.find_first_of(static_cast<Character>('=')))!=T::npos) // = 0x3D : 0x3A
         {
-            ///
-            ParametersNV pNv(str.substr(0,pos-1),str.substr(pos+1,str.size()-pos-1));
+            ParametersNV pNv(str.substr(0,pos-1),str.substr(pos+1,str.size()-pos-1));///key=value,
             currentPtr->push_back(pNv);
-            //cs->vPtr.insert(std::pair);
         }
-        return false;
+        return true;
     }
     bool IniTextResolveAnalyzerLine(/*_Not_NULL_*/StringConstPtr str,size_t size)
     {
