@@ -108,7 +108,7 @@ public:
         auto iter=treeMode.find(section);
         if(iter==treeMode.end())
         {
-            return T(5,0);
+            return T();
         }
         auto &v=treeMode[section];
         auto iter=v.begin();
@@ -125,7 +125,7 @@ public:
                 return va[va.size()-1];
             return va[innode];
         }
-        return T(5,0);
+        return T();
     }
     bool Set(T section,T name,T value,unsigned innode=0)
     {
@@ -169,7 +169,7 @@ public:
             std::vector<ParametersNV> v;
             T sn=str.substr(1,pos-1);
             treeMode.insert(std::map<T,std::vector<ParametersNV>>::value_type(sn,v));
-           currentSection=sn;
+            currentSection=sn;
             currentPtr=&treeMode[sn];
             ///.
         }else if((pos=str.find_first_of(static_cast<Character>('=')))!=T::npos) // = 0x3D : 0x3A
