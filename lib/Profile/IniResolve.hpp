@@ -105,6 +105,11 @@ public:
     }
     T Get(T section,T sname,unsigned innode=0)
     {
+        auto iter=treeMode.find(section);
+        if(iter==treeMode.end())
+        {
+            return T(5,0);
+        }
         auto &v=treeMode[section];
         auto iter=v.begin();
         auto end=v.end();
