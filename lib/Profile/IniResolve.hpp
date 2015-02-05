@@ -102,8 +102,8 @@ public:
             }
             return std::string();
         }
-        auto iter=treeMode.find(section);
-        if(iter==treeMode.end())
+        auto it2=treeMode.find(section);
+        if(it2==treeMode.end())
         {
             return T();
         }
@@ -179,53 +179,18 @@ public:
         }
         return Set(T(section),T(name),T(value),innode);
     }
-    uint64_t EscapeCharacterReplace(Character *c,size_t len)///return 0 not parser.
-    {
-        if(c[0]!='\\'&&len<2)
-            return 0;
-        switch(c[1])
-        {
-            case '\\':
-            return '\\';
-            case '0':
-            return '\0';
-            case 'a':
-            return '\a';
-            case 'b':
-            return '\b';
-            case 't':
-            return '\t';
-            case 'r':
-            return '\r';
-            case 'n':
-            return '\n';
-            case ';':
-            return ';';
-            case '=':
-            return '=';
-            case ':':
-            return ':';
-            case 'x':
-            {
-                //
-            }
-            default:
-            break;
-        }
-        return 0;
-    }
     bool IniTextResolveAnalyzerLine(const T &str)
     {
         size_t pos;
         /// ; 0x3B # 0x23
         if(str.at(0)==static_cast<Character>(';')||str.at(0)==static_cast<Character>('#')||(str.at(0)=='/'&&str.size()>2&&str.at(1)=='/'))
         {
-            commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),str));
+            commentsMap.insert(std::pair<unsigned,T>(this->treeMode.size(),str));
         }else if(str[0]==static_cast<Character>('[')&&(pos=str.find(static_cast<Character>(']')))!=T::npos) //[ 0x5B ] 0x5D
         {
             std::vector<ParametersNV> v;
             T sn=str.substr(1,pos-1);
-            treeMode.insert(std::map<T,std::vector<ParametersNV>>::value_type(sn,v));
+            treeMode.insert(std::pair<T,std::vector<ParametersNV>>(sn,v));
             currentSection=sn;
             currentPtr=&treeMode[sn];
             ///.
@@ -245,8 +210,8 @@ public:
         if(str[0]=='#'||str[0]==';')
         {
             if(size>=2){
-                Ptr=&str[1];
-                commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),T(Ptr)));
+                T commentsStr=str;
+                commentsMap.insert(std::pair<unsigned,T>(this->treeMode.size(),commentsStr));
                 return true;
             }
             return true;
@@ -258,7 +223,7 @@ public:
                 {
                     std::vector<ParametersNV> v;
                     T sn=T(Ptr,i-1);
-                    treeMode.insert(std::map<T,std::vector<ParametersNV>>::value_type(sn,v));
+                    treeMode.insert(std::pair<T,std::vector<ParametersNV>>(sn,v));
                     currentSection=sn;
                     currentPtr=&treeMode[sn];
                     return true;
@@ -273,7 +238,7 @@ public:
                 if(str[i++]=='=')
                 {
                     T key=T(str,i-1);
-                    if(i<size-2);
+                    if(i<size-2)
                     {
                         Ptr=&str[i];
                         ParametersNV pNv(key,T(Ptr));///key=value,
@@ -288,26 +253,25 @@ public:
     }
     bool IniTextResolveAnalyzer(CharacterPtr cPtr,size_t size)
     {
-        if(cPtr==nullptr||size=0)
-            return false;
-        size_t i=0;
-        bool b=false;
-        Character mPtr=cPtr;
-        Character Pre=cPtr;
-        while(*mPtr!=0&&*mPtr!=EOF&&i<size)
+        ///
+        Character lineBase[8192]={0};
+        size_t index(0),Pre(0),index2(0);
+        while(index<size)
         {
-            if(*mPtr=='\r')
+            if((lineBase[index2++]=cPtr[index++])=='\n')
             {
-                ////Set CRLF
+                lineBase[index2--]='\0';
+                T s=T(lineBase);
+                size_t n=0;
+                if((n=s.find('\r'))!=T::npos)
+                {
+                    s.erase(n,1);
+                }
+                this->IniTextResolveAnalyzerLine(s);
+                index2=0;
             }
-            while(*mPtr=='\n')
-            {
-                this->IniTextResolveAnalyzerLine(const_cast<StringConstPtr>(Pre),mPtr-Pre);
-                Pre=mPtr;
-            }
-            i++;
-            mPtr++;
         }
+        return true;
     }
 };
 

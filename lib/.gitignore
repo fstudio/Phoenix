@@ -4,6 +4,8 @@
 *.ilk
 *.meta
 *.obj
+*.o
+*.a
 *.pch
 *.pdb
 *.pgc

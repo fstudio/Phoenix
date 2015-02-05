@@ -86,7 +86,7 @@ bool IniResolveUnicode::ForeachReaderLineA()
     if(_wfopen_s(&fp,this->m_iniFile.c_str(),L"rw")!=0)
         return false;
     ////Skip UTF-8 BOM
-    if(this->codePage=65001)
+    if(this->codePage==65001)
     {
         fseek(fp,3L,SEEK_SET);
     }
@@ -190,10 +190,13 @@ bool IniResolveUnicode::Loader()
     switch(this->codePage)
     {
         case 1200:
-        break;
+        return this->ForeachReaderLineW();
         case 1201:
         break;
         case 65001:
+        {
+            return this->ForeachReaderLineA();
+        }
         default:
         break;
     }
@@ -218,7 +221,7 @@ bool IniResolveMultiByte::ForeachReaderLineA()
     if(fopen_s(&fp,this->m_iniFile.c_str(),"rw")!=0)
         return false;
     ////Skip UTF-8 BOM
-    if(this->codePage=65001)
+    if(this->codePage==65001)
     {
         fseek(fp,3L,SEEK_SET);
     }
