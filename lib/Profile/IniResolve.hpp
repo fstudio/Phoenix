@@ -173,7 +173,7 @@ public:
     }
     bool Set(StringConstPtr section,StringConstPtr name,StringConstPtr value,unsigned innode=0)
     {
-        if(section.empty())
+        if(section==nullptr)
         {
             return Set(T(),T(name),T(value),innode);/// T()null
         }
@@ -241,22 +241,50 @@ public:
         if(str==nullptr||size<=0)
             return false;
         auto i=0;
-        CharacterPtr p;
-        while(i<size)
+        StringConstPtr Ptr;
+        if(str[0]=='#'||str[0]==';')
         {
-            ///
-            if(str[0]=='#'||str[0]==';'||(size>2&&str[0]=='/'&&str[1]=='/'))
+            if(size>=2){
+                Ptr=&str[1];
+                commentsMap.insert(std::map<unsigned,T>::value_type(this->treeMode.size(),T(Ptr)));
+                return true;
+            }
+            return true;
+        }else if(str[0]=='['&&str[1]!=']'){
+            Ptr=&str[1];
+            while(i<size-1)
             {
-                //Comments
-            }else if(str[0]=='[')
+                if(Ptr[i++]==']')
+                {
+                    std::vector<ParametersNV> v;
+                    T sn=T(Ptr,i-1);
+                    treeMode.insert(std::map<T,std::vector<ParametersNV>>::value_type(sn,v));
+                    currentSection=sn;
+                    currentPtr=&treeMode[sn];
+                    return true;
+                }
+            }
+            return false;
+            //
+        }else{
+            //
+            while(i<size)
             {
-                ////
-            }else
-            {
-                ///
+                if(str[i++]=='=')
+                {
+                    T key=T(str,i-1);
+                    if(i<size-2);
+                    {
+                        Ptr=&str[i];
+                        ParametersNV pNv(key,T(Ptr));///key=value,
+                        currentPtr->push_back(pNv);
+                        return true;
+                    }
+                    return false;
+                }
             }
         }
-        return true;
+        return false;
     }
     bool IniTextResolveAnalyzer(CharacterPtr cPtr,size_t size)
     {
