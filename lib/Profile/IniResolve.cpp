@@ -102,7 +102,7 @@ bool IniResolveUnicode::ForeachReaderLineA()
         switch(nc)
         {
             case '\r':
-            Line[i--]='\0';
+            i--;//Remove \r
             break;
             case '\n':
             {
@@ -141,7 +141,7 @@ bool IniResolveUnicode::ForeachReaderLineW()
         switch(nc)
         {
             case '\r':
-            Line[i--]='\0';
+            i--;
             break;
             case '\n':
             {
@@ -194,10 +194,8 @@ bool IniResolveUnicode::Loader()
         case 1201:
         break;
         case 65001:
-        {
-            return this->ForeachReaderLineA();
-        }
         default:
+        return this->ForeachReaderLineA();
         break;
     }
     return false;
@@ -237,7 +235,7 @@ bool IniResolveMultiByte::ForeachReaderLineA()
         switch(nc)
         {
             case '\r':
-            Line[i--]='\0';
+            i--;
             break;
             case '\n':
             {
@@ -276,7 +274,7 @@ bool IniResolveMultiByte::ForeachReaderLineW()
         switch(nc)
         {
             case '\r':
-            Line[i--]='\0';
+            i--;
             break;
             case '\n':
             {
@@ -323,11 +321,13 @@ bool IniResolveMultiByte::Loader()
     switch(this->codePage)
     {
         case 1200:
+        this->ForeachReaderLineW();
         break;
         case 1201:
         break;
         case 65001:
         default:
+        this->ForeachReaderLineA();
         break;
     }
     return false;
