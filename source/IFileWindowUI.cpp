@@ -20,9 +20,9 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-PhoenixIFileWindowUI::PhoenixIFileWindowUI(HWND hParent):m_hParent(hParent)
+PhoenixIFileWindowUI::PhoenixIFileWindowUI(HWND hParent):m_hParent(hParent),windowTitle(L"Phoenix IFileWindow")
 {
-    this->windowTitle=L"Phoenix IFileWindow";
+	///Resource Init
 }
 
 
