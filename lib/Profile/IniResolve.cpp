@@ -17,6 +17,7 @@
 ///MultiByteToUnicode
 #include <Encoding/Encode.h>
 #include <functional>
+#include <sstream>
 #include "IniResolve.hpp"
 
 static const unsigned char bom_utf8[] = {0xEF,0xBB,0xBF};
@@ -198,6 +199,15 @@ bool IniResolveUnicode::Loader()
         return this->ForeachReaderLineA();
         break;
     }
+    return false;
+}
+
+bool IniResolveUnicode::Save()
+{
+    if(!Modify)
+        return true;
+    ///To Sava.
+
     return false;
 }
 

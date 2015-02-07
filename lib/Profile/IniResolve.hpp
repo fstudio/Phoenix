@@ -63,7 +63,7 @@ protected:
     std::map<unsigned,T> commentsMap;
     std::vector<ParametersNV> anonymousNV;
     T currentSection;
-    std::vector<ParametersNV>* currentPtr;
+    std::vector<ParametersNV>* currentPtr;//current vector cache Pointer.
     unsigned codePage;
     bool isBom;
     bool CheckIniFileChardet()
@@ -80,7 +80,7 @@ public:
     isBom(false)
     {
         //
-        currentPtr=&(this->anonymousNV);
+        currentPtr=&(this->anonymousNV);//Move Pointer to anonymous Parameters Name Value.
     }
     ~IniResolve()
     {
@@ -281,6 +281,7 @@ private:
     bool GetTransactedLine(std::string raw,std::wstring &det);
     bool ForeachReaderLineA();
     bool ForeachReaderLineW();
+    bool ForeachReaderLineBE();
 public:
     IniResolveUnicode(std::wstring inifile):IniResolve<std::wstring>(inifile)
     {
@@ -288,7 +289,7 @@ public:
     }
     bool Loader();
     bool Save();//Sava With Origin Encoding
-    bool SavaWithUTF16LE();//Sava With Uncode.
+    bool SaveWithUTF16LE();//Sava With Uncode.
 };
 
 class IniResolveMultiByte :public IniResolve<std::string>{
@@ -302,9 +303,9 @@ public:
         ///
     }
     bool Loader();
-    bool Sava();
-    bool SavaWithUTF8();//Sava With UTF-8 default has BOM.
-    bool SavaWithUTF8NoBOM();
+    bool Save();
+    bool SaveWithUTF8();//Sava With UTF-8 default has BOM.
+    bool SaveWithUTF8NoBOM();
 };
 
 /**
