@@ -10,7 +10,7 @@ CXXFLAGS=/TP -I$(INCDIR) -EHsc -DDLLEXPORT
 LDFLAGS=-dll
 LIBRARY=ole32.lib kernel32.lib gdi32.lib  user32.lib ole32.lib libcmt.lib
 COBJS=GC.obj Http.obj jsonsl.obj manualgc.obj UUID.obj Zip.obj PackageRuntime.obj
-CXXOBJS=JSONResolve.obj RAIIBIND.obj ZipArchive.obj  XmlResolve.obj HttpInternal.obj tinyxml2.obj
+CXXOBJS=JSONResolve.obj RAIIBIND.obj ZipArchive.obj  XmlResolve.obj HttpInternal.obj tinyxml2.obj Base64Encoder.obj
 RESOURCES=PackageRuntime.res
 
 all:$(TARGET)
