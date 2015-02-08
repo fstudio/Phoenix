@@ -6,3 +6,18 @@
 **********************************************************************************************************/
 #include <ZipCompress/ZipCompress.h>
 #include "ZipArchive.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <io.h>
+
+bool ZipCompress(const char *source,const char *dest)
+{
+    if(_access_s(source,04)!=0)
+        return false;//This file not found
+    return true;
+}
+
+bool ZipExtract(const char* zipfile,const char *path)
+{
+    return true;
+}

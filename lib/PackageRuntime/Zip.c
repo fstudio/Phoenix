@@ -5,6 +5,7 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <Runtime/Zip.h>
+
 #include "ZipArchive.h"
 
 PKGEXTERN int ComperssFolderFiles(const char* folder)

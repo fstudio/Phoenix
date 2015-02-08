@@ -69,7 +69,12 @@ extern "C" PKGEXTERN bool GetForeachElementNamespaceText(XmlResolve_t xrt,const 
     strcpy(text,surface->GetText());
     return true;
 }
-extern "C" PKGEXTERN bool GetForeachNamespaceAttribute(XmlResolve_t xrt,const char* element,const char* nsp,const char* key,const char* ansp,char* text)
+extern "C" PKGEXTERN bool GetForeachNamespaceAttribute(XmlResolve_t xrt,
+    const char* element,
+    const char* nsp,
+    const char* key,
+    const char* ansp,
+    char* text)
 {
     XMLDocument *doc=static_cast<XMLDocument *>(xrt);
     std::string nelem=element;

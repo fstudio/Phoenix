@@ -120,6 +120,7 @@ bool ZipCompressA::CreateCompressFile(std::string sourcefile,/*OutDir*/std::stri
                 return false;
          }
     }
+    //BOOL bRet=ZipCompress
     return true;
 }
 bool ZipCompressA::UnCompressToBuffer(std::string zipfile,BYTE*dest,size_t *destlen)
@@ -132,7 +133,8 @@ bool ZipCompressA::UnCompressToDisk(std::string zipfile,std::string folder)
 {
     if(_access_s(zipfile.c_str(),4)!=0)
         return false;
-    return true;
+    //BOOL bRet=ZipExtract(zipfile.c_str,folder.c_str);
+    return true;//bRet==TRUE;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////ZipAsynchronous
@@ -150,4 +152,15 @@ void ZipAsynchronousCompress::SetAsynchronousNotify(std::function<bool(int)> fun
 {
     ///
     this->NotifyFunction=fun;
+}
+
+
+extern "C" bool ZipCompressFile(const char *source,const char *dest)
+{
+    return true;
+}
+
+extern "C" bool ZipExtractFileA(const char *zip,const char* extractdir)
+{
+    return true;
 }
