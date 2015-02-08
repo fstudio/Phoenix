@@ -20,7 +20,7 @@ extern "C"  PKGEXTERN bool JSONResolveNewEx(JSONResolve_t *pjt,const char *jsonT
 
 extern "C" PKGEXTERN bool JSONResolveGet(const char* key,char *value)
 {
-    return 0;
+    return true;
 }
 
 extern "C" PKGEXTERN void JSONResolveDelete(JSONResolve_t jt)

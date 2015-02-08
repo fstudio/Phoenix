@@ -1,27 +1,28 @@
 /*********************************************************************************************************
 *   Phoneix Package Runtime
-*   Note: HttpInternal.h
-*   Data: 2015.01.18
+*   Note: CppRest.h
+*   Data: 2015.02.08
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#ifndef PHOENIX_PACKAGE_RUNTIME_HTTP_INTERNAL_H
-#define PHOENIX_PACKAGE_RUNTIME_HTTP_INTERNAL_H
+#ifndef PHOENIX_PACKAGE_RUNTIME_CPPREST_H
+#define PHOENIX_PACKAGE_RUNTIME_CPPREST_H
 
 #ifdef __cplusplus
-enum  HTTP_REST_METHOD_FLAGS{
-    HTTP_REST_GET=0,
-    HTTP_REST_POST=1,
-    HTTP_REST_PUT=2,
-    HTTP_REST_DELETE=3
-};
-
 class CppRest{
 private:
     unsigned method;
+    unsigned timeout;
+    std::wstring useAgent;
+    HINTERNET hSession;
+    HINTERNET hConnect;
+    HINTERNET hRequest;
+    bool OpenConnet();
 public:
     CppRest();
+    ~CppRest();
+    bool RequestSend(unsigned md,bool isSSL,const wchar_t url,wchar_t* stream,size_t streamLen,short port=80);
 };
 
 #endif

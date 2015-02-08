@@ -9,17 +9,22 @@
 
 
 
-PKGEXTERN void PRGC_Init()
+PKGEXTERN void GCInitialize()
 {
     ///Init.
 }
 
-PKGEXTERN void *PRGC_Alloc(size_t mmSize)
+PKGEXTERN void *GCAlloc(size_t mmSize)
 {
   return NULL;
 }
 
-PKGEXTERN void *PRGC_Malloc(size_t mmSize)
+PKGEXTERN void GCDestory()
+{
+    ///
+}
+
+PKGEXTERN void *GCMalloc(size_t mmSize)
 {
   if(mmSize==0)
     return NULL;

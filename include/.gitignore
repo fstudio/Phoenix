@@ -9,7 +9,6 @@
 *.o
 *.a
 *.pch
-*.idb
 *.pdb
 *.pgc
 *.pgd
@@ -22,13 +21,11 @@
 *.tmp
 *.tmp_proj
 *.log
-*.sdf
-*.opensdf
 *.vspscc
 *.vssscc
 .builds
 *.pidb
 *.svclog
 *.scc
-
+rapidjson/
 

@@ -5,7 +5,7 @@ CC=cl
 LIB=lib
 CXXFLAGS=/TP  -EHsc  -W3  -Zc:forScope -Zc:wchar_t -O2 
 CFLAGS=/TC -W3  -Zc:forScope -Zc:wchar_t -O2 
-CXXOBJS=StringConvertWin.obj
+CXXOBJS=StringConvertWin.obj base64.obj modp_b64.obj
 COBJS=ConvertUTF.obj
 
 
@@ -18,6 +18,9 @@ $(TARGET):$(CXXOBJS) $(COBJS)
 	$(CC) $(CFLAGS) -c $<
 
 {.}.cpp.obj::
+	$(CC) $(CXXFLAGS) -c $<
+	
+{.}.cc.obj::
 	$(CC) $(CXXFLAGS) -c $<
 	
 clean:
