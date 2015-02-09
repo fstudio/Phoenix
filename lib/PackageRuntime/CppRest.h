@@ -8,7 +8,7 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_PACKAGE_RUNTIME_CPPREST_H
 #define PHOENIX_PACKAGE_RUNTIME_CPPREST_H
-
+#include <vector>
 #ifdef __cplusplus
 
 class CppRest{
@@ -21,6 +21,14 @@ public:
         CPPREST_USER_CANCEL,
         CPPREST_API_SERVERUNREACHABLE
     };
+    struct MPList{
+        char *pointer;
+        bool bfree;
+        MPList(char *p,bool b):pointer(p),bfree(b)
+        {
+            //
+        }
+    };
 private:
     unsigned method;
     unsigned timeout;
@@ -28,6 +36,7 @@ private:
     HINTERNET hSession;
     HINTERNET hConnect;
     HINTERNET hRequest;
+    std::vector<MPList> mpv;
     bool OpenConnet();
 public:
     CppRest();
