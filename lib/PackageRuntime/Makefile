@@ -10,7 +10,7 @@ CXXFLAGS=/TP -I$(INCDIR) -EHsc -DDLLEXPORT
 LDFLAGS=-dll
 LIBRARY=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib \
 ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libcmt.lib winhttp.lib
-COBJS=GC.obj HTTP.obj jsonsl.obj UUID.obj Zip.obj PackageRuntime.obj CppRest.obj
+COBJS=GC.obj  jsonsl.obj UUID.obj Zip.obj PackageRuntime.obj CppRest.obj
 CXXOBJS=JSONResolve.obj RAIIBIND.obj ZipArchive.obj  XmlResolve.obj  tinyxml2.obj Base64Encoder.obj RuntimeDebug.obj
 RESOURCES=PackageRuntime.res
 

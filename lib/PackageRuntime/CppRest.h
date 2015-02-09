@@ -10,7 +10,17 @@
 #define PHOENIX_PACKAGE_RUNTIME_CPPREST_H
 
 #ifdef __cplusplus
+
 class CppRest{
+public:
+    enum ApiResult
+    {
+        CPPREST_API_200,
+        CPPREST_API_401,
+        CPPREST_API_403,
+        CPPREST_USER_CANCEL,
+        CPPREST_API_SERVERUNREACHABLE
+    };
 private:
     unsigned method;
     unsigned timeout;
@@ -22,6 +32,7 @@ private:
 public:
     CppRest();
     ~CppRest();
+    void SetUserAgent(std::wstring &ua);
     bool RequestSend(unsigned md,bool isSSL,const wchar_t url,wchar_t* stream,size_t streamLen,short port=80);
 };
 

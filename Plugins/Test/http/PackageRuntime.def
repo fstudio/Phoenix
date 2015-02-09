@@ -12,6 +12,10 @@ ComperssFolderFiles
 ComponentInitialize
 ComponentInitializeEx
 ComponentUnInitialze
+GCAlloc
+GCDestory
+GCInitialize
+GCMalloc
 GetAttribute
 GetElementText
 GetForeachElementNamespaceText
@@ -20,10 +24,11 @@ JSONResolveDelete
 JSONResolveGet
 JSONResolveNew
 JSONResolveNewEx
-PRGC_Alloc
-PRGC_Init
-PRGC_Malloc
-SendHttpRequest
+PackageRuntimeStandardRequest
+RequestBufferFree
+RequestCreateNew
+RequestFree
+SendRequest
 SetUserAgent
 XmlResolveDelete
 XmlResolveLoader
