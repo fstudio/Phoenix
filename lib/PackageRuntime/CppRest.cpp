@@ -134,7 +134,7 @@ extern "C" PKGEXTERN Request_t RequestCreateNew()
 extern "C" PKGEXTERN void RequestFree(Request_t rq)
 {
     if(rq)
-        delete static_cast<CppRest*>(rq);
+        delete reinterpret_cast<CppRest*>(rq);
 }
 
 extern "C" PKGEXTERN char *SendRequest(unsigned method,Request_t rq)
@@ -146,7 +146,7 @@ extern "C" PKGEXTERN void SetUserAgent(const char *ua,Request_t rq)
 {
     if(rq==nullptr)
         return;
-    CppRest *cppRest=static_cast<CppRest*>(rq);
+    CppRest *cppRest=reinterpret_cast<CppRest*>(rq);
     wCharGet wua(ua);
     std::wstring wuaStr=wua.Get();
     cppRest->SetUserAgent(wuaStr);
@@ -258,5 +258,5 @@ extern "C" PKGEXTERN bool StandardRequest(const char *ua,
     wCharGet wua(ua);
     wCharGet whost(host);
     wCharGet wurl(url);
-    return StandardRequestW(wua.Get(),whost.Get(),method,wurl.Get(),useSSL,recallback);
+    return StandardRequestW(wua.Get(),whost.Get(),method,wurl.Get(),useSSL,recallback,dataPtr);
 }

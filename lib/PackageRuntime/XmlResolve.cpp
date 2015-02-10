@@ -39,12 +39,12 @@ extern "C" PKGEXTERN void XmlResolveDelete(XmlResolve_t xrt)
     //
     if(xrt==nullptr)
         return ;
-    XMLDocument *doc=static_cast<XMLDocument *>(xrt);
+    XMLDocument *doc=reinterpret_cast<XMLDocument *>(xrt);
     delete doc;
 }
 extern "C" PKGEXTERN bool GetAttribute(XmlResolve_t xrt,const char* element,const char* key,char* attribute)
 {
-    XMLDocument *doc=static_cast<XMLDocument *>(xrt);
+    XMLDocument *doc=reinterpret_cast<XMLDocument *>(xrt);
     XMLElement *scene=doc->RootElement();
     XMLElement *surface=scene->FirstChildElement(element);
     strcpy(attribute,surface->Attribute(key));
@@ -52,7 +52,7 @@ extern "C" PKGEXTERN bool GetAttribute(XmlResolve_t xrt,const char* element,cons
 }
 extern "C" PKGEXTERN bool GetElementText(XmlResolve_t xrt,const char* element, char* text)
 {
-    XMLDocument *doc=static_cast<XMLDocument *>(xrt);
+    XMLDocument *doc=reinterpret_cast<XMLDocument *>(xrt);
     XMLElement  *scene=doc->RootElement();
     XMLElement *surface=scene->FirstChildElement(element);
     strcpy(text,surface->GetText());
@@ -60,7 +60,7 @@ extern "C" PKGEXTERN bool GetElementText(XmlResolve_t xrt,const char* element, c
 }
 extern "C" PKGEXTERN bool GetForeachElementNamespaceText(XmlResolve_t xrt,const char* element,const char* nsp,char* text)
 {
-     XMLDocument *doc=static_cast<XMLDocument *>(xrt);
+     XMLDocument *doc=reinterpret_cast<XMLDocument *>(xrt);
     std::string nelement=std::string(element);
     nelement+=":";
     nelement+=nsp;
@@ -76,7 +76,7 @@ extern "C" PKGEXTERN bool GetForeachNamespaceAttribute(XmlResolve_t xrt,
     const char* ansp,
     char* text)
 {
-    XMLDocument *doc=static_cast<XMLDocument *>(xrt);
+    XMLDocument *doc=reinterpret_cast<XMLDocument *>(xrt);
     std::string nelem=element;
     if(nsp!=nullptr)
     {

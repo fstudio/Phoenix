@@ -40,7 +40,7 @@ extern "C" PKGEXTERN bool JSONResolveGetKV(const char* key,char *value,JSONResol
 {
     if(key==nullptr||value==nullptr||jt==nullptr)
         return false;
-    Object *object=static_cast<Object *>(jt);
+    Object *object=reinterpret_cast<Object *>(jt);
     if(object->has<String>(key))
     {
         strcpy(value,object->get<String>(key).c_str());
