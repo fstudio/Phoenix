@@ -34,3 +34,9 @@ StandardRequest
 XmlResolveDelete
 XmlResolveLoader
 XmlResolveNew
+getopt
+getopt_long
+getopt_long_only
+optarg
+optind
+optreset
