@@ -190,7 +190,7 @@ static bool StandardRequestW(const wchar_t *ua,
     const wchar_t *url,
     bool useSSL,
     ReceiveResponeCallBack recallback,
-    void *dataPtr=nullptr)
+    void *dataPtr)
 {
     DWORD dwSize = 0;
     DWORD dwDownloaded = 0;
