@@ -21,10 +21,10 @@ public:
         CPPREST_USER_CANCEL,
         CPPREST_API_SERVERUNREACHABLE
     };
-    struct MPList{
+    struct MemPtrList{
         char *pointer;
         bool bfree;
-        MPList(char *p,bool b):pointer(p),bfree(b)
+        MemPtrList(char *p,bool b):pointer(p),bfree(b)
         {
             //
         }
@@ -36,7 +36,7 @@ private:
     HINTERNET hSession;
     HINTERNET hConnect;
     HINTERNET hRequest;
-    std::vector<MPList> mpv;
+    std::vector<MemPtrList> mpv;
     bool OpenConnet();
 public:
     CppRest();

@@ -12,6 +12,34 @@
 #include <wincrypt.h>
 #include "CppRest.h"
 
+class wCharGet{
+private:
+    wchar_t *wstr;
+public:
+    wCharGet(const char *str):wstr(nullptr)
+    {
+        if(str==nullptr)
+            return ;
+        size_t len =strlen(str);
+        int unicodeLen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+        if(unicodeLen==0)
+            return ;
+        this->wstr = new wchar_t[unicodeLen + 1];
+        memset(this->wstr, 0, (unicodeLen + 1) * sizeof(wchar_t));
+        ::MultiByteToWideChar(CP_ACP, 0,str, -1, (LPWSTR)this->wstr,unicodeLen);
+    }
+    const wchar_t *Get()
+    {
+        if(!wstr)
+            return nullptr;
+        return const_cast<const wchar_t *>(wstr);
+    }
+    ~wCharGet()
+    {
+        if(wstr)
+            delete[] wstr;
+    }
+};
 
 const wchar_t *GetMethodString(unsigned i)
 {
@@ -37,37 +65,6 @@ const wchar_t *GetMethodString(unsigned i)
         break;
     }
     return L"GET";
-}
-
-std::wstring MultiByteToUnicode(const std::string &str,unsigned cp) {
-  int len = 0;
-  len = str.length();
-  int unicodeLen = ::MultiByteToWideChar(cp, 0, str.c_str(), -1, NULL, 0);
-  wchar_t *pUnicode;
-  pUnicode = new wchar_t[unicodeLen + 1];
-  memset(pUnicode, 0, (unicodeLen + 1) * sizeof(wchar_t));
-  ::MultiByteToWideChar(cp, 0, str.c_str(), -1, (LPWSTR)pUnicode,
-                        unicodeLen);
-  std::wstring rt;
-  rt = (wchar_t *)pUnicode;
-  delete pUnicode;
-
-  return rt;
-}
-std::string UnicodeToMultiByte(const std::wstring &wstr,unsigned cp) {
-  char *pElementText;
-  int iTextLen;
-  // wide char to multi char
-  iTextLen =
-      WideCharToMultiByte(cp, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
-  pElementText = new char[iTextLen + 1];
-  memset((void *)pElementText, 0, sizeof(char) * (iTextLen + 1));
-  ::WideCharToMultiByte(cp, 0, wstr.c_str(), -1, pElementText, iTextLen,
-                        NULL, NULL);
-  std::string strText;
-  strText = pElementText;
-  delete[] pElementText;
-  return strText;
 }
 
 
@@ -127,54 +124,6 @@ void CppRest::SetUserAgent(std::wstring &ua)
     this->useAgent=ua;
 }
 
-/*
-std::string HttpRequest(char * lpHostName,short sPort,char * lpUrl,char * lpMethod,char * lpPostData,int nPostDataLen)
-{
-    HINTERNET hInternet,hConnect,hRequest;
-
-    BOOL bRet;
-
-    std::string strResponse;
-
-    hInternet = (HINSTANCE)InternetOpen("User-Agent",INTERNET_OPEN_TYPE_PRECONFIG,NULL,NULL,0);
-    if(!hInternet)
-        goto Ret0;
-
-    hConnect = (HINSTANCE)InternetConnect(hInternet,lpHostName,sPort,NULL,"HTTP/1.1",INTERNET_SERVICE_HTTP,0,0);
-    if(!hConnect)
-        goto Ret0;
-
-    hRequest = (HINSTANCE)HttpOpenRequest(hConnect,lpMethod,lpUrl,"HTTP/1.1",NULL,NULL,INTERNET_FLAG_RELOAD,0);
-    if(!hRequest)
-        goto Ret0;
-
-    //bRet = HttpAddRequestHeaders(hRequest,"Content-Type: application/x-www-form-urlencoded",Len(FORMHEADERS),HTTP_ADDREQ_FLAG_REPLACE | HTTP_ADDREQ_FLAG_ADD);
-    //if(!bRet)
-        //goto Ret0;
-
-    bRet = HttpSendRequest(hRequest,NULL,0,lpPostData,nPostDataLen);
-    while(TRUE)
-    {
-        char cReadBuffer[4096];
-        unsigned long lNumberOfBytesRead;
-        bRet = InternetReadFile(hRequest,cReadBuffer,sizeof(cReadBuffer) - 1,&lNumberOfBytesRead);
-        if(!bRet || !lNumberOfBytesRead)
-            break;
-        cReadBuffer[lNumberOfBytesRead] = 0;
-        strResponse = strResponse + cReadBuffer;
-    }
-
- Ret0:
-    if(hRequest)
-        InternetCloseHandle(hRequest);
-    if(hConnect)
-        InternetCloseHandle(hConnect);
-    if(hInternet)
-        InternetCloseHandle(hInternet);
-
-    return strResponse;
-}
-*/
 
 extern "C" PKGEXTERN Request_t RequestCreateNew()
 {
@@ -198,9 +147,9 @@ extern "C" PKGEXTERN void SetUserAgent(const char *ua,Request_t rq)
     if(rq==nullptr)
         return;
     CppRest *cppRest=static_cast<CppRest*>(rq);
-    std::string sua=ua;
-    std::wstring wua=MultiByteToUnicode(sua,CP_ACP);
-    cppRest->SetUserAgent(wua);
+    wCharGet wua(ua);
+    std::wstring wuaStr=wua.Get();
+    cppRest->SetUserAgent(wuaStr);
 }
 
 
@@ -211,134 +160,7 @@ static char *PackageRuntimeStandardRequestW(const wchar_t *ua,
     size_t *bufferSize,
     bool useSSL=false)
 {
-    DWORD dwStatusCode = 0;
-    DWORD dwLastStatus = 0;
-    DWORD dwSize=sizeof(DWORD);
-    DWORD m_dwSize;
-    BOOL bResults = FALSE;
-    BOOL bDone=FALSE;
-    CppRest::ApiResult result=CppRest::CPPREST_API_SERVERUNREACHABLE;
-    DWORD dwProxyAuthScheme=0;
-    HINTERNET hSession = nullptr,
-    hConnect = nullptr,
-    hRequest = nullptr;
-    LPSTR pszOutBuffer=nullptr;
-    DWORD dwDownloaded=0;
-    wchar_t uaStr[512]=L"Charlie/1.0\0";
-    if(ua)
-    {
-        memset(uaStr,0,512);
-        wcsncpy(uaStr,ua,511);
-    }
-
-    hSession = WinHttpOpen(uaStr,
-                           WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-                           WINHTTP_NO_PROXY_NAME,
-                           WINHTTP_NO_PROXY_BYPASS, 0);
-
-    // Specify an HTTP server
-    INTERNET_PORT nPort = (useSSL) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
-    if (hSession)
-        hConnect = WinHttpConnect(hSession,host,
-                                  nPort, 0);
-      wprintf(L"Host:%ls\n",host);
-    // Create an HTTP Request handle.
-    unsigned md=0;
-    if (hConnect)
-        hRequest = WinHttpOpenRequest(hConnect,GetMethodString(method),
-                                      url,
-                                      NULL,
-                                      WINHTTP_NO_REFERER,
-                                      WINHTTP_DEFAULT_ACCEPT_TYPES,
-                                      (useSSL)?WINHTTP_FLAG_SECURE:0);
-    wprintf(L"Method:%ls\n",GetMethodString(method));
-    wprintf(L"URL:%ls\n",url);
-    //std::wcout<<
-    if(hRequest==nullptr)
-        bDone=TRUE;
-    //FIXME This Function Memory Leek.
-    while (!bDone){
-        if (hRequest)
-            bResults = WinHttpSendRequest(hRequest,
-                WINHTTP_NO_ADDITIONAL_HEADERS,
-                0, WINHTTP_NO_REQUEST_DATA, 0,
-                0, 0);
-        if (bResults)
-            bResults = WinHttpReceiveResponse(hRequest, NULL);
-        if (bResults){
-            do{
-            // Verify available data.
-                m_dwSize = 0;
-                if (!WinHttpQueryDataAvailable(hRequest, &m_dwSize))
-                    printf("Error %u in WinHttpQueryDataAvailable.\n",GetLastError());
-                    // Allocate space for the buffer.
-                pszOutBuffer =(LPSTR)malloc(sizeof(char)*m_dwSize+1);
-                // Read the Data.
-                ZeroMemory(pszOutBuffer, m_dwSize+1);
-                if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer,m_dwSize, &dwDownloaded)){
-                //printf("Error %u in WinHttpReadData.\n", GetLastError());
-                    free(pszOutBuffer);
-                    pszOutBuffer=nullptr;
-                }else{
-                    printf("Page:%s\n",pszOutBuffer);
-                    printf("BufferSize:%d\n",m_dwSize);
-                    *bufferSize=m_dwSize;
-                }
-            }while (m_dwSize > 0);
-        }
-        if (bResults){
-            dwSize = sizeof(dwStatusCode);
-            bResults = WinHttpQueryHeaders(hRequest,
-                WINHTTP_QUERY_STATUS_CODE |
-                WINHTTP_QUERY_FLAG_NUMBER,
-                NULL,
-                &dwStatusCode,
-                &dwSize,
-                NULL);
-        }
-        if (bResults){
-            switch (dwStatusCode){
-                case 200:
-                bDone = TRUE;
-                result = CppRest::ApiResult::CPPREST_API_200;
-                break;
-                case 401:
-                bDone = TRUE;
-                result = CppRest::ApiResult::CPPREST_API_401;
-                break;
-                case 403:
-                result = CppRest::ApiResult::CPPREST_API_403;
-                bDone = TRUE;
-                break;
-                case 407:
-                bDone = TRUE;
-                break;
-                default:
-                bDone = TRUE;
-            }
-        }
-        dwLastStatus = dwStatusCode;
-        if (!bResults){
-            bDone = TRUE;
-        }
-    }
-
-    // Report any errors.
-    if (!bResults)
-    {
-        //DWORD dwLastError = GetLastError();
-        //printf("Error %d has occurred.\n", dwLastError);
-        result = CppRest::ApiResult::CPPREST_API_SERVERUNREACHABLE;
-    }
-    // Report errors.
-    if (!bResults)
-        printf("Error %d has occurred.\n", GetLastError());
-
-    // Close open handles.
-    if (hRequest) WinHttpCloseHandle(hRequest);
-    if (hConnect) WinHttpCloseHandle(hConnect);
-    if (hSession) WinHttpCloseHandle(hSession);
-    return pszOutBuffer;
+    return nullptr;
 }
 
 
@@ -349,26 +171,92 @@ extern "C" PKGEXTERN char *PackageRuntimeStandardRequest(const char *ua,
     size_t *bufferSize,
     bool useSSL)
 {
-    char *p=nullptr;
-    if(host==nullptr)
-        return nullptr;
-    std::string sua;
-    std::string shost=host;
-    std::string surl;
-    if(ua==nullptr)
-        sua="Charlie/1.0";
-    std::wstring wua=MultiByteToUnicode(sua,CP_ACP);
-    std::wstring whost=MultiByteToUnicode(shost,CP_ACP);
-    if(url==nullptr){
-        return PackageRuntimeStandardRequestW(wua.c_str(),whost.c_str(),method,nullptr,bufferSize,useSSL);
-    }
-    surl=url;
-    std::wstring wurl=MultiByteToUnicode(surl,CP_ACP);
-    return PackageRuntimeStandardRequestW(wua.c_str(),whost.c_str(),method,wurl.c_str(),bufferSize,useSSL);
+    wCharGet wua(ua);
+    wCharGet whost(host);
+    wCharGet wurl(url);
+    return PackageRuntimeStandardRequestW(wua.Get(),whost.Get(),method,wurl.Get(),bufferSize,useSSL);
 }
 
 extern "C" PKGEXTERN void RequestBufferFree(void *p)
 {
     if(p)
       free(p);
+}
+
+
+static bool StandardRequestW(const wchar_t *ua,
+    const wchar_t *host,
+    unsigned method,
+    const wchar_t *url,
+    bool useSSL,
+    ReceiveResponeCallBack recallback,
+    void *dataPtr=nullptr)
+{
+    DWORD dwSize = 0;
+    DWORD dwDownloaded = 0;
+    LPSTR pszOutBuffer;
+    BOOL bResults = FALSE;
+    HINTERNET hSession = NULL,
+    hConnect = NULL,
+    hRequest = NULL;
+    INTERNET_PORT nPort = (useSSL) ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT;
+    hSession = WinHttpOpen(ua,
+        WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+        WINHTTP_NO_PROXY_NAME,
+        WINHTTP_NO_PROXY_BYPASS, 0);
+
+    if (hSession)
+        hConnect = WinHttpConnect(hSession, host,
+            nPort, 0);
+    if (hConnect)
+        hRequest = WinHttpOpenRequest(hConnect,
+            GetMethodString(method),
+            url,
+            NULL, WINHTTP_NO_REFERER,
+            WINHTTP_DEFAULT_ACCEPT_TYPES,
+            (useSSL)?WINHTTP_FLAG_SECURE:0);
+    if (hRequest)
+        bResults = WinHttpSendRequest(hRequest,
+            WINHTTP_NO_ADDITIONAL_HEADERS,
+            0, WINHTTP_NO_REQUEST_DATA, 0,
+            0, 0);
+    if (bResults)
+        bResults = WinHttpReceiveResponse(hRequest, NULL);
+    if (bResults){
+        do{
+            dwSize = 0;
+            if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
+                printf("Error %u in WinHttpQueryDataAvailable.\n",GetLastError());
+            pszOutBuffer = new char[dwSize+1];
+            ZeroMemory(pszOutBuffer, dwSize+1);
+            if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer,dwSize, &dwDownloaded)){
+                printf("Error %u in WinHttpReadData.\n", GetLastError());
+            }
+            else{
+                recallback(pszOutBuffer,dwSize,dataPtr);
+            }
+            delete[] pszOutBuffer;
+        }while (dwSize > 0);
+    }
+    if (!bResults)
+        printf("Error %d has occurred.\n", GetLastError());
+    if (hRequest) WinHttpCloseHandle(hRequest);
+    if (hConnect) WinHttpCloseHandle(hConnect);
+    if (hSession) WinHttpCloseHandle(hSession);
+    return true;
+}
+
+
+extern "C" PKGEXTERN bool StandardRequest(const char *ua,
+    const char *host,
+    unsigned method,
+    const char *url,
+    bool useSSL,
+    ReceiveResponeCallBack recallback,
+    void *dataPtr)
+{
+    wCharGet wua(ua);
+    wCharGet whost(host);
+    wCharGet wurl(url);
+    return StandardRequestW(wua.Get(),whost.Get(),method,wurl.Get(),useSSL,recallback);
 }

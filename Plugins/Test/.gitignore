@@ -2,6 +2,7 @@
 *_p.c
 *_i.h
 *.ilk
+*.dll
 *.meta
 *.obj
 *.exp

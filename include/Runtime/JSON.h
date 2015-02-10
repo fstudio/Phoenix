@@ -15,7 +15,10 @@ typedef void*  JSONResolve_t;
 
 PKG_BEGIN_DECL
 ////Feature.
-
+PKGEXTERN JSONResolve_t JSONResolveNew(const char *jsonText);
+PKGEXTERN bool JSONResolveNewEx(JSONResolve_t *pjt,const char *jsonText);
+PKGEXTERN bool JSONResolveGetKV(const char* key,char *value,JSONResolve_t jt);
+PKGEXTERN void JSONResolveDelete(JSONResolve_t jt);
 PKG_END_DECL
 
 

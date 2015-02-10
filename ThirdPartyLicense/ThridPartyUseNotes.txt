@@ -1,10 +1,9 @@
 Include:
 Firefox UniversalChardet
 SQLite 
-JSONSL
+jsonxx
 rapidjson
 libclang
-manualgc
 zlib
 log4z
 tinyxml2

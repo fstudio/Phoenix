@@ -25,8 +25,20 @@ typedef int(*ReceiveResponeCallBack)(char *p,size_t buffer,void* t);
 
 PKG_BEGIN_DECL
 ////Feature.
-PKGEXTERN char *PackageRuntimeStandardRequest(const char *ua,const char *host,unsigned method,const char *url,size_t *bufferSize,bool useSSL);
-PKGEXTERN bool StandardRequest(const char *ua,const char *host,unsigned method,const char *url,bool useSSL,ReceiveResponeCallBack recallback);
+PKGEXTERN char *PackageRuntimeStandardRequest(const char *ua,
+    const char *host,
+    unsigned method,
+    const char *url,
+    size_t *bufferSize,
+    bool useSSL);
+
+PKGEXTERN bool StandardRequest(const char *ua,
+    const char *host,
+    unsigned method,
+    const char *url,
+    bool useSSL,
+    ReceiveResponeCallBack recallback,
+    void *dataPtr);
 PKGEXTERN void RequestBufferFree(void *p);
 PKG_END_DECL
 
