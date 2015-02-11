@@ -19,6 +19,35 @@
 #include "base/nsUniversalDetector.h"
 
 #ifdef _WIN32
+class WideCharGet{
+private:
+    wchar_t *wstr;
+public:
+    WideCharGet(const char *str):wstr(nullptr)
+    {
+        if(str==nullptr)
+            return ;
+        size_t len =strlen(str);
+        int unicodeLen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+        if(unicodeLen==0)
+            return ;
+        this->wstr = new wchar_t[unicodeLen + 1];
+        memset(this->wstr, 0, (unicodeLen + 1) * sizeof(wchar_t));
+        ::MultiByteToWideChar(CP_ACP, 0,str, -1, (LPWSTR)this->wstr,unicodeLen);
+    }
+    const wchar_t *Get()
+    {
+        if(!wstr)
+            return nullptr;
+        return const_cast<const wchar_t *>(wstr);
+    }
+    ~WideCharGet()
+    {
+        if(wstr)
+            delete[] wstr;
+    }
+};
+
 static bool StringToWideString(const std::string &str,std::wstring &wstr)
 {
     int  len = 0;
@@ -75,7 +104,33 @@ static bool WideStringToString(const std::wstring &wstr,std::string &str)
 }
 ////WinAPI Done
 #else
-
+class WideCharGet{
+private:
+    wchar_t *wstr;
+public:
+    WideCharGet(const char *str):wstr(nullptr)
+    {
+        if(str==nullptr)
+            return ;
+        const char* _Source = str;
+        size_t _Dsize =strlen(str) + 1;
+        wchar_t *_Dest = new wchar_t[_Dsize];
+        wmemset(_Dest, 0, _Dsize);
+        mbstowcs(_Dest,_Source,_Dsize);
+        wstr= _Dest;
+    }
+    const wchar_t *Get()
+    {
+        if(!wstr)
+            return nullptr;
+        return const_cast<const wchar_t *>(wstr);
+    }
+    ~WideCharGet()
+    {
+        if(wstr)
+            delete[] wstr;
+    }
+};
 static bool StringToWideString(const std::string &str,std::wstring &wstr)
 {
     const char* _Source = s.c_str();

@@ -5,12 +5,14 @@
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <Runtime/HTTP.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cstdint>
 #include <Windows.h>
 #include <string>
 #include <Winhttp.h>
 #include <wincrypt.h>
 #include "CppRest.h"
+#include "UriParser.h"
 
 class wCharGet{
 private:
@@ -67,7 +69,6 @@ const wchar_t *GetMethodString(unsigned i)
     return L"GET";
 }
 
-
 inline const wchar_t *RemoveURLProtocolMark(const wchar_t *url,bool &isSSL)
 {
     if(url==nullptr&&wcslen(url)<12)
@@ -89,10 +90,16 @@ static bool GetHostNameNoMark(const wchar_t* url,wchar_t *dest,wchar_t *subURL)
     {
         *dest++=*url++;
     }
-    dest='\0';
+    *dest='\0';
     wcscpy(subURL,url);
     return true;
 }
+
+bool BaseURLResolve(const wchar_t *url,wchar_t *host,wchar_t *path,unsigned *port)
+{
+    return 0;
+}
+
 
 CppRest::CppRest():hConnect(nullptr),hSession(nullptr),hRequest(nullptr),useAgent(L"PkgCppRest/1.0")
 {
@@ -259,4 +266,51 @@ extern "C" PKGEXTERN bool StandardRequest(const char *ua,
     wCharGet whost(host);
     wCharGet wurl(url);
     return StandardRequestW(wua.Get(),whost.Get(),method,wurl.Get(),useSSL,recallback,dataPtr);
+}
+
+static uint32_t
+ToUInt32 (const char *s, uint32_t fail_value, int base, bool *success_ptr)
+{
+    if (s && s[0])
+    {
+        char *end = nullptr;
+        const unsigned long uval = ::strtoul (s, &end, base);
+        if (*end == '\0')
+        {
+            if (success_ptr)
+                *success_ptr = (uval <= UINT32_MAX);
+            return (uint32_t)uval; // All characters were used, return the result
+        }
+    }
+    if (success_ptr) *success_ptr = false;
+    return fail_value;
+}
+
+
+extern "C" PKGEXTERN bool StandardURLResolve(const char *uri,char *scheme,char *host,char *path,unsigned *ports)
+{
+    char port_buf[11]={0};
+    path[0]='/';
+        bool ok = false;
+    if (4==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]/%2047s", scheme, host, port_buf, path+1)) { ok = true; }
+    else if (3==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]", scheme, host, port_buf)) { ok = true; }
+    else if (3==sscanf(uri, "%99[^:/]://%255[^/]/%2047s", scheme, host, path+1)) { ok = true; }
+    else if (2==sscanf(uri, "%99[^:/]://%255[^/]", scheme, host)) { ok = true; }
+
+    bool success = false;
+    int port_tmp = -1;
+    if (port_buf[0])
+    {
+        port_tmp = ToUInt32(port_buf, UINT32_MAX, 10, &success);
+        if (!success || port_tmp > 65535)
+        {
+            // there are invalid characters in port_buf
+            return false;
+        }
+    }
+    if(ok)
+    {
+        *ports=port_tmp;
+    }
+    return ok;
 }

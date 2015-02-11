@@ -31,6 +31,8 @@ RequestFree
 SendRequest
 SetUserAgent
 StandardRequest
+StandardURLResolve
+URIGetPortFromSchemes
 XmlResolveDelete
 XmlResolveLoader
 XmlResolveNew

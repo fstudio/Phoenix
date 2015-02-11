@@ -8,8 +8,16 @@
 #define PHONEIX_PACKAGE_RUNTIME_HTTP_H
 #include "rtdefs.h"
 #include <stdbool.h>
+#include <stddef.h>
 typedef void* Request_t;
 
+#define PKG_URI_FTP_DEFAULT_PORT         21 /**< default FTP port */
+#define PKG_URI_SSH_DEFAULT_PORT         22 /**< default SSH port */
+#define PKG_URI_TELNET_DEFAULT_PORT      23 /**< default telnet port */
+#define PKG_URI_HTTP_DEFAULT_PORT        80 /**< default HTTP port */
+#define PKG_URI_POP_DEFAULT_PORT        110 /**< default POP port */
+#define PKG_URI_IMAP_DEFAULT_PORT       143 /**< default IMAP port */
+#define PKG_URI_HTTPS_DEFAULT_PORT      443 /**< default HTTPS port */
 
 #define HTTP_RQ_METHOD_UNKNOWN 0x0001
 #define HTTP_RQ_METHOD_GET 0x0002
@@ -25,6 +33,10 @@ typedef int(*ReceiveResponeCallBack)(char *p,size_t buffer,void* t);
 
 PKG_BEGIN_DECL
 ////Feature.
+
+PKGEXTERN bool StandardURLResolve(const char *uri,/*100*/char *scheme,/*256*/char *host,/*2049*/char *path,unsigned *ports);
+PKGEXTERN unsigned URIGetPortFromSchemes(const char *scheme_str);
+
 PKGEXTERN char *PackageRuntimeStandardRequest(const char *ua,
     const char *host,
     unsigned method,
