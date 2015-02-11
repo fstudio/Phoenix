@@ -97,6 +97,7 @@ static bool GetHostNameNoMark(const wchar_t* url,wchar_t *dest,wchar_t *subURL)
 
 bool BaseURLResolve(const wchar_t *url,wchar_t *host,wchar_t *path,unsigned *port)
 {
+    //swscanf
     return 0;
 }
 

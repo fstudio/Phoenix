@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <regex>
+#include <unordered_map>
 #include <list>
 #include <UniversalChardet/UniversalChardet.h>
 /**
@@ -59,7 +59,7 @@ public:
 protected:
     T m_iniFile;
     bool Modify;
-    std::map<T, std::vector<ParametersNV> > treeMode;///Node as a map->
+    std::map<T, std::vector<ParametersNV> > treeMode;/// Replace unordered_map.
     std::map<unsigned,T> commentsMap;
     std::vector<ParametersNV> anonymousNV;
     T currentSection;

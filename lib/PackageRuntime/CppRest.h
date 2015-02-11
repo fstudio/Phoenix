@@ -8,8 +8,10 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_PACKAGE_RUNTIME_CPPREST_H
 #define PHOENIX_PACKAGE_RUNTIME_CPPREST_H
-#include <vector>
+
 #ifdef __cplusplus
+#include <unordered_map>
+#include <vector>
 
 class CppRest{
 public:
@@ -42,7 +44,7 @@ public:
     CppRest();
     ~CppRest();
     void SetUserAgent(std::wstring &ua);
-    bool RequestSend(unsigned md,bool isSSL,const wchar_t url,wchar_t* stream,size_t streamLen,short port=80);
+    bool RequestSend(unsigned md,bool isSSL,const wchar_t *url,wchar_t* stream,size_t streamLen,short port=80);
 };
 
 #endif
