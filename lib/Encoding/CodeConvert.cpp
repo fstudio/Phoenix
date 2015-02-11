@@ -22,7 +22,7 @@ bool WideStringToString(const std::wstring& src,std::string &str)
     memset( data_to, 0, (src.size() + 1) * wchar_size );
 
     typedef std::codecvt<wchar_t, char, mbstate_t> convert_facet;
-    mbstate_t out_state = 0;
+    mbstate_t out_state = {0};
     auto result = std::use_facet<convert_facet>(sys_locale).out(
         out_state, data_from, data_from_end, data_from_next,
         data_to, data_to_end, data_to_next );
@@ -50,7 +50,7 @@ bool StringToWideString( const std::string& src,std::wstring &wstr)
     wmemset( data_to, 0, src.size() + 1 );
 
     typedef std::codecvt<wchar_t, char, mbstate_t> convert_facet;
-    mbstate_t in_state = 0;
+    mbstate_t in_state = {0};
     auto result = std::use_facet<convert_facet>(sys_locale).in(
         in_state, data_from, data_from_end, data_from_next,
         data_to, data_to_end, data_to_next );
@@ -65,7 +65,7 @@ bool StringToWideString( const std::string& src,std::wstring &wstr)
 }
 
 
-bool WCharStringToUTF8String(const std::wstring &wstr,std::string &u8sr)
+bool WCharStringToUTF8String(const std::wstring &wstr,std::string &u8str)
 {
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     u8str= conv.to_bytes(wstr);
@@ -75,6 +75,6 @@ bool WCharStringToUTF8String(const std::wstring &wstr,std::string &u8sr)
 bool UTF8StringToWCharString(const std::string &u8str,st::wstring &wstr)
 {
     std::wstring_convert<std::codecvt_utf8<wchar_t> > conv;
-    wstr=conv.from_bytes( src );
+    wstr=conv.from_bytes( u8str );
     return true;
 }
