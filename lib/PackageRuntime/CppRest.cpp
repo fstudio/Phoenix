@@ -291,12 +291,13 @@ ToUInt32 (const char *s, uint32_t fail_value, int base, bool *success_ptr)
 extern "C" PKGEXTERN bool StandardURLResolve(const char *uri,char *scheme,char *host,char *path,unsigned *ports)
 {
     char port_buf[11]={0};
+    char scheme_buf[100] = {0};
     path[0]='/';
         bool ok = false;
-    if (4==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]/%2047s", scheme, host, port_buf, path+1)) { ok = true; }
-    else if (3==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]", scheme, host, port_buf)) { ok = true; }
-    else if (3==sscanf(uri, "%99[^:/]://%255[^/]/%2047s", scheme, host, path+1)) { ok = true; }
-    else if (2==sscanf(uri, "%99[^:/]://%255[^/]", scheme, host)) { ok = true; }
+    if (4==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]/%2047s", scheme_buf, host, port_buf, path+1)) { ok = true; }
+    else if (3==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]", scheme_buf, host, port_buf)) { ok = true; }
+    else if (3==sscanf(uri, "%99[^:/]://%255[^/]/%2047s", scheme_buf, host, path+1)) { ok = true; }
+    else if (2==sscanf(uri, "%99[^:/]://%255[^/]", scheme_buf, host)) { ok = true; }
 
     bool success = false;
     int port_tmp = -1;
@@ -308,10 +309,13 @@ extern "C" PKGEXTERN bool StandardURLResolve(const char *uri,char *scheme,char *
             // there are invalid characters in port_buf
             return false;
         }
+        *ports=port_tmp;
+    }else{
+        *prots=URIGetPortFromSchemes(scheme_buf);
     }
     if(ok)
     {
-        *ports=port_tmp;
+        strcpy(scheme,scheme_buf);
     }
     return ok;
 }
