@@ -7,7 +7,7 @@
 #include <string>
 #include <map>
 
-int ParserPropertyFormString(std::string text,std::map<std::string,std::string> *tb)
+int ParserPropertyFormString(std::string text,std::map<std::string,std::string> &tb)
 {
     if(text.empty())
         return -1;

@@ -1,6 +1,6 @@
 /*********************************************************************************************************
 * PManager.cpp@PhoenixManager
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 * Note:
 * E-mail:<forcemz@outlook.com>
 * @2014.08

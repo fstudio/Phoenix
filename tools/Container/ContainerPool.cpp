@@ -11,6 +11,7 @@ public:
     ContainerPool();
 protected:
     bool CleanPool();
+
 };
 
 ContainerPool::ContainerPool()
@@ -22,3 +23,6 @@ bool ContainerPool::CleanPool()
 {
     return false;
 }
+
+
+

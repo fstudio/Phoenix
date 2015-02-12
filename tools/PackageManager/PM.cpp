@@ -5,5 +5,5 @@
 
 int wmain(int args,wchar_t* argv[])
 {
-return 0;
+	return 0;
 }
