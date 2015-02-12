@@ -15,7 +15,7 @@ extern "C" unsigned GetMajroVersion(void)
   return PHOENIX_VERSION_MAJRO;
 }
 
-extern "C" version_t GetVersionTypoe(void)
+extern "C" version_t GetVersionType(void)
 {
     return sgversion;
 }

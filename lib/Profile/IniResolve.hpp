@@ -93,12 +93,10 @@ public:
     {
         if(section.empty)
         {
-            auto it=anonymousNV.begin();
-            auto end=anonymousNV.end();
-            for(;it!=end;it++)
+            for(auto &iter :anonymousNV)
             {
-                it->name==sname;
-                return it->value;
+                iter.name==sname;
+                return iter.value;
             }
             return std::string();
         }
@@ -108,13 +106,11 @@ public:
             return T();
         }
         auto &v=treeMode[section];
-        auto iter=v.begin();
-        auto end=v.end();
         std::vector<T> va;
-        for(;iter!=end;iter++)
+        for(auto &iter: v)
         {
-            if(iter->name==sname)
-                va.push_back(iter->value);
+            if(iter.name==sname)
+                va.push_back(iter.value);
         }
         if(va.size()>=1)
         {
@@ -130,13 +126,11 @@ public:
             return false;
         if(section.empty())
         {
-            auto it=anonymousNV.begin();
-            auto end=anonymousNV.end();
-            for(;it!=end;it++)
+            for(auto &it :anonymousNV)
             {
-                if(it->name==name)
+                if(it.name==name)
                 {
-                    it->value=value;
+                    it.value=value;
                     return true;
                 }
             }
@@ -150,10 +144,10 @@ public:
             treeMode.insert(std::map<T, decltype(v)>::value_type(section,v));
         }
         auto &v=treeMode[section];
-        auto iter=v.begin();
-        auto end=v.end();
+        //auto iter=v.begin();
+        //auto end=v.end();
         unsigned i=0;
-        for(;iter!=end;iter++)
+        for(auto &iter: v)
         {
             if(iter->name==name)
             {
