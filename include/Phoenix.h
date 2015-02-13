@@ -25,7 +25,7 @@
 
 
 #elif __unix__
-#include "Platform/POSIX/PhoenixPosix.h"
+#include "Platform/POSIX/posix.h"
 #define PHOENIXEDITOR "Phoenix.Editor"
 
 #endif

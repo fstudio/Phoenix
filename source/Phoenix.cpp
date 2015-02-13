@@ -1,18 +1,18 @@
 /*********************************************************************************************************
 * Phoenix.cpp
-* Note:
+* Note: Phoenix Main 
 * E-mail:<forcemz@outlook.com>
 * Data: @2014.08
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#include <Phoenix.h>
-#include <map>
 #ifndef _WIN32
 #error "Only Support Windows"
 #endif
+#include <Phoenix.h>
 #include <Winternl.h>
 #include <Processthreadsapi.h>
 #include <wchar.h>
+#include <map>
 #include "PhoenixUI.h"
 #include "CommandLineArgumentsEx.hpp"
 
