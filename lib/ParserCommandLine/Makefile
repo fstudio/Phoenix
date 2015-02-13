@@ -1,1 +1,0 @@
-#Makefile NMAKE LIBRARY CommandLine Interface.
