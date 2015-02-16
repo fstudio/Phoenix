@@ -1,3 +1,4 @@
+////getopt MultiByte
 #ifdef UNICODE
 #undef UNICODE 
 #endif

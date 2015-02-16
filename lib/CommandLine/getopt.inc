@@ -88,7 +88,7 @@ getopt_internal (int argc, TCHAR **argv, TCHAR *shortopts,
     _toptind = optwhere = 1;
 
   /* define ordering */
-  if (shortopts != NULL && (*shortopts == _T('-'))|| *shortopts == _T('+'))
+  if (shortopts != NULL && (*shortopts == _T('-')|| *shortopts == _T('+')))
     {
       ordering = (*shortopts ==  _T('-')) ? RETURN_IN_ORDER : REQUIRE_ORDER;
       shortopts++;

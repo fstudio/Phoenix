@@ -1,3 +1,4 @@
+#Makefile this default use NMAKE format
 
 CC=cl
 AR = lib.exe
