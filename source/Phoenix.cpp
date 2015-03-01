@@ -34,7 +34,7 @@ public:
         if(hPtr)
             this->m_handle=hPtr;
     }
-    HANDLE Get() {
+    HANDLE Get() const{
         return this->m_handle;
     }
     ~ForceHANDLE()
