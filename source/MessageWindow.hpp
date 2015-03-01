@@ -12,10 +12,11 @@
 
 class MessageWindowImpl{
 public:
-    enum ERROR_LEVEL{
-        MW_NORMAL_WINDOW=0,
-        MW_WARNING_WINDOW=1,
-        MW_ERROR_WINDOW=2
+    enum ERROR_LEVEL_FLAGS{
+        NORMAL_LEVEL=0,
+        WARNING_LEVEL=1,
+        ERROR_LEVEL=2,
+        SHIELD_LEVEL=3
     };
 private:
     std::wstring m_title;

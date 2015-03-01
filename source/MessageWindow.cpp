@@ -39,7 +39,7 @@ static HICON TryGetApplicationIcon()
     return gMwIcon;
 }
 HRESULT CALLBACK
-TaskDialogCallbackProc(
+TaskWindowCallBackProc(
 __in HWND hwnd,
 __in UINT msg,
 __in WPARAM wParam,
@@ -89,7 +89,6 @@ bool MessageWindowImpl::InitializeWindowImpl()
     BOOL bElevated = FALSE;
     memset(&tdConfig, 0, sizeof(tdConfig));
     tdConfig.cbSize = sizeof(tdConfig);
-    HICON hMainIcon;
     tdConfig.hwndParent = this->m_hParent;
     tdConfig.hInstance = GetModuleHandle(nullptr);
     tdConfig.dwFlags =TDF_ALLOW_DIALOG_CANCELLATION |
@@ -101,22 +100,37 @@ bool MessageWindowImpl::InitializeWindowImpl()
     tdConfig.pszWindowTitle =this->m_title.c_str();
     tdConfig.pszMainInstruction = this->m_note.c_str();
     tdConfig.pszContent = this->m_content.c_str();
-
+    switch(errorlevel)
+    {
+        case ERROR_LEVEL_FLAGS::WARNING_LEVEL:
+        tdConfig.pszMainIcon=TD_WARNING_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::ERROR_LEVEL:
+        tdConfig.pszMainIcon=TD_ERROR_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::SHIELD_LEVEL:
+        tdConfig.pszMainIcon=TD_SHIELD_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::NORMAL_LEVEL:
+        default:
+        tdConfig.pszMainIcon=TD_INFORMATION_ICON;
+        break;
+    }
     if(this->m_hIcon)
     {
         tdConfig.hMainIcon=static_cast<HICON>(this->m_hIcon);
         tdConfig.dwFlags |= TDF_USE_HICON_MAIN;
     }
-    /*else if((hMainIcon=TryGetApplicationIcon())!=nullptr)
+    /*else if((TryGetApplicationIcon()!=nullptr)
     {
-        tdConfig.hMainIcon=static_cast<HICON>(hMainIcon);
+        tdConfig.hMainIcon=static_cast<HICON>(TryGetApplicationIcon());
         tdConfig.dwFlags |= TDF_USE_HICON_MAIN;
     }*/
     tdConfig.pszExpandedInformation =m_ninfo.c_str();
 
     tdConfig.pszCollapsedControlText = L"More information";
     tdConfig.pszExpandedControlText = L"Less information";
-    tdConfig.pfCallback = TaskDialogCallbackProc;
+    tdConfig.pfCallback = TaskWindowCallBackProc;
     this->hr = TaskDialogIndirect(&tdConfig, &nButton, &nRadioButton, NULL);
     return true;
 }
@@ -148,11 +162,11 @@ HRESULT MessageWindowImpl::MessageWindowShowCStr(HWND hParent,
     LPCWSTR &note,
     LPCWSTR &content,
     LPCWSTR &info,
-    int errorLevel=0)
+    int errorLevel)
 {
     std::wstring t=titleText;
     std::wstring n=note;
     std::wstring c=content;
     std::wstring i=info;
-    return MessageWindowImpl::MessageWindowShow(hParent,t,n,c,i,errorlevel);
+    return MessageWindowImpl::MessageWindowShow(hParent,t,n,c,i,errorLevel);
 }
