@@ -12,6 +12,7 @@
 #include <Winternl.h>
 #include <Processthreadsapi.h>
 #include <wchar.h>
+#include <string>
 #include <map>
 #include "PhoenixUI.h"
 #include "CommandLineArgumentsEx.hpp"
@@ -236,7 +237,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     bool bTask=false;
     bool bInit=false;
     bool bVersion=false;
-
+    std::wstring  textfile;
 
     typedef Force::CommandLineArguments argT;
     Force::CommandLineArguments Args;
@@ -249,6 +250,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
         L"Execute Phoenix With Task Process");
     Args.AddArgument(L"-Init",argT::NO_ARGUMENT,&bInit,
         L"Initialize Phoenix Editor Environment");
+    Args.AddArgument(L"-File",argT::SPACE_ARGUMENT,&textfile,
+        L"Open File");
     Args.SetUnknownArgumentCallback(cmdUnknownArgument);
     int parsed=Args.Parse();
 
