@@ -11,6 +11,8 @@
 #include <comdef.h>
 #include <taskschd.h>
 
+
+
 static HICON gMwIcon=nullptr;
 static bool runOnce=false;
 
@@ -139,4 +141,18 @@ HRESULT MessageWindowImpl::MessageWindowShow(HWND hParent,
 {
     MessageWindowImpl  wimpl(hParent,titleText,note,content,info,errorLevel);
     return wimpl.Show();
+}
+
+HRESULT MessageWindowImpl::MessageWindowShowCStr(HWND hParent,
+    LPCWSTR &titleText,
+    LPCWSTR &note,
+    LPCWSTR &content,
+    LPCWSTR &info,
+    int errorLevel=0)
+{
+    std::wstring t=titleText;
+    std::wstring n=note;
+    std::wstring c=content;
+    std::wstring i=info;
+    return MessageWindowImpl::MessageWindowShow(hParent,t,n,c,i,errorlevel);
 }

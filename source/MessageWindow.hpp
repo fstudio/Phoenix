@@ -31,7 +31,20 @@ public:
     MessageWindowImpl(HWND hParent,std::wstring &title,std::wstring &note,std::wstring &content,std::wstring &info,int errorLevel=0);
     bool SetMainIcon(HICON hIcon);
     HRESULT Show();
-    static HRESULT MessageWindowShow(HWND hParent,std::wstring &titleText,std::wstring &note,std::wstring &content,std::wstring &info,int errorLevel=0);//Default is zero
+    static HRESULT MessageWindowShow(HWND hParent,
+    std::wstring &titleText,
+    std::wstring &note,
+    std::wstring &content,
+    std::wstring &info,
+    int errorLevel=0);//Default is zero
+    static HRESULT MessageWindowShowCStr(HWND hParent,
+    LPCWSTR &titleText,
+    LPCWSTR &note,
+    LPCWSTR &content,
+    LPCWSTR &info,
+    int errorLevel=0);
 };
+
+
 
 #endif
