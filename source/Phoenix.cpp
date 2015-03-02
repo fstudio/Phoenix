@@ -236,6 +236,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     bool help=false;
     bool bTask=false;
     bool bInit=false;
+    bool newWindow=false;
     bool bVersion=false;
     std::wstring  textfile;
 
@@ -246,6 +247,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
         L"Cmd Print Help");
     Args.AddArgument(L"--version", argT::NO_ARGUMENT, &bVersion,
         L"Print Phoenix version");
+    Args.AddArgument(L"-New",argT::NO_ARGUMENT,&newWindow,
+        L"Open New Window");
     Args.AddArgument(L"-Task", argT::NO_ARGUMENT, &bTask,
         L"Execute Phoenix With Task Process");
     Args.AddArgument(L"-Init",argT::NO_ARGUMENT,&bInit,
