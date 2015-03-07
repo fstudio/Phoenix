@@ -20,7 +20,7 @@ public:
     static bool AppContainerInitialize();
     static void AppContainerClear();
 protected:
-    AppContainer(std::wstring app,std::wstring Args,);
+    AppContainer(std::wstring app,std::wstring Args,unsigned dwFlags);
     bool Exectue();
 };
 

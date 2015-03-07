@@ -8,10 +8,7 @@
 #ifndef PHOENIX_UI_H
 #define PHOENIX_UI_H
 
-#ifdef _WIN32
-#define UIWINDOWCLASS L"Phoenix.UI.Window.v1"
-#define PHOENIXEDITWINDOWCLASS  L"Phoenix.UI.Edit.Window"
-#endif
+#define UIWINDOWCLASS L"Phoenix.UI.Window.Render.v1"
 #include <atlbase.h>
 #include <atlwin.h>
 #include <atlcoll.h>

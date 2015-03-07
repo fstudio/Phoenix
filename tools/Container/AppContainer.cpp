@@ -16,6 +16,7 @@ bool AppContainer::AppContainerInitialize()
     wchar_t appContainerName[64]={0};
     wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.v1\0";
     wchar_t appContainerDesc[2048];
+
     return 0;
 }
 

@@ -8,7 +8,6 @@
 #include <Runtime/GC.h>
 
 
-
 PKGEXTERN void GCInitialize()
 {
     ///Init.
