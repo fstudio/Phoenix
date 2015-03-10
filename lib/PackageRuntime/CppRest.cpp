@@ -30,7 +30,7 @@ public:
         memset(this->wstr, 0, (unicodeLen + 1) * sizeof(wchar_t));
         ::MultiByteToWideChar(CP_ACP, 0,str, -1, (LPWSTR)this->wstr,unicodeLen);
     }
-    const wchar_t *Get()
+    const wchar_t *Get const()
     {
         if(!wstr)
             return nullptr;

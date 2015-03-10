@@ -134,6 +134,7 @@ bool AppContainer::Exectue()
     ::CloseHandle(pi.hProcess);
 Cleanup:
     DeleteProcThreadAttributeList(siex.lpAttributeList);
+	FreeSid(appContainerSid);
     free(psArgs);
     return true;
 }
