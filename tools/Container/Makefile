@@ -12,7 +12,7 @@ CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
 
 
 LDFLAGS=/NOLOGO -OPT:REF  
-OBJS=Precompiled.obj UACProcess.obj Host.obj 
+OBJS=Precompiled.obj UACProcess.obj Host.obj AppContainer.obj
 
 !IFDEF DEBUG
 CXXFLAGS=$(CXXFLAGS) $(CXXDEBUG)

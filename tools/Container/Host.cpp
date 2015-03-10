@@ -1,6 +1,7 @@
 ////Container
 #include "Precompiled.h"
 #include "ContainerAPI.h"
+#include "AppContainer.hpp"
 #include <string>
 
 const wchar_t *ContainerHostJobObject = L"Phoenix.Container.JobObject.APIv1\0";
@@ -22,6 +23,10 @@ public:
   bool Initialize() {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     return true;
+  }
+  bool Execute(std::wstring appPath,std::wstring command)
+  {
+	  return false;
   }
   bool Stop() {
     CoUninitialize();

@@ -11,15 +11,19 @@
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
-
+#include <functional>
 
 class AppContainer{
 private:
-    static PSID appContainerSid;
+    std::wstring m_app;
+    std::wstring m_Args;
+    unsigned m_dwFlags;
+protected:
+    static wchar_t appContainerName[64];
 public:
     static bool AppContainerInitialize();
-    static void AppContainerClear();
-protected:
+    ///responseTask when Delete Profile failed, execute responseTask callback function ,close container handle
+    static bool AppContainerDelete(std::function<bool(unsigned)> responseTask);
     AppContainer(std::wstring app,std::wstring Args,unsigned dwFlags);
     bool Exectue();
 };

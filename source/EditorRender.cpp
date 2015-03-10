@@ -6,3 +6,9 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "EditorRender.hpp"
+
+
+EditorRender::EditorRender()
+{
+    ///
+}

@@ -281,6 +281,7 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   TOKEN_MANDATORY_LABEL TIL = {0};
   PROCESS_INFORMATION ProcInfo = {0};
   STARTUPINFO StartupInfo = {0};
+  StartupInfo.cb=sizeof(STARTUPINFO);
   ULONG ExitCode = 0;
 
   b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
