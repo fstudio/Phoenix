@@ -8,6 +8,10 @@
 #include <winternl.h>
 #include <Processthreadsapi.h>
 #include <wchar.h>
+#include "Header.hpp"
+#include "Arguments.hpp"
+#include "CommandLineArgumentsEx.hpp"
+#include "TaskProcess.hpp"
 
 /*
 Winternl.h:
@@ -21,6 +25,8 @@ __out_opt PULONG ReturnLength
 );
 
 */
+
+using namespace Task;
 
 typedef NTSTATUS (__stdcall * NTQUERYINFORMATIONPROCESS)
 (
@@ -40,46 +46,64 @@ typedef struct _PROCESS_BASIC_INFORMATION {
 } PROCESS_BASIC_INFORMATION;
 
 //Task Process start
-DWORD  WINAPI   WaitForParentExitThread(LPVOID lParam)
+DWORD  WINAPI  FollowParentQuit(LPVOID lParam)
 {
     ForceHANDLE hAlp=static_cast<ForceHANDLE>(lParam);
     HANDLE hProcess=GetCurrentProcess();
     DWORD dwParentPid;
     LONG status;
     PROCESS_BASIC_INFORMATION pbi;
-    HMODULE hMod = GetModuleHandle(L"NTDLL.DLL");
+    HMODULE hMod = GetModuleHandleW(L"NTDLL.DLL");
     NTQUERYINFORMATIONPROCESS NtQueryInformationProcess = (NTQUERYINFORMATIONPROCESS)GetProcAddress(hMod,"NtQueryInformationProcess");
     if(NtQueryInformationProcess==NULL)
     {
         CloseHandle(hProcess);
-        ///FreeLibrary(hMod);
-        CloseHandle(hMod);
         return 1;
     }
     status = NtQueryInformationProcess(hProcess,ProcessBasicInformation,(PVOID)&pbi,sizeof(PROCESS_BASIC_INFORMATION),NULL);
     dwParentPid=(DWORD)pbi.Reserved3;
-    CloseHandle(hProcess);
-    ////Wait..
-    ///FreeLibrary(hMod);
-    //MsgWaitForMultipleObjects()
-    //MsgWaitForMultipleObjectsEx()
-    //Exit
+    ForceHANDLE hFParent=OpenProcess(SYNCHRONIZE,FALSE,dwParentPid);
+    if(hFParent.Get()==nullptr)
+    {
+        //OpenProcess Failed
+        return 2;
+    }
+    DWORD dwRet;
+    if((dwRet=WaitForSingleObject(hFParent.Get(),INFINITE))==WAIT_TIMEOUT)
+    {
+        ///
+    }
+    if(dwRet==WAIT_FAILED)
+    {
+        return 2;
+    }
     //NTDLL always be called . so ....
-
+    CloseHandle(hProcess);
     return 0;
 }
 
 
-
-int WINAPI   PhoenixTaskModel()
+TaskProcess::TaskProcess(int Argv,wchar_t *Argv)
 {
-    //Check Parent is Phoenix?
 
-    DWORD dWaitPid;
-    ForceHANDLE hAlp;
-
-    ////
-    //check Wait Thread
-    return 0;
 }
 
+TaskProcess::TaskProcess(std::vector<std::wstring> &Args)
+{
+
+}
+
+TaskProcess::TaskProcess()
+{
+
+}
+
+int TaskProcess::Execute()
+{
+    DWORD dwThread;
+    HANDLE hThread=CreateThread(NULL, 0, FollowParentQuit, nullptr, 0, &dwThread);
+    if(!hThread)
+        return 2;
+    CloseHandle(hThread);
+    return 0;
+}

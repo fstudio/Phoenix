@@ -9,11 +9,22 @@
 #define PHOENIX_TASK_PROCESS_HPP
 
 #include <vector>
+#ifndef _WINDOWS_
+#include <Windows.h>
+#endif
 
-class Process{
+namespace Task{
+
+class TaskProcess{
+private:
+    DWORD dwParent;
+    bool SetParentProcess();
 public:
-    Process(int Argv,wchar_t *Argv);
-    Process(std::vector<std::wstring> Args);
+    TaskProcess(int Argv,wchar_t *Argv);
+    TaskProcess(std::vector<std::wstring> &Args);
+    TaskProcess();
+    int Execute();
 };
 
+}
 #endif

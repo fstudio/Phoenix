@@ -17,7 +17,7 @@
 #include "Header.hpp"
 #include "Arguments.hpp"
 #include "CommandLineArgumentsEx.hpp"
-
+#include "TaskProcess.hpp"
 
 //class UIWindow;
 static std::map<int,HINSTANCE> ChildProcessMap;
@@ -77,7 +77,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     int parsed=Args.Parse();
 
     if(parsed){
-        ///
+        if(bTask)
+        {
+            TaskProcess taskProcess;
+            return taskProcess.Execute();
+        }
     }else{
         ///
     }
