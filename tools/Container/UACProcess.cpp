@@ -280,14 +280,16 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   PSID pIntegritySid = NULL;
   TOKEN_MANDATORY_LABEL TIL = {0};
   PROCESS_INFORMATION ProcInfo = {0};
-  STARTUPINFO StartupInfo = {0};
-  StartupInfo.cb=sizeof(STARTUPINFO);
+  STARTUPINFOW StartupInfo = {0};
+  StartupInfo.cb=sizeof(STARTUPINFOW);
   ULONG ExitCode = 0;
 
   b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
+  if(!b)
+	  return FALSE;
   b = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityImpersonation,
                        TokenPrimary, &hNewToken);
-  b = ConvertStringSidToSid(szIntegritySid, &pIntegritySid);
+  b = ConvertStringSidToSidW(szIntegritySid, &pIntegritySid);
   TIL.Label.Attributes = SE_GROUP_INTEGRITY;
   TIL.Label.Sid = pIntegritySid;
 
@@ -301,8 +303,9 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
   wchar_t *lpCmdLineT = _wcsdup(lpCmdLine);
   // To create a new low-integrity processes
-  b = CreateProcessAsUser(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
+  b = CreateProcessAsUserW(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
                           NULL, NULL, &StartupInfo, &ProcInfo);
+  LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;
 }
