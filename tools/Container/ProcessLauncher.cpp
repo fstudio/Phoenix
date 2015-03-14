@@ -263,7 +263,8 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCW
     hr = 8;
     goto cleanup;
   }
-
+  ::CloseHandle(pi.hThread);
+  ::CloseHandle(pi.hProcess);
   retval = true;
 
 cleanup:
