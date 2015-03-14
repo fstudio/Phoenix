@@ -17,6 +17,7 @@ class AppContainer{
 private:
     std::wstring m_app;
     std::wstring m_Args;
+    std::wstring m_workDir;
     unsigned m_dwFlags;
 protected:
     static wchar_t appContainerName[64];
@@ -24,8 +25,8 @@ public:
     static bool AppContainerInitialize();
     ///responseTask when Delete Profile failed, execute responseTask callback function ,close container handle
     static bool AppContainerDelete(std::function<bool(unsigned)> responseTask);
-    AppContainer(std::wstring app,std::wstring Args,unsigned dwFlags);
-    bool Exectue();
+    AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags=0);
+    bool Execute();
 };
 
 #endif

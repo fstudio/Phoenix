@@ -76,12 +76,15 @@ bool AppContainer::AppContainerDelete(std::function<bool(unsigned)> responseTask
     }
     return hr==S_OK;
 }
-AppContainer::AppContainer(std::wstring app,std::wstring Args,unsigned dwFlags):m_app(app),m_Args(Args),m_dwFlags(dwFlags)
+AppContainer::AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags):m_app(app),
+m_Args(Args),
+m_workDir(workDir),
+m_dwFlags(dwFlags)
 {
 
 }
 
-bool AppContainer::Exectue()
+bool AppContainer::Execute()
 {
     PSID appContainerSid;
     std::vector<SID_AND_ATTRIBUTES> capabilities;
@@ -128,7 +131,7 @@ bool AppContainer::Exectue()
         nullptr, nullptr,
         FALSE,
         EXTENDED_STARTUPINFO_PRESENT,
-        NULL, NULL,
+        NULL, m_workDir.c_str(),
         reinterpret_cast<LPSTARTUPINFOW>(&siex), &pi);
     ::CloseHandle(pi.hThread);
     ::CloseHandle(pi.hProcess);

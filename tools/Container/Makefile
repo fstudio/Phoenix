@@ -1,7 +1,7 @@
 #Makefile
 TARGET=Container.exe
 DBGTARGET=ContainerD.exe
-LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib
+LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib Shell32.lib
 CC=cl
 LD=link
 RC=rc
@@ -12,7 +12,7 @@ CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
 
 
 LDFLAGS=/NOLOGO -OPT:REF  
-OBJS=Precompiled.obj UACProcess.obj Host.obj AppContainer.obj
+OBJS=Container.obj ProcessLauncher.obj  AppContainer.obj Precompiled.obj  
 
 !IFDEF DEBUG
 CXXFLAGS=$(CXXFLAGS) $(CXXDEBUG)

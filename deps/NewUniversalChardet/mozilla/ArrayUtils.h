@@ -21,7 +21,7 @@
 namespace mozilla {
 
 template<typename T, size_t N>
-size_t
+inline size_t
 ArrayLength(T (&aArr)[N])
 {
   return N;

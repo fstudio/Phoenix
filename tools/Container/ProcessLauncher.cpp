@@ -1,22 +1,22 @@
-
+/*********************************************************************************************************
+* ProcessLauncher.cpp
+* Note: Phoenix Container Process Launcher
+* E-mail:<forcemz@outlook.com>
+* Data: @2015.03
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
+**********************************************************************************************************/
 #include "Precompiled.h"
 #include <string>
 #include <taskschd.h>
 #include <comdef.h>
 #include <Sddl.h>
 #include <string.h>
+#pragma warning(disable:4091)
+#include <ShlObj.h>
+#pragma warning(default:4091)
 #include "ContainerAPI.h"
+#include "AppContainer.hpp"
 
-//////////////////////////////////////////////////////////
-// Release COM reasource
-template <class Interface>
-inline void SafeRelease(Interface **ppInterfaceToRelease) {
-  if (*ppInterfaceToRelease != nullptr) {
-    (*ppInterfaceToRelease)->Release();
-
-    (*ppInterfaceToRelease) = nullptr;
-  }
-}
 #ifndef ASSERT
 #ifdef _DEBUG
 #include <assert.h>
@@ -32,13 +32,22 @@ inline void SafeRelease(Interface **ppInterfaceToRelease) {
 #define _tsizeof(s) (sizeof(s) / sizeof(s[0]))
 #endif //_tsizeof
 
+template <class Interface>
+inline void SafeRelease(Interface **ppInterfaceToRelease) {
+  if (*ppInterfaceToRelease != nullptr) {
+    (*ppInterfaceToRelease)->Release();
+
+    (*ppInterfaceToRelease) = nullptr;
+  }
+}
+
 #define DO(action)                                                             \
   if (FAILED( action )) {                                                        \
     ASSERT( FALSE );                                                             \
     goto ClenUp;                                                               \
   }
 
-HRESULT WINAPI TaskUACRunNonElevated(LPCWSTR pszPath, LPCWSTR pszParameters,
+HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath, LPCWSTR pszParameters,
                                      LPCWSTR pszDirectory) {
   // If Your User is Administrator (Windows Default) Task run dafault by
   // Administrator,So, user Explorer's Token <CreateProcessAsTokenW>
@@ -161,20 +170,14 @@ ClenUp:
   SafeRelease(&iRegisteredTask);
   return hr;
 }
-/*
-* HRESULT WINAPI CreateProcessWithShellToken();
-* @param:
-*  exePath
-*  cmdArgs
-*  workdir
-* startinfo
-* processinfo
-* @return Zero success
-*/
-HRESULT WINAPI
-CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
-                            _In_ LPCWSTR workDirectory, _In_ STARTUPINFOW &si,
-                            _Inout_ PROCESS_INFORMATION &pi) {
+
+HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  STARTUPINFOW si;
+  PROCESS_INFORMATION pi;
+  SecureZeroMemory(&si, sizeof(si));
+  SecureZeroMemory(&pi, sizeof(pi));
+  si.cb = sizeof(si);
   HANDLE hShellProcess = nullptr, hShellProcessToken = nullptr,
          hPrimaryToken = nullptr;
   HWND hwnd = nullptr;
@@ -271,11 +274,12 @@ cleanup:
   return hr;
 }
 
-BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
-  BOOL b;
+
+HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  BOOL bRet;
   HANDLE hToken;
   HANDLE hNewToken;
-  // PWSTR szProcessName = L"LowClient";
   PWSTR szIntegritySid = L"S-1-16-4096";
   PSID pIntegritySid = NULL;
   TOKEN_MANDATORY_LABEL TIL = {0};
@@ -284,74 +288,76 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   StartupInfo.cb=sizeof(STARTUPINFOW);
   ULONG ExitCode = 0;
 
-  b = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
-  if(!b)
-	  return FALSE;
-  b = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityImpersonation,
+  bRet = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
+  if(!bRet)
+    return 1;
+  bRet = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityImpersonation,
                        TokenPrimary, &hNewToken);
-  b = ConvertStringSidToSidW(szIntegritySid, &pIntegritySid);
+  bRet = ConvertStringSidToSidW(szIntegritySid, &pIntegritySid);
   TIL.Label.Attributes = SE_GROUP_INTEGRITY;
   TIL.Label.Sid = pIntegritySid;
   CloseHandle(hToken);
   // Set process integrity levels
-  b = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
+  bRet = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
                           sizeof(TOKEN_MANDATORY_LABEL) +
                               GetLengthSid(pIntegritySid));
 
   // Set process UI privilege level
   /*b = SetTokenInformation(hNewToken, TokenIntegrityLevel,
   &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
-  wchar_t *lpCmdLineT = _wcsdup(lpCmdLine);
+  wchar_t *lpCmdLine = _wcsdup(cmdArgs);
   // To create a new low-integrity processes
-  b = CreateProcessAsUserW(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
-                          NULL, NULL, &StartupInfo, &ProcInfo);
+  bRet = CreateProcessAsUserW(hNewToken, exePath, lpCmdLine, NULL, NULL, FALSE, 0,
+                          NULL, workDirectory, &StartupInfo, &ProcInfo);
   CloseHandle(hToken);
-  CloseHandle(hNewToken);  
+  CloseHandle(hNewToken);
   LocalFree(pIntegritySid);
-  free(lpCmdLineT);
-  return b;
+  free(lpCmdLine);
+  return bRet?S_OK:S_FALSE;
 }
 
-HRESULT WINAPI CreateProcessInvokeBase(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory,unsigned level)
+HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  AppContainer appContainer(std::wstring(exePath),std::wstring(cmdArgs),std::wstring(workDirectory),0);
+  bool bRet=appContainer.Execute();
+  return bRet?S_OK:S_FALSE;
+}
+
+HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory,unsigned level)
 {
     if(exePath==nullptr&&cmdArgs==nullptr)
         return S_FALSE;
     HRESULT hr=S_OK;
+    BOOL bAdmin=IsUserAnAdmin();
     switch(level){
-        case Phoenix::CONTAINER_STANDARD_RLEVEL:
+        case Phoenix::CONTAINER_INVOKER_RLEVEL:
         break;
-        case Phoenix::CONTAINER_GUEST_RLEVEL:
-        break;
-        case Phoenix::CONTAINER_LOW_RLEVEL:
-        break;
+        case Phoenix::CONTAINER_MANDATORY_INTEGRITY_CONTROL_RLEVEL:
+        return ProcessLauncherMIC(exePath,cmdArgs,workDirectory);
+        case Phoenix::CONTAINER_UAC_MEDIUM_RLEVEL:
+        {
+          if(bAdmin){
+            if(_waccess(exePath,04)!=0)
+              return -1;
+            return ProcessLauncherNonElevatedWithTaskSchd(exePath,cmdArgs,workDirectory);
+          }
+        }
+        case Phoenix::CONTAINER_APPCONTAINER_RLEVEL:
+        return ProcessLauncherWithAppContainer(exePath,cmdArgs,workDirectory);
         default:
-        return S_FALSE;
+        break;
     }
-
-    return hr;
+    return ProcessLauncherWithAppContainer(exePath,cmdArgs,workDirectory);
 }
 
 
-HRESULT WINAPI CreateProcessWithNonElevated(LPCWSTR exePath, LPCWSTR cmdArgs,
+HRESULT WINAPI ProcessLauncherWithNonElevated(LPCWSTR exePath, LPCWSTR cmdArgs,
                                             LPCWSTR workDirectory) {
-
-
   wchar_t userName[MAX_PATH] = {0};
   DWORD BufferSize = MAX_PATH;
   GetUserNameW(userName, &BufferSize);
   if (wcscmp(userName, L"Administrator") == 0) {
-    STARTUPINFOW si;
-    PROCESS_INFORMATION pi;
-    SecureZeroMemory(&si, sizeof(si));
-    SecureZeroMemory(&pi, sizeof(pi));
-    si.cb = sizeof(si);
-    HRESULT hr = S_OK;
-    if ((hr = CreateProcessWithShellToken(exePath, cmdArgs, workDirectory, si,
-                                          pi)) == S_OK) {
-      CloseHandle(pi.hProcess);
-      CloseHandle(pi.hThread);
-    }
-    return hr;
+    return ProcessLauncherExplorerLevel(exePath,cmdArgs,workDirectory);
   }
-  return TaskUACRunNonElevated(exePath, cmdArgs, workDirectory);
+  return ProcessLauncherNonElevatedWithTaskSchd(exePath, cmdArgs, workDirectory);
 }

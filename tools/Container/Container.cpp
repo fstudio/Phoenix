@@ -6,7 +6,17 @@
 
 const wchar_t *ContainerHostJobObject = L"Phoenix.Container.JobObject.APIv1\0";
 
-int UACLimit() { return 0; }
+bool RemoveContainerInstance(unsigned dwFlags)
+{
+  switch(dwFlags)
+  {
+    case 0:
+    break;
+    default:
+    break;
+  }
+  return true;
+}
 
 int ContainerInstance(std::wstring relFile, std::wstring cmdArgs) {
   if (PathFileExistsW(relFile.c_str()) != TRUE)
@@ -22,7 +32,8 @@ public:
   Container() {}
   bool Initialize() {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    return true;
+    bool bRet=AppContainer::AppContainerInitialize();
+    return bRet;
   }
   bool Execute(std::wstring appPath,std::wstring command)
   {
@@ -30,6 +41,7 @@ public:
   }
   bool Stop() {
     CoUninitialize();
+    bool bRet=AppContainer::AppContainerDelete(RemoveContainerInstance);
     return true;
   }
 };
