@@ -45,6 +45,8 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   // To create a new low-integrity processes
   b = CreateProcessAsUserW(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
                           NULL, NULL, &StartupInfo, &ProcInfo);
+  CloseHandle(hToken);
+  CloseHandle(hNewToken);
   LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;

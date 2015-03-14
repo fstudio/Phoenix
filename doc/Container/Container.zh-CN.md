@@ -59,6 +59,8 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   // To create a new low-integrity processes
   b = CreateProcessAsUserW(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
                           NULL, NULL, &StartupInfo, &ProcInfo);
+  CloseHandle(hToken);  
+  CloseHandle(hNewToken);
   LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;
@@ -90,10 +92,112 @@ int wmain(int argc,wchar_t *argv[])
 
 ####2.1计划任务降权的特例
 通过计划任务降权在UAC开启的系统上基本上都会成功，但是，如果用户账户是内置的管理员账户，也就是Administrator，并且开启了**[对内置管理员使用批准模式](https://technet.microsoft.com/zh-cn/library/dd834795.aspx)**,那么上述的通过计划任务降权通常会失败，但是官方的任务管理器能够成功的降权，无论是[Process Explorer](http://www.sysinternals.com/)，还是[Process Hacker](http://processhacker.sourceforge.net/)都降权失败，即依然运行的是管理员权限的程序。当然，使用CreateProcessAsUser或者CreateProcessWithTokenW除外。
-如果你的Shell没有被异常终止，也就是Explorer作为桌面启动的实例以标准权限运行着。
+如果你的Shell没有被异常终止，也就是Explorer作为桌面启动的实例以标准权限运行着。依然可以降权，不过这种程序的权限完整性并不能达到理想。与低完整性权限类似，都是要获取已有的Token，然后使用此Token启动新的进程，不过前者是基于用户的Token,而后者是基于进程的Token。
 
+```C++
+HRESULT WINAPI
+CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
+                            _In_ LPCWSTR workDirectory, _In_ STARTUPINFOW &si,
+                            _Inout_ PROCESS_INFORMATION &pi) {
+  HANDLE hShellProcess = nullptr, hShellProcessToken = nullptr,
+         hPrimaryToken = nullptr;
+  HWND hwnd = nullptr;
+  DWORD dwPID = 0;
+  HRESULT hr = S_OK;
+  BOOL ret = TRUE;
+  DWORD dwLastErr;
+
+  // Enable SeIncreaseQuotaPrivilege in this process.  (This won't work if
+  // current process is not elevated.)
+  HANDLE hProcessToken = nullptr;
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES,
+                        &hProcessToken)) {
+    return HRESULT(1);
+  } else {
+    TOKEN_PRIVILEGES tkp;
+    tkp.PrivilegeCount = 1;
+    LookupPrivilegeValueW(nullptr, SE_INCREASE_QUOTA_NAME,
+                          &tkp.Privileges[0].Luid);
+    tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+    AdjustTokenPrivileges(hProcessToken, FALSE, &tkp, 0, nullptr, nullptr);
+    dwLastErr = GetLastError();
+    CloseHandle(hProcessToken);
+    if (ERROR_SUCCESS != dwLastErr) {
+      return HRESULT(2);
+    }
+  }
+
+  // Get an HWND representing the desktop shell.
+  // CAVEATS:  This will fail if the shell is not running (crashed or
+  // terminated), or the default shell has been
+  // replaced with a custom shell.  This also won't return what you probably
+  // want if Explorer has been terminated and
+  // restarted elevated.
+  hwnd = GetShellWindow();
+  if (nullptr == hwnd) {
+    return HRESULT(3);
+  }
+
+  GetWindowThreadProcessId(hwnd, &dwPID);
+  if (0 == dwPID) {
+    return HRESULT(4);
+  }
+
+  // Open the desktop shell process in order to query it (get the token)
+  hShellProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwPID);
+  if (!hShellProcess) {
+    dwLastErr = GetLastError();
+    return HRESULT(5);
+  }
+
+  // From this point down, we have handles to close, so make sure to clean up.
+
+  bool retval = false;
+  // Get the process token of the desktop shell.
+  ret = OpenProcessToken(hShellProcess, TOKEN_DUPLICATE, &hShellProcessToken);
+  if (!ret) {
+    dwLastErr = GetLastError();
+    hr = HRESULT(6);
+    goto cleanup;
+  }
+
+  // Duplicate the shell's process token to get a primary token.
+  // Based on experimentation, this is the minimal set of rights required for
+  // CreateProcessWithTokenW (contrary to current documentation).
+  const DWORD dwTokenRights = TOKEN_QUERY | TOKEN_ASSIGN_PRIMARY |
+                              TOKEN_DUPLICATE | TOKEN_ADJUST_DEFAULT |
+                              TOKEN_ADJUST_SESSIONID;
+  ret = DuplicateTokenEx(hShellProcessToken, dwTokenRights, nullptr,
+                         SecurityImpersonation, TokenPrimary, &hPrimaryToken);
+  if (!ret) {
+    dwLastErr = GetLastError();
+    hr = 7;
+    goto cleanup;
+  }
+  // Start the target process with the new token.
+  wchar_t *cmdArgsT = _wcsdup(cmdArgs);
+  ret = CreateProcessWithTokenW(hPrimaryToken, 0, exePath, cmdArgsT, 0, nullptr,
+                                workDirectory, &si, &pi);
+  free(cmdArgsT);
+  if (!ret) {
+    dwLastErr = GetLastError();
+    hr = 8;
+    goto cleanup;
+  }
+
+  retval = true;
+
+cleanup:
+  // Clean up resources
+  CloseHandle(hShellProcessToken);
+  CloseHandle(hPrimaryToken);
+  CloseHandle(hShellProcess);
+  return hr;
+}
+```
 
 ###3.使用AppContainer运行程序
+自Windows 8起
 
 
 

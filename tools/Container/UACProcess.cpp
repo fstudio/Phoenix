@@ -292,7 +292,7 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   b = ConvertStringSidToSidW(szIntegritySid, &pIntegritySid);
   TIL.Label.Attributes = SE_GROUP_INTEGRITY;
   TIL.Label.Sid = pIntegritySid;
-
+  CloseHandle(hToken);
   // Set process integrity levels
   b = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
                           sizeof(TOKEN_MANDATORY_LABEL) +
@@ -305,6 +305,8 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
   // To create a new low-integrity processes
   b = CreateProcessAsUserW(hNewToken, NULL, lpCmdLineT, NULL, NULL, FALSE, 0,
                           NULL, NULL, &StartupInfo, &ProcInfo);
+  CloseHandle(hToken);
+  CloseHandle(hNewToken);  
   LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;
