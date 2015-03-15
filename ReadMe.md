@@ -1,28 +1,30 @@
 #Phoenix Editor
 next ....
 
-####Modern UI
+###Modern UI
 Design:
 ![Image](design/PhoenixUI.png)
 
 next ....
 
 
-####Plugin Subsystem.
+###Plugin Subsystem.
 Tiny C Compiler Support.
 
 C language Script
 
 
-####Build
+###Build
 PowerShell 
 
 next.... 
 
 
-####Install
+###Install
 next ....
 
+###Design Insider
+[Container](./doc/Container/Container.zh-CN.md)
 
 ####Copyright:
 Copyright &copy; 2015 ForceStudio. All Rights Reserved.
