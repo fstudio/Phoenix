@@ -284,7 +284,7 @@ HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDi
   PWSTR szIntegritySid = L"S-1-16-4096";
   PSID pIntegritySid = NULL;
   TOKEN_MANDATORY_LABEL TIL = {0};
-  PROCESS_INFORMATION ProcInfo = {0};
+  PROCESS_INFORMATION pi = {0};
   STARTUPINFOW StartupInfo = {0};
   StartupInfo.cb=sizeof(STARTUPINFOW);
   ULONG ExitCode = 0;
@@ -309,7 +309,9 @@ HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDi
   wchar_t *lpCmdLine = _wcsdup(cmdArgs);
   // To create a new low-integrity processes
   bRet = CreateProcessAsUserW(hNewToken, exePath, lpCmdLine, NULL, NULL, FALSE, 0,
-                          NULL, workDirectory, &StartupInfo, &ProcInfo);
+                          NULL, workDirectory, &StartupInfo, &pi);
+  ::CloseHandle(pi.hThread);
+  ::CloseHandle(pi.hProcess);
   CloseHandle(hToken);
   CloseHandle(hNewToken);
   LocalFree(pIntegritySid);

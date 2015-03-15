@@ -61,6 +61,8 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
                           NULL, NULL, &StartupInfo, &ProcInfo);
   CloseHandle(hToken);  
   CloseHandle(hNewToken);
+  CloseHandle(ProcInfo.hThread);
+  CloseHandle(ProcInfo.hProcess);
   LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;
@@ -294,6 +296,8 @@ int wmain(int argc,wchar_t *argv[])
 通过计划任务降权在UAC开启的系统上基本上都会成功，但是，如果用户账户是内置的管理员账户，也就是Administrator，并且开启了**[对内置管理员使用批准模式](https://technet.microsoft.com/zh-cn/library/dd834795.aspx)**,那么上述的通过计划任务降权通常会失败，但是官方的任务管理器能够成功的降权，无论是[Process Explorer](http://www.sysinternals.com/)，还是[Process Hacker](http://processhacker.sourceforge.net/)都降权失败，即依然运行的是管理员权限的程序。当然，使用CreateProcessAsUser或者CreateProcessWithTokenW除外。
 如果你的Shell没有被异常终止，也就是Explorer作为桌面启动的实例以标准权限运行着。依然可以降权，不过这种程序的权限完整性并不能达到理想。与低完整性权限类似，都是要获取已有的Token，然后使用此Token启动新的进程，不过前者是基于用户的Token,而后者是基于进程的Token。
 
+其中[WELL_KNOWN_SID_TYPE](https://msdn.microsoft.com/zh-cn/windows/desktop/aa379650)可以在MSDN上找到
+
 ```C++
 HRESULT WINAPI
 CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
@@ -384,7 +388,8 @@ CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
     hr = 8;
     goto cleanup;
   }
-
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
   retval = true;
 
 cleanup:
@@ -397,7 +402,7 @@ cleanup:
 ```
 
 ###3.使用AppContainer运行程序
-自Windows 8起
+自Windows 8起，微软推出了Windows Store,而Store应用程序运行在容器之中，权限被降低，同是微软也为传统的Desktop应用程序提供了一系列的API来创建一个AppContainer，并且使进程在AppContainer中启动。比如使用CreateAppContainerProfile创建一个容器SID，使用DeleteAppContainerProfile查找一个已知容器名的SID，删除一个容器DeleteAppContainerProfile配置文件。GetAppContainerFolderPath 获得容器目录。
 
 ```C++
 #include <vector>
@@ -434,14 +439,10 @@ bool SetCapability(const WELL_KNOWN_SID_TYPE type, std::vector<SID_AND_ATTRIBUTE
   sidList.push_back(capabilitySid);
   return true;
 }
-bool AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
+
+static bool MakeWellKnownSIDAttributes(std::vector<SID_AND_ATTRIBUTES> &capabilities,std::vector<SHARED_SID> &capabilitiesSidList)
 {
-    wchar_t appContainerName[]=L"Phoenix.Container.AppContainer.Profile.v1.Test";
-    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.v1.Test\0";
-    wchar_t appContainerDesc[]=L"Phoenix Container Default AppContainer Profile Test ,Revision 1\0";
-	DeleteAppContainerProfile(appContainerName);///Remove this AppContainerProfile
-    std::vector<SID_AND_ATTRIBUTES> capabilities;
-    std::vector<SHARED_SID> capabilitiesSidList;
+
     const WELL_KNOWN_SID_TYPE capabilitiyTypeList[] = {
         WinCapabilityInternetClientSid, WinCapabilityInternetClientServerSid, WinCapabilityPrivateNetworkClientServerSid,
         WinCapabilityPicturesLibrarySid, WinCapabilityVideosLibrarySid, WinCapabilityMusicLibrarySid,
@@ -453,13 +454,29 @@ bool AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
             return false;
         }
     }
+    return true;
+}
+
+
+HRESULT AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
+{
+    wchar_t appContainerName[]=L"Phoenix.Container.AppContainer.Profile.v1.test";
+    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.v1.test\0";
+    wchar_t appContainerDesc[]=L"Phoenix Container Default AppContainer Profile  Test,Revision 1\0";
+	DeleteAppContainerProfile(appContainerName);///Remove this AppContainerProfile
+    std::vector<SID_AND_ATTRIBUTES> capabilities;
+    std::vector<SHARED_SID> capabilitiesSidList;
+    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList))
+        return S_FALSE;
     PSID sidImpl;
     HRESULT hr=::CreateAppContainerProfile(appContainerName,
         appContainerDisplayName,
         appContainerDesc,
         (capabilities.empty() ? NULL : &capabilities.front()), capabilities.size(), &sidImpl);
-    if(hr!=S_OK)
-        return false;
+    if(hr!=S_OK){
+		std::cout<<"CreateAppContainerProfile Failed"<<std::endl;
+		return hr;
+	}
 	wchar_t *psArgs=nullptr;
     psArgs=_wcsdup(cmdArgs);
     PROCESS_INFORMATION pi;
@@ -492,7 +509,7 @@ Cleanup:
 	DeleteAppContainerProfile(appContainerName);
     free(psArgs);
     FreeSid(sidImpl);
-    return true;
+    return hr;
 }
 
 int wmain(int argc,wchar_t *argv[])
@@ -505,10 +522,10 @@ int wmain(int argc,wchar_t *argv[])
 }
 ```
 同样的打开Process Explorer安全属性如下：
-![appContainer](./Images/appcontainer.png)
-打开一个文件，如下：
-![appconatiner-open](./Images/appcontainer-open.png)
-
+![appContainer](./Images/appcontainer.png)  
+打开文件，由于默认打开**我的文档**，而在创建AppContainer时，将我的文档添加到拒绝权限，也就是WinCapabilityDocumentsLibrarySid，所以无法打开**我的文档**，出现如下提示：
+![appconatiner-open](./Images/appcontainer-open.png)  
+根据自己所需对权限进行细粒度的设置。
 
 ###备注
 开启 对内置管理员的批准模式

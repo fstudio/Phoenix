@@ -47,6 +47,8 @@ BOOL WINAPI CreateLowLevelProcess(LPCWSTR lpCmdLine) {
                           NULL, NULL, &StartupInfo, &ProcInfo);
   CloseHandle(hToken);
   CloseHandle(hNewToken);
+  CloseHandle(ProcInfo.hThread);
+  CloseHandle(ProcInfo.hProcess);
   LocalFree(pIntegritySid);
   free(lpCmdLineT);
   return b;

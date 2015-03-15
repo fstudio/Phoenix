@@ -32,14 +32,10 @@ bool SetCapability(const WELL_KNOWN_SID_TYPE type, std::vector<SID_AND_ATTRIBUTE
   sidList.push_back(capabilitySid);
   return true;
 }
-bool AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
+
+static bool MakeWellKnownSIDAttributes(std::vector<SID_AND_ATTRIBUTES> &capabilities,std::vector<SHARED_SID> &capabilitiesSidList)
 {
-    wchar_t appContainerName[]=L"Phoenix.Container.AppContainer.Profile.v1.test";
-    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.v1.test\0";
-    wchar_t appContainerDesc[]=L"Phoenix Container Default AppContainer Profile  Test,Revision 1\0";
-	DeleteAppContainerProfile(appContainerName);///Remove this AppContainerProfile
-    std::vector<SID_AND_ATTRIBUTES> capabilities;
-    std::vector<SHARED_SID> capabilitiesSidList;
+
     const WELL_KNOWN_SID_TYPE capabilitiyTypeList[] = {
         WinCapabilityInternetClientSid, WinCapabilityInternetClientServerSid, WinCapabilityPrivateNetworkClientServerSid,
         WinCapabilityPicturesLibrarySid, WinCapabilityVideosLibrarySid, WinCapabilityMusicLibrarySid,
@@ -51,13 +47,29 @@ bool AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
             return false;
         }
     }
+    return true;
+}
+
+
+HRESULT AppContainerLauncherProcess(LPCWSTR app,LPCWSTR cmdArgs,LPCWSTR workDir)
+{
+    wchar_t appContainerName[]=L"Phoenix.Container.AppContainer.Profile.v1.test";
+    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.v1.test\0";
+    wchar_t appContainerDesc[]=L"Phoenix Container Default AppContainer Profile  Test,Revision 1\0";
+	DeleteAppContainerProfile(appContainerName);///Remove this AppContainerProfile
+    std::vector<SID_AND_ATTRIBUTES> capabilities;
+    std::vector<SHARED_SID> capabilitiesSidList;
+    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList))
+        return S_FALSE;
     PSID sidImpl;
     HRESULT hr=::CreateAppContainerProfile(appContainerName,
         appContainerDisplayName,
         appContainerDesc,
         (capabilities.empty() ? NULL : &capabilities.front()), capabilities.size(), &sidImpl);
-    if(hr!=S_OK)
-        return false;
+    if(hr!=S_OK){
+		std::cout<<"CreateAppContainerProfile Failed"<<std::endl;
+		return hr;
+	}
 	wchar_t *psArgs=nullptr;
     psArgs=_wcsdup(cmdArgs);
     PROCESS_INFORMATION pi;
@@ -90,7 +102,7 @@ Cleanup:
 	DeleteAppContainerProfile(appContainerName);
     free(psArgs);
     FreeSid(sidImpl);
-    return true;
+    return hr;
 }
 
 int wmain(int argc,wchar_t *argv[])
