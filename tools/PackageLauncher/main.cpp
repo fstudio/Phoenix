@@ -10,6 +10,12 @@
 #include <Windows.h>
 #include <libWrapper.h>
 
+#ifdef _WIN64
+#pragma comment(lib,"libtcc32.lib")
+#else
+#pragma comment(lib,"libtcc64.lib")
+#endif
+
 bool GetDefaultSearchFolder(char *outdir)
 {
     return false;

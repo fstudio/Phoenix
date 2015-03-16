@@ -73,7 +73,7 @@ HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath, LPCWSTR p
   IExecAction *iExecAction = nullptr;
   IRegisteredTask *iRegisteredTask = nullptr;
 
-  LPCWSTR pszTaskName = L"Phoenix.Container-CreateNonElevatedProcess-Task-APIv1";
+  LPCWSTR pszTaskName = L"Phoenix.Container-ProcessLauncherNonElevatedWithTaskSchd-Task-APIv1";
 
   DO(hr = CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,IID_ITaskService, (void **)&iTaskService));
   //WCHAR szError=

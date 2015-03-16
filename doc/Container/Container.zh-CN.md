@@ -1,4 +1,5 @@
 #Phoenix 插件容器介绍
+Windows系统自Vista以来，在安全性上取得了长足的进步。当然，如果用户执意关闭UAC，去使用的是类似XP的安全策略，那么，UAC的意义将得不到体现。  
 
 
 ###1.启动低完整性进程
@@ -289,14 +290,13 @@ int wmain(int argc,wchar_t *argv[])
 }
 
 ```
+计划任务降权过程比较麻烦，需要调用十几个接口，并且每一步都是正确执行，最后才能成功的启动程序。
 使用Process Explorer 查看属性，发现是由taskhostex（）启动,并且Autostart Location显示为计划任务的名称。
 ![Images](./Images/taskschdlauncher.png)
 
 ####2.1计划任务降权的特例
 通过计划任务降权在UAC开启的系统上基本上都会成功，但是，如果用户账户是内置的管理员账户，也就是Administrator，并且开启了**[对内置管理员使用批准模式](https://technet.microsoft.com/zh-cn/library/dd834795.aspx)**,那么上述的通过计划任务降权通常会失败，但是官方的任务管理器能够成功的降权，无论是[Process Explorer](http://www.sysinternals.com/)，还是[Process Hacker](http://processhacker.sourceforge.net/)都降权失败，即依然运行的是管理员权限的程序。当然，使用CreateProcessAsUser或者CreateProcessWithTokenW除外。
 如果你的Shell没有被异常终止，也就是Explorer作为桌面启动的实例以标准权限运行着。依然可以降权，不过这种程序的权限完整性并不能达到理想。与低完整性权限类似，都是要获取已有的Token，然后使用此Token启动新的进程，不过前者是基于用户的Token,而后者是基于进程的Token。
-
-其中[WELL_KNOWN_SID_TYPE](https://msdn.microsoft.com/zh-cn/windows/desktop/aa379650)可以在MSDN上找到
 
 ```C++
 HRESULT WINAPI
@@ -523,9 +523,9 @@ int wmain(int argc,wchar_t *argv[])
 ```
 同样的打开Process Explorer安全属性如下：
 ![appContainer](./Images/appcontainer.png)  
-打开文件，由于默认打开**我的文档**，而在创建AppContainer时，将我的文档添加到拒绝权限，也就是WinCapabilityDocumentsLibrarySid，所以无法打开**我的文档**，出现如下提示：
+打开文件，由于默认打开*我的文档*，而在创建AppContainer时，将我的文档添加到拒绝权限，也就是WinCapabilityDocumentsLibrarySid，所以无法打开*我的文档*，出现如下提示：
 ![appconatiner-open](./Images/appcontainer-open.png)  
-根据自己所需对权限进行细粒度的设置。
+根据自己所需对权限进行细粒度的设置。其中[WELL_KNOWN_SID_TYPE](https://msdn.microsoft.com/zh-cn/windows/desktop/aa379650)可以在MSDN上找到。
 
 ###备注
 开启 对内置管理员的批准模式

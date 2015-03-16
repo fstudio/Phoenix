@@ -38,7 +38,7 @@ struct SID_AND_ATTRIBUTES {
 } 
 alias SID_AND_ATTRIBUTES *PSID_AND_ATTRIBUTES;
 
-enum { 
+enum WELL_KNOWN_SID_TYPE{ 
   WinNullSid                                   = 0,
   WinWorldSid                                  = 1,
   WinLocalSid                                  = 2,

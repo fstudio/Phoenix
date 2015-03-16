@@ -73,7 +73,7 @@ static bool IniResolveFileAccess(const std::string &path)
     if ( (attr_data.dwFileAttributes & FILE_ATTRIBUTE_READONLY) && 2 ) {
         return false;
     }
-    return false;
+    return true;
 }
 
 ////
