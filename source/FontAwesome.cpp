@@ -9,12 +9,7 @@
 #include <Windows.h>
 #include <Wingdi.h>
 #include "FontAwesome.hpp"
-#include <d2d1.h>
-#include <dwrite.h>
-#include <Strsafe.h>
-
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib,"dwrite.lib")
+#include "Direct2D.hpp"
 
 
 #define AWESOMEFONTNAME L"FontAwesome"
