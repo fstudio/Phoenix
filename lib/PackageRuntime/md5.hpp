@@ -1,6 +1,6 @@
 #ifndef MD5_H
 #define MD5_H
-
+#include <Runtime/MD5.h>
 #include <string>
 
 /**
@@ -12,7 +12,7 @@ std::string md5sum(const void* dat, size_t len);
  * Return Calculated raw result(always little-endian), the size is always 16.
  * @out Output result.
  */
-void md5bin(const void* dat, size_t len, unsigned char out[16]);
+//void md5bin(const void* dat, size_t len, unsigned char out[16]);
 
 /**
  * Generate shorter md5sum by something like base62

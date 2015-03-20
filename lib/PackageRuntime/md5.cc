@@ -300,7 +300,7 @@ string md5sum(const void* dat, size_t len) {
     return res;
 }
 
-void md5bin(const void* dat, size_t len, unsigned char out[16]) {
+extern "C" PKGEXTERN void md5bin(const void* dat, size_t len, unsigned char out[16]) {
     MD5_CTX c;
     MD5_Init(&c);
     MD5_Update(&c, dat, len);

@@ -25,6 +25,9 @@ JSONResolveGetKV
 JSONResolveNew
 JSONResolveNewEx
 PackageRuntimeStandardRequest
+ReferenceDestory
+ReferenceInitialize
+ReferencePush
 RequestBufferFree
 RequestCreateNew
 RequestFree
@@ -39,6 +42,7 @@ XmlResolveNew
 getopt
 getopt_long
 getopt_long_only
+md5bin
 optarg
 optind
 optreset
