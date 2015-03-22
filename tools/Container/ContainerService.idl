@@ -1,0 +1,11 @@
+[
+uuid("70316D8E-FDA6-45C0-BBAA-CB6DB0263BC0"),
+version(1.0)
+]
+
+interface ContainerServiceRPC
+{
+
+     void Send([in,string]const wchar_t * psz);
+     void Shutdown(void);
+}

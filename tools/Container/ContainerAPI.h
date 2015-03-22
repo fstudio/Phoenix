@@ -35,5 +35,7 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,
 HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath,
     LPCWSTR pszParameters,
     LPCWSTR pszDirectory);
+bool LauncherSelfWithNonElevated();
+int LauncherContainerStatChecker();
 
 #endif

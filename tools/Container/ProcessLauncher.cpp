@@ -11,9 +11,6 @@
 #include <comdef.h>
 #include <Sddl.h>
 #include <string.h>
-#pragma warning(disable:4091)
-#include <ShlObj.h>
-#pragma warning(default:4091)
 #include "ContainerAPI.h"
 #include "AppContainer.hpp"
 

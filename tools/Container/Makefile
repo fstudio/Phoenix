@@ -12,7 +12,9 @@ CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
 
 
 LDFLAGS=/NOLOGO -OPT:REF  
-OBJS=Container.obj ProcessLauncher.obj  AppContainer.obj Precompiled.obj  
+OBJS=Container.obj ProcessLauncher.obj  AppContainer.obj ContainerStatus.obj ContainerService.obj Precompiled.obj  
+RPCGENFILE=ContainerService_c.c ContainerService_s.c ContainerService.h
+
 
 !IFDEF DEBUG
 CXXFLAGS=$(CXXFLAGS) $(CXXDEBUG)
@@ -34,7 +36,10 @@ Container.res:
 {.}.cpp.obj::
 	$(CC) $(CXXFLAGS) -c $<
 	
+##RPC MDI Auto
+RPCGEN:
+	midl ContainerService.idl
 
 clean:
-	-del *.obj *.res *.exe
+	-del *.obj *.res *.exe $(RPCGENFILE)
 

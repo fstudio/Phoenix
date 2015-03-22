@@ -3,6 +3,7 @@
 #include "ContainerAPI.h"
 #include "AppContainer.hpp"
 #include <string>
+#include <vector>
 
 const wchar_t *ContainerHostJobObject = L"Phoenix.Container.JobObject.APIv1\0";
 
@@ -27,7 +28,7 @@ int ContainerInstance(std::wstring relFile, std::wstring cmdArgs) {
 class Container {
 private:
   unsigned Id;
-
+  ///std::vector<int> idvector;
 public:
   Container() {}
   bool Initialize() {
@@ -62,6 +63,9 @@ int wmian(int argc,wchar_t** argv)
 #else
 
 int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+  int ret=0;
+  if((ret=LauncherContainerStatChecker())!=0)
+    return ret;
   Container container;
   HRESULT hr=S_OK;
   if (!container.Initialize())
