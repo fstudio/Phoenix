@@ -12,9 +12,9 @@
 int ContainerServiceInitialize()
 {
         RpcServerUseProtseqEpW(
-         L"ncalrpc",
+         (RPC_WSTR)L"ncalrpc",
          RPC_C_PROTSEQ_MAX_REQS_DEFAULT,
-         L"Phoenix_Container_RPC_Service",
+         (RPC_WSTR)L"Phoenix_Container_RPC_Service",
          NULL);
     //RpcServerRegisterIf(HelloWorld_v1_0_s_ifspec, NULL, NULL);
     RpcServerRegisterIfEx(
@@ -28,6 +28,30 @@ int ContainerServiceInitialize()
     return 0;
 }
 
+/* [async] */
+void  Launcher(
+    /* [in] */ PRPC_ASYNC_STATE Launcher_AsyncHandle,
+    /* [unique][in] */ LPCWSTR pszPath,
+    /* [unique][in] */ LPCWSTR pszArgs,
+    /* [unique][in] */ LPCWSTR pszWorkdir)
+{
+     RpcAsyncCompleteCall(Launcher_AsyncHandle, NULL);
+}
+int ContainerRunner(
+    LPCWSTR pszPath,
+    LPCWSTR pszArgs,
+    LPCWSTR pszWorkdir)
+{
+	if(pszPath||pszArgs)
+	{
+		///
+	}
+	return 0;
+}
+int Kill(LPCWSTR pszApp)
+{
+    return 0;
+}
 void ServiceDestory(void)
 {
     RpcMgmtStopServerListening(NULL);

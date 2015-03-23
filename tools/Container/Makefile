@@ -1,7 +1,7 @@
 #Makefile
 TARGET=Container.exe
 DBGTARGET=ContainerD.exe
-LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib Shell32.lib Userenv.lib
+LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib Shell32.lib Userenv.lib Rpcrt4.lib
 CC=cl
 LD=link
 RC=rc
@@ -30,8 +30,8 @@ CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
 
 all:$(TARGET) $(LIBCONTAINER)
 
-$(TARGET):Container.res $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) Container.res -OUT:$@ $(LIBS)
+$(TARGET):Container.res ContainerService_s.obj ContainerService.obj $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) ContainerService_s.obj ContainerService.obj Container.res -OUT:$@ $(LIBS)
 
 Container.res:
 	$(RC) Container.rc
