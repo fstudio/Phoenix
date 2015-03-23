@@ -1,11 +1,31 @@
+//+------------------------------------------------------------------------------------------------------
+// ContainerService.idl
+// Note: Phoenix Container
+// E-mail:<forcemz@outlook.com>
+// Data: @2015.03
+// Copyright (C) 2015 The ForceStudio All Rights Reserved.
+//+------------------------------------------------------------------------------------------------------
+cpp_quote("//+----------------------------------------------------------------------------------------------------------------------------")
+cpp_quote("//  Phoenix Container Service")
+cpp_quote("//  Note: Container Service RPC<LPC> module")
+cpp_quote("//  E-mail:<forcemz@outlook.com>")
+cpp_quote("//  Copyright (C) 2015 The ForceStudio All Rights Reserved..")
+cpp_quote("//")
+cpp_quote("//------------------------------------------------------------------------------------------------------------------------------")
+
+import "wtypesbase.idl";
+
 [
-uuid("70316D8E-FDA6-45C0-BBAA-CB6DB0263BC0"),
-version(1.0)
+uuid("97EE2EF1-A1CA-4620-BB6F-DD56A5E8302F"),
+helpstring("Phoenix Container Service"),
+version(1.0),pointer_default(unique),
 ]
 
 interface ContainerServiceRPC
 {
 
-     void Send([in,string]const wchar_t * psz);
-     void Shutdown(void);
+     void Launcher([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+     int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+     int Kill([in,unique] LPCWSTR pszApp);
+     void ServiceDestory();
 }

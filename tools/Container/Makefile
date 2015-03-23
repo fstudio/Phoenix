@@ -5,16 +5,19 @@ LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Adv
 CC=cl
 LD=link
 RC=rc
-CFLAGS=-nologo  -DUNICODE -D_UNICODE -TC -W3 
+AR=lib
+CFLAGS=-nologo  -DUNICODE -D_UNICODE -TC -W3
 CXXFLAGS=-nologo  -DUNICODE -D_UNICODE -TP  -W4 -EHsc -Zc:forScope -Zc:wchar_t
 CXXDEBUG=-Od -MTd -DDEBUG
-CXXNDEBUG=-O1 -Oi -MT -DNDEBUG 
+CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
 
 
-LDFLAGS=/NOLOGO -OPT:REF  
-OBJS=Container.obj ProcessLauncher.obj  AppContainer.obj ContainerStatus.obj ContainerService.obj Precompiled.obj  
+LDFLAGS=/NOLOGO -OPT:REF
+OBJS=Container.obj ProcessLauncher.obj  AppContainer.obj ContainerStatus.obj ContainerServiceHub.obj Precompiled.obj
 RPCGENFILE=ContainerService_c.c ContainerService_s.c ContainerService.h
-
+###This libcontainer.lib
+LIBCONTAINEROBJ=ContainerService_c.obj ContainerLPCClient.obj
+LIBCONTAINER=libcontainer.lib
 
 !IFDEF DEBUG
 CXXFLAGS=$(CXXFLAGS) $(CXXDEBUG)
@@ -25,7 +28,7 @@ CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
 !ENDIF
 
 
-all:$(TARGET)
+all:$(TARGET) $(LIBCONTAINER)
 
 $(TARGET):Container.res $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) Container.res -OUT:$@ $(LIBS)
@@ -35,11 +38,21 @@ Container.res:
 
 {.}.cpp.obj::
 	$(CC) $(CXXFLAGS) -c $<
-	
-##RPC MDI Auto
-RPCGEN:
+
+{.}.c.obj::
+	$(CC) $(CFLAGS) -c $<
+
+$(LIBCONTAINER):$(LIBCONTAINEROBJ)
+	$(AR) $(LIBCONTAINEROBJ) -out:$@
+
+$(LIBCONTAINEROBJ):ContainerLPCClient.cc $(RPCGENFILE)
+	$(CC) $(CXXFLAGS) -c ContainerLPCClient.cc
+	$(CC) $(CFLAGS) -c ContainerService_c.c
+
+#Auto Gen RPC File
+$(RPCGENFILE):
 	midl ContainerService.idl
 
 clean:
-	-del *.obj *.res *.exe $(RPCGENFILE)
+	-del *.obj *.res *.exe *.lib $(RPCGENFILE)
 

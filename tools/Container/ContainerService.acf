@@ -1,8 +1,8 @@
-[  
-     implicit_handle(handle_t    ContainerServiceRPC_Binding)  
-]  
+[
+     implicit_handle(handle_t    ContainerServiceRPC_Binding)
+]
 
 interface ContainerServiceRPC
 {
-
+     [async] Launcher();
 }
