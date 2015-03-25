@@ -28,4 +28,4 @@ interface ContainerServiceRPC
      int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
      int Kill([in,unique] LPCWSTR pszApp);
      void ServiceDestory();
-}
+};
