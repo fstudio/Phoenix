@@ -7,10 +7,22 @@
 **********************************************************************************************************/
 #include "Precompiled.h"
 #include "ContainerAPI.h"
+#include <map>
+
+BOOL KillProcess(DWORD ProcessId)
+{
+    HANDLE hProcess=OpenProcess(PROCESS_TERMINATE,FALSE,ProcessId);
+    if(hProcess==NULL)
+        return FALSE;
+    if(!TerminateProcess(hProcess,0))
+        return FALSE;
+    return TRUE;
+}
 
 
 class ContainerService{
 private:
+    std::map<unsigned, unsigned> taskMap;
     bool BindPorts()
     {
         return true;
@@ -23,6 +35,14 @@ public:
     static bool ContainerServiceStart()
     {
         return 0;
+    }
+    void ContainerServiceDestory()
+    {
+        //
+        for(auto i:taskMap)
+        {
+            KillProcess(i.first);
+        }
     }
 };
 

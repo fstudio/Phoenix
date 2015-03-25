@@ -8,9 +8,21 @@
 #ifndef CONTAINER_LPC_CLIENT_API_HPP
 #define CONTAINER_LPC_CLIENT_API_HPP
 #include <Windows.h>
+#include <functional>
 
-int WINAPI LauncherWithLPC(LPCWSTR pszApp,
-    LPCWSTR pszArgs,
-    LPCWSTR pszDir);
+
+class ContainerRpcManager{
+private:
+    bool RpcInit;
+public:
+    ContainerRpcManager();
+    ~ContainerRpcManager();
+    int Launcher(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
+    int Runner(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
+    int ProcessKill(LPCWSTR pszApp);
+    void Destory();
+    bool getStatus(){return this->RpcInit;}
+};
+
 
 #endif

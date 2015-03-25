@@ -48,7 +48,7 @@ int ContainerRunner(
 	}
 	return 0;
 }
-int Kill(LPCWSTR pszApp)
+int ProcessKill(LPCWSTR pszApp)
 {
     return 0;
 }
