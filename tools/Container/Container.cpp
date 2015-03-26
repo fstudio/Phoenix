@@ -74,8 +74,9 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     return ret;
   Container container;
   HRESULT hr=S_OK;
-  if (!container.Initialize())
+  if (!container.Initialize()){
     return -1;
+  }
   /*HRESULT hr = CreateProcessWithNonElevated(
       L"C:/Windows/System32/WindowsPowerShell/v1.0/powershell_ise.exe", nullptr,
       nullptr);*/

@@ -10,6 +10,7 @@
 #ifndef _WINDOWS_
 #include <Windows.h>
 #endif
+#include <stdio.h>
 
 namespace Phoenix {
 enum CONTAINER_PROCESS_RUNLEVEL {
@@ -37,5 +38,12 @@ HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath,
     LPCWSTR pszDirectory);
 bool LauncherSelfWithNonElevated();
 int LauncherContainerStatChecker();
+
+bool InitializeLogger();
+void LoggerDestory();
+void LogOut(FILE *fp,const wchar_t* format,...);
+void LogOutDefault(const wchar_t* format,...);
+
+
 
 #endif
