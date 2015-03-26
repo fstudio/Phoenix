@@ -3,6 +3,8 @@
 #include <string>
 #include "JobManager.hpp"
 
+const wchar_t *ContainerHostJobObject = L"Phoenix.Container.JobObject.APIv1\0";
+
 JobManager::JobManager() : jobhandle(nullptr) {}
 
 JobManager::~JobManager() {

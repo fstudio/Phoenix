@@ -6,8 +6,11 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Precompiled.h"
+#include <string>
+#include <vector>
 #include "ContainerAPI.h"
-#include <map>
+#include "AppContainer.hpp"
+#include "ContainerServiceHub.hpp"
 
 BOOL KillProcess(DWORD ProcessId)
 {
@@ -20,39 +23,87 @@ BOOL KillProcess(DWORD ProcessId)
 }
 
 
-class ContainerService{
+bool RemoveContainerInstance(unsigned dwFlags)
+{
+  switch(dwFlags)
+  {
+    case 0:
+    break;
+    default:
+    break;
+  }
+  return true;
+}
+
+int ContainerInstance(std::wstring relFile, std::wstring cmdArgs) {
+  if (PathFileExistsW(relFile.c_str()) != TRUE)
+    return -1;
+  return 0;
+}
+
+class Container {
 private:
-    std::map<unsigned, unsigned> taskMap;
-    bool BindPorts()
-    {
-        return true;
-    }
+  unsigned Id;
+  ///std::vector<int> idvector;
 public:
-    ContainerService()
-    {
-        //
-    }
-    static bool ContainerServiceStart()
-    {
-        return 0;
-    }
-    void ContainerServiceDestory()
-    {
-        //
-        for(auto i:taskMap)
-        {
-            KillProcess(i.first);
-        }
-    }
+  Container() {}
+  bool Initialize() {
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+    bool bRet=AppContainer::AppContainerInitialize();
+    return bRet;
+  }
+  bool Stop() {
+    CoUninitialize();
+    bool bRet=AppContainer::AppContainerDelete(RemoveContainerInstance);
+    return true;
+  }
 };
 
-DWORD ContainerServiceManagerThread(LPVOID lParam)
+
+DWORD ContainerRPCService(LPVOID)
 {
-    if(lParam==nullptr)
+    if(ContainerRemoteProcedureCall())
         return 1;
-    ContainerService *sevice=reinterpret_cast<ContainerService *>(lParam);
     return 0;
 }
 
 
 
+ContainerService::ContainerService()
+{
+    ///
+}
+bool ContainerService::Execute()
+{
+    Container container;
+    bool bRet=true;
+    if(!container.Initialize())
+        return false;
+    DWORD tId;
+    HANDLE hThread=CreateThread(NULL, 0, ContainerRPCService, nullptr, 0, &tId);
+    if(!hThread)
+    {
+        container.Stop();
+        return false;
+    }
+    bRet=Manager(tId);
+    container.Stop();
+    return bRet;
+}
+
+bool ContainerService::Manager(unsigned id){
+    while(true)
+    {
+        Sleep(200);
+    }
+    return true;
+}
+
+void ContainerService::Destory()
+{
+        //
+    for(auto i:taskMap)
+    {
+        KillProcess(i.first);
+    }
+}

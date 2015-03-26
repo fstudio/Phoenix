@@ -6,10 +6,9 @@
 // Copyright (C) 2015 The ForceStudio All Rights Reserved.
 //+------------------------------------------------------------------------------------------------------
 #include "ContainerService.h"
+#include "ContainerAPI.h"
 
-
-
-int ContainerServiceInitialize()
+int ContainerRemoteProcedureCall()
 {
         RpcServerUseProtseqEpW(
          (RPC_WSTR)L"ncalrpc",
@@ -42,11 +41,7 @@ int ContainerRunner(
     LPCWSTR pszArgs,
     LPCWSTR pszWorkdir)
 {
-	if(pszPath||pszArgs)
-	{
-		///
-	}
-	return 0;
+    return (int)ProcessLauncherWithAppContainer(pszPath,pszArgs,pszWorkdir);
 }
 int ProcessKill(LPCWSTR pszApp)
 {

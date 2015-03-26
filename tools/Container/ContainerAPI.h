@@ -30,6 +30,9 @@ HRESULT WINAPI ProcessLauncherWithNonElevated(LPCWSTR exePath,
 HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,
     LPCWSTR cmdArgs,
     LPCWSTR workDirectory);
+HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,
+   LPCWSTR cmdArgs,
+   LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,
     LPCWSTR cmdArgs,
     LPCWSTR workDirectory);
@@ -44,6 +47,6 @@ void LoggerDestory();
 void LogOut(FILE *fp,const wchar_t* format,...);
 void LogOutDefault(const wchar_t* format,...);
 
-
+int ContainerRemoteProcedureCall();
 
 #endif
