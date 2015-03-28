@@ -19,6 +19,7 @@ private:
     std::wstring m_Args;
     std::wstring m_workDir;
     unsigned m_dwFlags;
+    unsigned taskId;
 protected:
     static wchar_t appContainerName[64];
 public:
@@ -27,6 +28,9 @@ public:
     static bool AppContainerDelete(std::function<bool(unsigned)> responseTask);
     AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags=0);
     bool Execute();
+    unsigned GetAppContainerTaskId(){
+        return this->taskId;
+    }
 };
 
 #endif

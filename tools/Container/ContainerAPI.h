@@ -11,6 +11,7 @@
 #include <Windows.h>
 #endif
 #include <stdio.h>
+#include <string>
 
 namespace Phoenix {
 enum CONTAINER_PROCESS_RUNLEVEL {
@@ -21,24 +22,35 @@ enum CONTAINER_PROCESS_RUNLEVEL {
 };
 }
 HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,
-    LPCWSTR cmdArgs,
-    LPCWSTR workDirectory,
-    unsigned level);
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory,
+  unsigned level);
 HRESULT WINAPI ProcessLauncherWithNonElevated(LPCWSTR exePath,
-    LPCWSTR cmdArgs,
-    LPCWSTR workDirectory);
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,
-    LPCWSTR cmdArgs,
-    LPCWSTR workDirectory);
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,
-   LPCWSTR cmdArgs,
-   LPCWSTR workDirectory);
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,
-    LPCWSTR cmdArgs,
-    LPCWSTR workDirectory);
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath,
-    LPCWSTR pszParameters,
-    LPCWSTR pszDirectory);
+  LPCWSTR pszParameters,
+  LPCWSTR pszDirectory);
+
+/*********************************************************************************************************************
+* Function Ex, return code is this child process id. Zero is failed!
+*********************************************************************************************************************/
+unsigned WINAPI ProcessLauncherMICEx(LPCWSTR exePath,
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
+unsigned WINAPI ProcessLauncherWithAppContainerEx(LPCWSTR exePath,
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
+
 bool LauncherSelfWithNonElevated();
 int LauncherContainerStatChecker();
 
@@ -48,5 +60,8 @@ void LogOut(FILE *fp,const wchar_t* format,...);
 void LogOutDefault(const wchar_t* format,...);
 
 int ContainerRemoteProcedureCall();
+bool FindProcessFromContainer(unsigned pid);
+bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName);
+bool RemoveContainerProcessId(unsigned pid);
 
 #endif

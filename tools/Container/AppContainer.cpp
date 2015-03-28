@@ -109,7 +109,8 @@ bool AppContainer::AppContainerDelete(std::function<bool(unsigned)> responseTask
 AppContainer::AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags):m_app(app),
 m_Args(Args),
 m_workDir(workDir),
-m_dwFlags(dwFlags)
+m_dwFlags(dwFlags),
+taskId(0)
 {
 
 }
@@ -164,6 +165,7 @@ bool AppContainer::Execute()
     {
         goto Cleanup;
     }
+    this->taskId=GetProcessId(pi.hProcess);
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
 Cleanup:

@@ -7,6 +7,9 @@
 //+------------------------------------------------------------------------------------------------------
 #include "ContainerService.h"
 #include "ContainerAPI.h"
+#include <TlHelp32.h>
+#include <Processthreadsapi.h>
+#include <string>
 
 int ContainerRemoteProcedureCall()
 {
@@ -41,11 +44,42 @@ int ContainerRunner(
     LPCWSTR pszArgs,
     LPCWSTR pszWorkdir)
 {
-    return (int)ProcessLauncherWithAppContainer(pszPath,pszArgs,pszWorkdir);
+    unsigned taskId=ProcessLauncherWithAppContainerEx(pszPath,pszArgs,pszWorkdir);
+    if(taskId!=0){
+        std::wstring strApp=pszPath;
+        ContainerProcessMapAtomAdd(taskId,strApp);
+    }
+    return (int)taskId;
 }
 int ProcessKill(LPCWSTR pszApp)
 {
-    return 0;
+    PROCESSENTRY32W pe32;
+    pe32.dwSize = sizeof(pe32);
+    HANDLE hProcessSnap = ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if(hProcessSnap == INVALID_HANDLE_VALUE)
+    {
+        return -1;
+     }
+     BOOL bMore = ::Process32First(hProcessSnap, &pe32);
+     while(bMore)
+     {
+        if(_wcsicmp(pe32.szExeFile,pszApp)==0)
+         {
+            ///TerminateProcess()
+            if(FindProcessFromContainer(pe32.th32ProcessID))
+            {
+                HANDLE hProcess=OpenProcess(PROCESS_TERMINATE,TRUE,pe32.th32ProcessID);
+                TerminateProcess(hProcess,1);
+                RemoveContainerProcessId(pe32.th32ProcessID);
+            }
+            ///Query Process Id Find From Map;
+             ::CloseHandle(hProcessSnap);
+             return 0;
+          }
+          bMore = ::Process32Next(hProcessSnap, &pe32);
+      }
+     ::CloseHandle(hProcessSnap);
+     return -1;
 }
 void ServiceDestory(void)
 {

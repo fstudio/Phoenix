@@ -7,14 +7,15 @@
 **********************************************************************************************************/
 #ifndef CONTAINER_SERVICE_HUB_HPP
 #define CONTAINER_SERVICE_HUB_HPP
-#include <map>
+#include <unordered_map>
 
 class ContainerService{
 private:
-    std::map<unsigned, unsigned> taskMap;
+    bool keepAlive;
     bool Manager(unsigned id);
 public:
     ContainerService();
+    ~ContainerService();
     bool Execute();
     void Destory();
 };

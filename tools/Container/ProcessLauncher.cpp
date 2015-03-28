@@ -260,8 +260,8 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCW
     hr = 8;
     goto cleanup;
   }
-  ::CloseHandle(pi.hThread);
-  ::CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
   retval = true;
 
 cleanup:
@@ -307,8 +307,8 @@ HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDi
   // To create a new low-integrity processes
   bRet = CreateProcessAsUserW(hNewToken, exePath, lpCmdLine, NULL, NULL, FALSE, 0,
                           NULL, workDirectory, &StartupInfo, &pi);
-  ::CloseHandle(pi.hThread);
-  ::CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
   CloseHandle(hToken);
   CloseHandle(hNewToken);
   LocalFree(pIntegritySid);
@@ -321,6 +321,65 @@ HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,LPCWSTR cmdArgs,L
   AppContainer appContainer(std::wstring(exePath),std::wstring(cmdArgs),std::wstring(workDirectory),0);
   bool bRet=appContainer.Execute();
   return bRet?S_OK:S_FALSE;
+}
+
+
+unsigned WINAPI ProcessLauncherMICEx(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  BOOL bRet;
+  HANDLE hToken;
+  HANDLE hNewToken;
+  PWSTR szIntegritySid = L"S-1-16-4096";
+  PSID pIntegritySid = NULL;
+  TOKEN_MANDATORY_LABEL TIL = {0};
+  PROCESS_INFORMATION pi = {0};
+  STARTUPINFOW StartupInfo = {0};
+  StartupInfo.cb=sizeof(STARTUPINFOW);
+  ULONG ExitCode = 0;
+  unsigned taskId=0;
+  bRet = OpenProcessToken(GetCurrentProcess(), MAXIMUM_ALLOWED, &hToken);
+  if(!bRet)
+    return 1;
+  bRet = DuplicateTokenEx(hToken, MAXIMUM_ALLOWED, NULL, SecurityImpersonation,
+                       TokenPrimary, &hNewToken);
+  bRet = ConvertStringSidToSidW(szIntegritySid, &pIntegritySid);
+  TIL.Label.Attributes = SE_GROUP_INTEGRITY;
+  TIL.Label.Sid = pIntegritySid;
+  CloseHandle(hToken);
+  // Set process integrity levels
+  bRet = SetTokenInformation(hNewToken, TokenIntegrityLevel, &TIL,
+                          sizeof(TOKEN_MANDATORY_LABEL) +
+                              GetLengthSid(pIntegritySid));
+
+  // Set process UI privilege level
+  /*b = SetTokenInformation(hNewToken, TokenIntegrityLevel,
+  &TIL, sizeof(TOKEN_MANDATORY_LABEL) + GetLengthSid(pIntegritySid)); */
+  wchar_t *lpCmdLine = _wcsdup(cmdArgs);
+  // To create a new low-integrity processes
+  bRet = CreateProcessAsUserW(hNewToken, exePath, lpCmdLine, NULL, NULL, FALSE, 0,
+                          NULL, workDirectory, &StartupInfo, &pi);
+  if(bRet){
+    taskId=GetProcessId(pi.hProcess);
+  }
+  CloseHandle(pi.hThread);
+  CloseHandle(pi.hProcess);
+  CloseHandle(hToken);
+  CloseHandle(hNewToken);
+  LocalFree(pIntegritySid);
+  free(lpCmdLine);
+  return taskId;
+}
+
+unsigned WINAPI ProcessLauncherWithAppContainerEx(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  AppContainer appContainer(std::wstring(exePath),std::wstring(cmdArgs),std::wstring(workDirectory),0);
+  bool bRet=appContainer.Execute();
+  unsigned id;
+  if((id=appContainer.GetAppContainerTaskId())==0&&bRet)
+  {
+    return id;
+  }
+  return 0;
 }
 
 HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory,unsigned level)
