@@ -17,6 +17,7 @@
 std::unordered_map<unsigned,std::wstring> taskMap;
 CRITICAL_SECTION g_cs;
 
+static  volatile bool g_keepAlive=true;
 
 bool FindProcessFromContainer(unsigned pid)
 {
@@ -38,6 +39,12 @@ bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName)
     LeaveCriticalSection(&g_cs);
     return ret.second;
 }
+
+void ContainerStopKeepAlive()
+{
+    g_keepAlive=false;
+}
+
 bool RemoveContainerProcessId(unsigned pid)
 {
     EnterCriticalSection(&g_cs);
@@ -65,7 +72,7 @@ BOOL KillProcess(DWORD ProcessId)
 }
 
 
-bool RemoveContainerAll(unsigned dwFlags)
+bool RemoveContainerTask(unsigned dwFlags)
 {
   switch(dwFlags)
   {
@@ -92,18 +99,17 @@ public:
   Container() {}
   bool Initialize() {
     CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-    bool bRet=AppContainer::AppContainerInitialize();
-    return bRet;
+    return (AppContainerProfileInitialize()==S_OK);
   }
   bool Stop() {
     CoUninitialize();
-    bool bRet=AppContainer::AppContainerDelete(RemoveContainerAll);
+    bool bRet=DeleteAppContainerProfileRestricted(RemoveContainerTask);
     return bRet;
   }
 };
 
 
-DWORD ContainerRPCService(LPVOID)
+DWORD WINAPI ContainerRPCService(LPVOID)
 {
     if(ContainerRemoteProcedureCall())
         return 1;
@@ -112,7 +118,7 @@ DWORD ContainerRPCService(LPVOID)
 
 
 
-ContainerService::ContainerService():keepAlive(false)
+ContainerService::ContainerService()
 {
     InitializeCriticalSection(&g_cs);
 }
@@ -138,8 +144,9 @@ Stop:
 bool ContainerService::Manager(unsigned id){
     if(id==0)
         return false;
-    while(this->keepAlive)
+    while(g_keepAlive)
     {
+        ///MessageBoxW(nullptr,L"SSS",L"Manager",MB_OK);
         Sleep(200);
     }
     return true;

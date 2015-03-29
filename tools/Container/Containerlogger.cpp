@@ -20,11 +20,11 @@ static bool SetDefaultLogger()
     return false;/// This Function invoke failed.
 #if defined(_MSC_VER)&& _MSC_VER>=1400
     wcscat_s(temp,4096,L"/Phoenix.tools.Container.defualt.v1.log");
-    if(_wfopen_s(&logfp,temp,L"at+")!=0)
+    if(_wfopen_s(&logfp,temp,L"a+")!=0)
         return false;
 #else
     wcscat(temp,L"/Phoenix.tools.Container.defualt.v1.log");
-    if((logfp=wfopen(temp,L"at+"))==nullptr)
+    if((logfp=wfopen(temp,L"a+"))==nullptr)
         return false;
 #endif
     return true;
@@ -41,25 +41,25 @@ void LoggerDestory()
         fclose(logfp);
 }
 
-void LogOut(FILE *fp,const wchar_t* format,...)
+void TRACEWithFile(FILE *fp,const wchar_t* format,...)
 {
   if(fp!=nullptr)
   {
     int ret;
     va_list ap;
     va_start(ap, format);
-    ret = vfwprintf(fp, format, ap);
+    ret = vfwprintf_s(fp, format, ap);
     va_end(ap);
   }
 }
-void LogOutDefault(const wchar_t* format,...)
+void TRACE(const wchar_t* format,...)
 {
   if(logfp!=nullptr)
   {
     int ret;
     va_list ap;
     va_start(ap, format);
-    ret = vfwprintf(logfp, format, ap);
+    ret = vfwprintf_s(logfp, format, ap);
     va_end(ap);
   }
 }

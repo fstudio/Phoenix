@@ -31,15 +31,15 @@ HRESULT WINAPI ProcessLauncherWithNonElevated(LPCWSTR exePath,
 HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,
   LPCWSTR cmdArgs,
   LPCWSTR workDirectory);
-HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,
-  LPCWSTR cmdArgs,
-  LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,
   LPCWSTR cmdArgs,
   LPCWSTR workDirectory);
 HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath,
   LPCWSTR pszParameters,
   LPCWSTR pszDirectory);
+HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,
+  LPCWSTR cmdArgs,
+  LPCWSTR workDirectory);
 
 /*********************************************************************************************************************
 * Function Ex, return code is this child process id. Zero is failed!
@@ -47,21 +47,20 @@ HRESULT WINAPI ProcessLauncherNonElevatedWithTaskSchd(LPCWSTR pszPath,
 unsigned WINAPI ProcessLauncherMICEx(LPCWSTR exePath,
   LPCWSTR cmdArgs,
   LPCWSTR workDirectory);
-unsigned WINAPI ProcessLauncherWithAppContainerEx(LPCWSTR exePath,
-  LPCWSTR cmdArgs,
-  LPCWSTR workDirectory);
+
 
 bool LauncherSelfWithNonElevated();
 int LauncherContainerStatChecker();
 
 bool InitializeLogger();
 void LoggerDestory();
-void LogOut(FILE *fp,const wchar_t* format,...);
-void LogOutDefault(const wchar_t* format,...);
+void TRACEWithFile(FILE *fp,const wchar_t* format,...);
+void TRACE(const wchar_t* format,...);
 
 int ContainerRemoteProcedureCall();
 bool FindProcessFromContainer(unsigned pid);
 bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName);
 bool RemoveContainerProcessId(unsigned pid);
+void ContainerStopKeepAlive();
 
 #endif

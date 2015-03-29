@@ -11,7 +11,6 @@
 
 class ContainerService{
 private:
-    bool keepAlive;
     bool Manager(unsigned id);
 public:
     ContainerService();

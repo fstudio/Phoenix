@@ -6,10 +6,12 @@
 // Copyright (C) 2015 The ForceStudio All Rights Reserved.
 //+------------------------------------------------------------------------------------------------------
 #include "ContainerService.h"
-#include "ContainerAPI.h"
 #include <TlHelp32.h>
 #include <Processthreadsapi.h>
 #include <string>
+#include "ContainerAPI.h"
+#include "AppContainer.hpp"
+
 
 int ContainerRemoteProcedureCall()
 {
@@ -37,21 +39,39 @@ void  Launcher(
     /* [unique][in] */ LPCWSTR pszArgs,
     /* [unique][in] */ LPCWSTR pszWorkdir)
 {
+    unsigned taskId=LauncherWithAppContainer(pszPath,pszArgs,pszWorkdir);
+    if(taskId!=0){
+        std::wstring strApp=pszPath;
+        ContainerProcessMapAtomAdd(taskId,strApp);
+    }
      RpcAsyncCompleteCall(Launcher_AsyncHandle, NULL);
 }
+
 int ContainerRunner(
     LPCWSTR pszPath,
     LPCWSTR pszArgs,
     LPCWSTR pszWorkdir)
 {
-    unsigned taskId=ProcessLauncherWithAppContainerEx(pszPath,pszArgs,pszWorkdir);
+    MessageBoxW(nullptr,pszPath,L"Open App is.",MB_OK);
+    unsigned taskId=LauncherWithAppContainer(pszPath,pszArgs,pszWorkdir);
     if(taskId!=0){
         std::wstring strApp=pszPath;
         ContainerProcessMapAtomAdd(taskId,strApp);
     }
     return (int)taskId;
 }
-int ProcessKill(LPCWSTR pszApp)
+
+int LauncherWithJob(
+    LPCWSTR pszPath,
+    LPCWSTR pszArgs,
+    LPCWSTR pszWorkdir)
+{
+    //
+    return 0;
+}
+
+
+int ContainerProcessExit(LPCWSTR pszApp)
 {
     PROCESSENTRY32W pe32;
     pe32.dwSize = sizeof(pe32);
@@ -81,11 +101,12 @@ int ProcessKill(LPCWSTR pszApp)
      ::CloseHandle(hProcessSnap);
      return -1;
 }
+
 void ServiceDestory(void)
 {
     RpcMgmtStopServerListening(NULL);
     RpcServerUnregisterIf(NULL, NULL, FALSE);
-    exit(0);
+    ContainerStopKeepAlive();
 }
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)

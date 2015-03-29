@@ -11,6 +11,8 @@
 
 int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
   int ret=0;
+  if((ret=LauncherContainerStatChecker())!=0)
+    return ret;
   ContainerService containerService;
   if(!containerService.Execute())
     ret=1;

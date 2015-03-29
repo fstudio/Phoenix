@@ -18,8 +18,9 @@ public:
     ContainerRpcManager();
     ~ContainerRpcManager();
     int Launcher(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
+    int LauncherWithJob(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
     int Runner(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
-    int ProcessKill(LPCWSTR pszApp);
+    int ProcessExit(LPCWSTR pszApp);
     void Destory();
     bool getStatus(){return this->RpcInit;}
 };

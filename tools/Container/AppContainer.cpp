@@ -12,11 +12,37 @@
 #include <Windows.h>
 #include <sddl.h>
 #include <Userenv.h>
+#include "ContainerAPI.h"
+
 
 #pragma comment(lib,"Userenv")
 
-//FireAPI.dll
-wchar_t AppContainer::appContainerName[64] = { 0 };
+
+static const wchar_t appContainerProfileName[]=L"Phoenix.Container.AppContainer.Profile.APIv1\0";
+
+
+class CharPtr{
+private:
+    wchar_t *Ptr;
+public:
+    CharPtr(const wchar_t *constPtr):Ptr(nullptr)
+    {
+        if(constPtr)
+        {
+            Ptr=_wcsdup(constPtr);
+        }
+    }
+    ~CharPtr()
+    {
+        if(Ptr)
+            free(Ptr);
+    }
+    wchar_t *get()
+    {
+        return this->Ptr;
+    }
+};
+
 void AppContainerLocalFree(PSID sid) {
   if (sid != NULL) {
     ::LocalFree(sid);
@@ -74,73 +100,65 @@ static bool MakeWellKnownSIDAttributes(std::vector<SID_AND_ATTRIBUTES> &capabili
     return true;
 }
 
-
-///ReadMe this Function must run once.
-bool AppContainer::AppContainerInitialize()
+bool DeleteAppContainerProfileRestricted(std::function<bool(unsigned)> rmTask)
 {
-    wcscpy_s(appContainerName,L"Phoenix.Container.AppContainer.Profile.v1");
-    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.v1\0";
-    wchar_t appContainerDesc[2048]=L"Phoenix Container Default AppContainer Profile ,Revision 1\0";
-    std::vector<SID_AND_ATTRIBUTES> capabilities;
-    std::vector<SHARED_SID> capabilitiesSidList;
-    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList))
-        return S_FALSE;
-    PSID sidImpl;
-    HRESULT hr=::CreateAppContainerProfile(appContainerName,
-        appContainerDisplayName,
-        appContainerDesc,
-        (capabilities.empty() ? NULL : &capabilities.front()), capabilities.size(), &sidImpl);
-    if(hr!=S_OK)
-        return false;
-    FreeSid(sidImpl);
-    return true;
-}
-
-bool AppContainer::AppContainerDelete(std::function<bool(unsigned)> responseTask)
-{
-    HRESULT hr=  DeleteAppContainerProfile(appContainerName);
+    HRESULT hr=  DeleteAppContainerProfile(appContainerProfileName);
     if(hr==HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED))
     {
-        if(responseTask(static_cast<unsigned>(hr)))
-            hr=DeleteAppContainerProfile(appContainerName);
+        if(rmTask(static_cast<unsigned>(hr)))
+            hr=DeleteAppContainerProfile(appContainerProfileName);
     }
     return hr==S_OK;
 }
-AppContainer::AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags):m_app(app),
-m_Args(Args),
-m_workDir(workDir),
-m_dwFlags(dwFlags),
-taskId(0)
-{
 
+HRESULT AppContainerProfileInitialize()
+{
+    wchar_t appContainerDisplayName[]=L"Phoenix.Container.AppContainer.Profile.APIv1\0";
+    wchar_t appContainerDesc[2048]=L"Phoenix Container Default AppContainer Profile ,API Revision 1\0";
+    DeleteAppContainerProfile(appContainerProfileName);
+    std::vector<SID_AND_ATTRIBUTES> capabilities;
+    std::vector<SHARED_SID> capabilitiesSidList;
+    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList)){
+        return S_FALSE;
+    }
+    PSID sidImpl;
+    HRESULT hr=::CreateAppContainerProfile(appContainerProfileName,
+        appContainerDisplayName,
+        appContainerDesc,
+        (capabilities.empty() ? NULL : &capabilities.front()), capabilities.size(), &sidImpl);
+    if(sidImpl)
+    {
+        FreeSid(sidImpl);
+    }
+    return hr;
 }
 
-bool AppContainer::Execute()
+
+HRESULT LauncherWithAppContainerEx(LPCWSTR pszApp,LPCWSTR cmdArgs,LPCWSTR workDir,DWORD &pid)
 {
     PSID appContainerSid;
     std::vector<SID_AND_ATTRIBUTES> capabilities;
     std::vector<SHARED_SID> capabilitiesSidList;
-    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList))
-        return S_FALSE;
-    HRESULT hr=DeriveAppContainerSidFromAppContainerName(appContainerName,&appContainerSid);
-    if(S_OK!=hr)
-        return false;
+    if(!MakeWellKnownSIDAttributes(capabilities,capabilitiesSidList)){
+        return 1;
+    }
+    HRESULT hr=DeriveAppContainerSidFromAppContainerName(appContainerProfileName,&appContainerSid);
+    if(S_OK!=hr){
+        return 2;
+    }
     STARTUPINFOEX siex = { sizeof(STARTUPINFOEX )};
-    wchar_t *psArgs=nullptr;
-    psArgs=_wcsdup(m_Args.c_str());
+    CharPtr charPtr(cmdArgs);
+    DWORD taskId=0;
     SecureZeroMemory(&siex.StartupInfo, sizeof(STARTUPINFOW));
     PROCESS_INFORMATION pi;
     siex.StartupInfo.cb = sizeof(STARTUPINFOEXW);
     SIZE_T cbAttributeListSize = 0;
-    BOOL bReturn = InitializeProcThreadAttributeList(
-        NULL, 3, 0, &cbAttributeListSize);
-    if(!bReturn){
-        FreeSid(appContainerSid);
-        return false;
-    }
+    InitializeProcThreadAttributeList(NULL, 3, 0, &cbAttributeListSize);
     siex.lpAttributeList = (PPROC_THREAD_ATTRIBUTE_LIST)HeapAlloc(GetProcessHeap(), 0, cbAttributeListSize);
+    BOOL bReturn=TRUE;
     if((bReturn = InitializeProcThreadAttributeList(siex.lpAttributeList, 3, 0, &cbAttributeListSize))==FALSE)
     {
+        hr=4;
         goto Cleanup;
     }
     SECURITY_CAPABILITIES sc;
@@ -154,24 +172,37 @@ bool AppContainer::Execute()
         sizeof(sc) ,
         NULL, NULL))==FALSE)
     {
+        hr=5;
         goto Cleanup;
     }
-    if((bReturn=CreateProcessW(m_app.c_str(), psArgs,
+    if((bReturn=CreateProcessW(pszApp, charPtr.get(),
         nullptr, nullptr,
         FALSE,
         EXTENDED_STARTUPINFO_PRESENT,
-        NULL, m_workDir.c_str(),
+        NULL, workDir,
         reinterpret_cast<LPSTARTUPINFOW>(&siex), &pi))==FALSE)
     {
+        pid=0;
+        hr=6;
         goto Cleanup;
     }
-    this->taskId=GetProcessId(pi.hProcess);
+    pid=GetProcessId(pi.hProcess);
     CloseHandle(pi.hThread);
     CloseHandle(pi.hProcess);
 Cleanup:
     DeleteProcThreadAttributeList(siex.lpAttributeList);
     FreeSid(appContainerSid);
-    free(psArgs);
-    return bReturn?true:false;
+    return hr;
+}
+
+unsigned LauncherWithAppContainer(LPCWSTR pszApp,LPCWSTR cmdArgs,LPCWSTR workDir)
+{
+    DWORD m_pid=0;
+    HRESULT hr=0;
+    if((hr=LauncherWithAppContainerEx(pszApp,cmdArgs,workDir,m_pid))==S_OK)
+    {
+        return m_pid;
+    }
+    return 0;
 }
 

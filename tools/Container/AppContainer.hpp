@@ -13,24 +13,9 @@
 #endif
 #include <functional>
 
-class AppContainer{
-private:
-    std::wstring m_app;
-    std::wstring m_Args;
-    std::wstring m_workDir;
-    unsigned m_dwFlags;
-    unsigned taskId;
-protected:
-    static wchar_t appContainerName[64];
-public:
-    static bool AppContainerInitialize();
-    ///responseTask when Delete Profile failed, execute responseTask callback function ,close container handle
-    static bool AppContainerDelete(std::function<bool(unsigned)> responseTask);
-    AppContainer(std::wstring app,std::wstring Args,std::wstring workDir,unsigned dwFlags=0);
-    bool Execute();
-    unsigned GetAppContainerTaskId(){
-        return this->taskId;
-    }
-};
+bool DeleteAppContainerProfileRestricted(std::function<bool(unsigned)> rmTask);
+HRESULT AppContainerProfileInitialize();
+unsigned LauncherWithAppContainer(LPCWSTR pszApp,LPCWSTR cmdArgs,LPCWSTR workDir);
+HRESULT LauncherWithAppContainerEx(LPCWSTR pszApp,LPCWSTR cmdArgs,LPCWSTR workDir,DWORD &pid);
 
 #endif

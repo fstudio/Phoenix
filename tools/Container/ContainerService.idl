@@ -26,6 +26,7 @@ interface ContainerServiceRPC
 
      void Launcher([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
      int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
-     int ProcessKill([in,unique] LPCWSTR pszApp);
+     int LauncherWithJob([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+     int ContainerProcessExit([in,unique] LPCWSTR pszApp);
      void ServiceDestory();
 };

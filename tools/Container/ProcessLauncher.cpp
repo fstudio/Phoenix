@@ -318,9 +318,8 @@ HRESULT WINAPI ProcessLauncherMIC(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDi
 
 HRESULT WINAPI ProcessLauncherWithAppContainer(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
 {
-  AppContainer appContainer(std::wstring(exePath),std::wstring(cmdArgs),std::wstring(workDirectory),0);
-  bool bRet=appContainer.Execute();
-  return bRet?S_OK:S_FALSE;
+  DWORD m_pid;
+  return LauncherWithAppContainerEx(exePath,cmdArgs,workDirectory,m_pid);
 }
 
 
@@ -368,18 +367,6 @@ unsigned WINAPI ProcessLauncherMICEx(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR wor
   LocalFree(pIntegritySid);
   free(lpCmdLine);
   return taskId;
-}
-
-unsigned WINAPI ProcessLauncherWithAppContainerEx(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
-{
-  AppContainer appContainer(std::wstring(exePath),std::wstring(cmdArgs),std::wstring(workDirectory),0);
-  bool bRet=appContainer.Execute();
-  unsigned id;
-  if((id=appContainer.GetAppContainerTaskId())==0&&bRet)
-  {
-    return id;
-  }
-  return 0;
 }
 
 HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory,unsigned level)

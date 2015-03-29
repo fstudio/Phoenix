@@ -30,6 +30,8 @@ CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
 
 all:$(TARGET) $(LIBCONTAINER)
 
+Dbg:$(TARGET) $(LIBCONTAINER)
+
 $(TARGET):Container.res ContainerService_s.obj ContainerService.obj $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) ContainerService_s.obj ContainerService.obj Container.res -OUT:$@ $(LIBS)
 

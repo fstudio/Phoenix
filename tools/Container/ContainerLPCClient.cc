@@ -35,7 +35,6 @@ int ContainerRpcManager::Launcher(LPCWSTR pszApp,
     ::Launcher(&async, pszApp,pszArgs,pszDir);
     while ( RpcAsyncGetCallStatus(&async) == RPC_S_ASYNC_CALL_PENDING )
     {
-        printf("Call Hello() pending, wait 1s...\n");
         Sleep(1000);
     }
     RpcAsyncCompleteCall( &async, NULL );
@@ -57,13 +56,26 @@ int ContainerRpcManager::Runner(LPCWSTR pszApp,
     RpcEndExcept
     return Ret;
 }
-
-
-int ContainerRpcManager::ProcessKill(LPCWSTR pszApp)
+int ContainerRpcManager::LauncherWithJob(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir)
 {
     int Ret=0;
     RpcTryExcept{
-        Ret=::ProcessKill(pszApp);
+        Ret=::LauncherWithJob(pszApp,pszArgs,pszDir);
+    }
+    RpcExcept(1)
+    {
+        //
+        fprintf(stderr, "ContainerService RPC Failed Stop: %d\n",RpcExceptionCode());
+    }
+    RpcEndExcept
+    return Ret;
+}
+
+int ContainerRpcManager::ProcessExit(LPCWSTR pszApp)
+{
+    int Ret=0;
+    RpcTryExcept{
+        Ret=::ContainerProcessExit(pszApp);
     }
     RpcExcept(1)
     {
@@ -92,6 +104,11 @@ ContainerRpcManager::~ContainerRpcManager()
 {
     RpcStringFree(&pszStringBinding);
     RpcBindingFree(&ContainerServiceRPC_Binding);
+}
+
+bool Associated()
+{
+    return true;
 }
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
