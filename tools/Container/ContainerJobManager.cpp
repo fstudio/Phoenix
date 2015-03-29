@@ -39,12 +39,20 @@ void ContainerJobManager::Destory()
     if(!this->hJob)
       return ;
   }
-  TreminateJobObject(hJob,1);
+  TerminateJobObject(hJob,1);
 }
-int ContainerJobManager::StartRestrictedProcess(LPCWSTR pszPath,LPCWSTR pszArgs,LPCWSTR pszWorkdir)
+HRESULT ContainerJobManager::StartRestrictedProcessEx(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszWorkdir,DWORD &pid)
 {
   ///
   //OpenJobObject
-  HANDLE hJob==OpenJobObject(READ_CONTROL,FALSE,ContainerHostJobObjectName);
+  HANDLE hJob=OpenJobObject(READ_CONTROL,FALSE,ContainerHostJobObjectName);
+  ///CreateProcess(...);
   return 0;
 }
+
+HRESULT ContainerJobManager::StartRestrictedProcess(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszWorkdir)
+{
+  DWORD m_pid=0;
+  return ContainerJobManager::StartRestrictedProcessEx(pszApp,pszArgs,pszWorkdir,m_pid);
+}
+

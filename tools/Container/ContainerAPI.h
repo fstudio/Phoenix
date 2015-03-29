@@ -18,7 +18,8 @@ enum CONTAINER_PROCESS_RUNLEVEL {
   CONTAINER_INVOKER_RLEVEL = 0,
   CONTAINER_MANDATORY_INTEGRITY_CONTROL_RLEVEL = 1,
   CONTAINER_UAC_MEDIUM_RLEVEL = 2,
-  CONTAINER_APPCONTAINER_RLEVEL=3
+  CONTAINER_APPCONTAINER_RLEVEL=3,
+  CONTAINER_RUNINJOB=4
 };
 }
 HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,
@@ -58,6 +59,7 @@ void TRACEWithFile(FILE *fp,const wchar_t* format,...);
 void TRACE(const wchar_t* format,...);
 
 int ContainerRemoteProcedureCall();
+bool ActiveSemaphoreEx();
 bool FindProcessFromContainer(unsigned pid);
 bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName);
 bool RemoveContainerProcessId(unsigned pid);

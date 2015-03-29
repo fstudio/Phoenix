@@ -13,6 +13,7 @@
 #include <string.h>
 #include "ContainerAPI.h"
 #include "AppContainer.hpp"
+#include "ContainerJobManager.hpp"
 
 #ifndef ASSERT
 #ifdef _DEBUG
@@ -390,6 +391,8 @@ HRESULT WINAPI ProcessLauncher(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirec
         }
         case Phoenix::CONTAINER_APPCONTAINER_RLEVEL:
         return ProcessLauncherWithAppContainer(exePath,cmdArgs,workDirectory);
+        case Phoenix::CONTAINER_RUNINJOB:
+        return ContainerJobManager::StartRestrictedProcess(exePath,cmdArgs,workDirectory);
         default:
         break;
     }

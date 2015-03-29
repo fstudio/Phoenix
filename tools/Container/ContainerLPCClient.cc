@@ -24,6 +24,12 @@ ContainerRpcManager::ContainerRpcManager()
     this->RpcInit=true;
 }
 
+void ContainerRpcManager::ActiveSemaphore()
+{
+    ::ActiveSemaphore();
+}
+
+
 int ContainerRpcManager::Launcher(LPCWSTR pszApp,
     LPCWSTR pszArgs,
     LPCWSTR pszDir)
@@ -106,10 +112,6 @@ ContainerRpcManager::~ContainerRpcManager()
     RpcBindingFree(&ContainerServiceRPC_Binding);
 }
 
-bool Associated()
-{
-    return true;
-}
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
 {
@@ -120,3 +122,16 @@ void __RPC_USER midl_user_free(void __RPC_FAR *ptr)
 {
      free(ptr);
 }
+
+/////////////////////////////////Semaphore
+
+bool AcquireContainerSemaphore()
+{
+    return true;
+}
+
+bool LeaveContainerSemaphore()
+{
+    return true;
+}
+

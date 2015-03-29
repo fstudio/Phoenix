@@ -32,6 +32,11 @@ int ContainerRemoteProcedureCall()
     return 0;
 }
 
+void ActiveSemaphore()
+{
+    ActiveSemaphoreEx();
+}
+
 /* [async] */
 void  Launcher(
     /* [in] */ PRPC_ASYNC_STATE Launcher_AsyncHandle,

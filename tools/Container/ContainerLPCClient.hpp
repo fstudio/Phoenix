@@ -17,6 +17,7 @@ private:
 public:
     ContainerRpcManager();
     ~ContainerRpcManager();
+    void ActiveSemaphore();
     int Launcher(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
     int LauncherWithJob(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
     int Runner(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);

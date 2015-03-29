@@ -17,6 +17,7 @@ public:
     ~ContainerService();
     bool Execute();
     void Destory();
+    void ActiveSemaphore();
 };
 
 #endif

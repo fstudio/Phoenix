@@ -19,7 +19,8 @@ public:
     ~ContainerJobManager();
     bool Initialize();
     void Destory();
-    static int StartRestrictedProcess(LPCWSTR pszPath,LPCWSTR pszArgs,LPCWSTR pszWorkdir);
+    static HRESULT StartRestrictedProcess(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszWorkdir);
+    static HRESULT StartRestrictedProcessEx(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszWorkdir,DWORD &pid);
 };
 
 

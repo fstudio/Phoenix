@@ -17,16 +17,16 @@ import "wtypesbase.idl";
 
 [
 uuid("97EE2EF1-A1CA-4620-BB6F-DD56A5E8302F"),
-helpstring("Phoenix Container Service"),
+helpstring("Phoenix Container LPC Service"),
 version(1.0),pointer_default(unique),
 ]
 
 interface ContainerServiceRPC
 {
-
-     void Launcher([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
-     int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
-     int LauncherWithJob([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
-     int ContainerProcessExit([in,unique] LPCWSTR pszApp);
-     void ServiceDestory();
+    void ActiveSemaphore();
+    void Launcher([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+    int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+    int LauncherWithJob([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
+    int ContainerProcessExit([in,unique] LPCWSTR pszApp);
+    void ServiceDestory();
 };
