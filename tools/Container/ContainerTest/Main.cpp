@@ -2,10 +2,15 @@
 #include "ContainerLPCClient.hpp"
 #include <iostream>
 
+void Call(ContainerRpcManager &cm)
+{
+	///
+}
+
 int wmain(int argc,wchar_t **argv)
 {
 	ContainerRpcManager mgr;
-	if(mgr.getStatus())
+	if(mgr.IsInitialize())
 	{
 		std::cout<<"Return Code: "<<mgr.Runner(L"C:/Windows/notepad.exe",nullptr,nullptr)<<std::endl;
 	}

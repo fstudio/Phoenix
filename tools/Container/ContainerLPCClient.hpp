@@ -13,7 +13,7 @@
 
 class ContainerRpcManager{
 private:
-    bool RpcInit;
+    bool rpcStatus;
 public:
     ContainerRpcManager();
     ~ContainerRpcManager();
@@ -23,8 +23,9 @@ public:
     int Runner(LPCWSTR pszApp,LPCWSTR pszArgs,LPCWSTR pszDir);
     int ProcessExit(LPCWSTR pszApp);
     void Destory();
-    bool getStatus(){return this->RpcInit;}
+    bool IsInitialize(){return this->rpcStatus;}
 };
+
 
 
 #endif

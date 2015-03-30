@@ -32,9 +32,18 @@ int ContainerRemoteProcedureCall()
     return 0;
 }
 
-void ActiveSemaphore()
+
+unsigned RegisterClient(unsigned id)
 {
-    ActiveSemaphoreEx();
+    ///Check PID
+    InterlockedExchangeAddEx(true);
+    return 0;
+}
+unsigned UnRegisterClient(unsigned id)
+{
+    ///
+    InterlockedExchangeAddEx(false);
+    return 0;
 }
 
 /* [async] */
@@ -109,9 +118,11 @@ int ContainerProcessExit(LPCWSTR pszApp)
 
 void ServiceDestory(void)
 {
-    RpcMgmtStopServerListening(NULL);
-    RpcServerUnregisterIf(NULL, NULL, FALSE);
-    ContainerStopKeepAlive();
+    if(LookAccessClientSize()==0){
+        RpcMgmtStopServerListening(NULL);
+        RpcServerUnregisterIf(NULL, NULL, FALSE);
+        ContainerStopKeepAlive();
+    }
 }
 
 void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)

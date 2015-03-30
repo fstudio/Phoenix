@@ -23,7 +23,8 @@ version(1.0),pointer_default(unique),
 
 interface ContainerServiceRPC
 {
-    void ActiveSemaphore();
+    unsigned RegisterClient([in] unsigned id);
+    unsigned UnRegisterClient([in] unsigned id);
     void Launcher([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
     int ContainerRunner([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);
     int LauncherWithJob([in,unique] LPCWSTR pszPath,[in,unique] LPCWSTR pszArgs,[in,unique] LPCWSTR pszWorkdir);

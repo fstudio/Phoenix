@@ -59,10 +59,12 @@ void TRACEWithFile(FILE *fp,const wchar_t* format,...);
 void TRACE(const wchar_t* format,...);
 
 int ContainerRemoteProcedureCall();
-bool ActiveSemaphoreEx();
 bool FindProcessFromContainer(unsigned pid);
 bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName);
 bool RemoveContainerProcessId(unsigned pid);
 void ContainerStopKeepAlive();
+bool InterlockedExchangeAddEx(bool model);
+unsigned LookAccessClientSize();
+
 
 #endif

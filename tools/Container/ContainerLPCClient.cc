@@ -21,12 +21,16 @@ ContainerRpcManager::ContainerRpcManager()
         nullptr,
         &pszStringBinding);
     RpcBindingFromStringBinding(pszStringBinding,&ContainerServiceRPC_Binding);
-    this->RpcInit=true;
-}
-
-void ContainerRpcManager::ActiveSemaphore()
-{
-    ::ActiveSemaphore();
+    RpcTryExcept{
+       ::RegisterClient(GetCurrentProcessId());
+    }
+    RpcExcept(1)
+    {
+        //
+        fprintf(stderr, "ContainerService RPC Failed Register: %d\n",RpcExceptionCode());
+    }
+    RpcEndExcept
+    this->rpcStatus=true;
 }
 
 
@@ -95,6 +99,7 @@ int ContainerRpcManager::ProcessExit(LPCWSTR pszApp)
 void ContainerRpcManager::Destory()
 {
     RpcTryExcept{
+       ::UnRegisterClient(GetCurrentProcessId());
         ServiceDestory();
     }
     RpcExcept(1)
@@ -108,6 +113,15 @@ void ContainerRpcManager::Destory()
 }
 ContainerRpcManager::~ContainerRpcManager()
 {
+    RpcTryExcept{
+       ::UnRegisterClient(GetCurrentProcessId());
+    }
+    RpcExcept(1)
+    {
+        //
+        fprintf(stderr, "ContainerService RPC Failed UnRegister: %d\n",RpcExceptionCode());
+    }
+    RpcEndExcept
     RpcStringFree(&pszStringBinding);
     RpcBindingFree(&ContainerServiceRPC_Binding);
 }
@@ -121,17 +135,5 @@ void __RPC_FAR* __RPC_USER midl_user_allocate(size_t len)
 void __RPC_USER midl_user_free(void __RPC_FAR *ptr)
 {
      free(ptr);
-}
-
-/////////////////////////////////Semaphore
-
-bool AcquireContainerSemaphore()
-{
-    return true;
-}
-
-bool LeaveContainerSemaphore()
-{
-    return true;
 }
 

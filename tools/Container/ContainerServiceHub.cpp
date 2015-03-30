@@ -17,12 +17,29 @@
 std::unordered_map<unsigned,std::wstring> taskMap;
 CRITICAL_SECTION g_cs;
 
-static  volatile LONG g_keepAlive=1;
-static  volatile LONG activeSemaphore=0;
+static volatile LONG g_keepAlive=1;
+static volatile unsigned clientNum=0;
 
-bool ActiveSemaphoreEx()
+
+bool InterlockedExchangeAddEx(bool model)
 {
-    return InterlockedExchange(&activeSemaphore,1)==1;
+    if(model)
+    {
+        InterlockedExchangeAdd(&clientNum,1);
+    }
+    else
+    {
+        if(clientNum>0)
+        {
+            InterlockedExchangeAdd(&clientNum,-1);
+        }
+    }
+    return true;
+}
+
+unsigned LookAccessClientSize()
+{
+    return clientNum;
 }
 
 bool FindProcessFromContainer(unsigned pid)
@@ -48,7 +65,7 @@ bool ContainerProcessMapAtomAdd(unsigned pid,std::wstring appName)
 
 void ContainerStopKeepAlive()
 {
-    InterlockedExchange(&activeSemaphore,0);
+    InterlockedExchange(&g_keepAlive,0);
 }
 
 bool RemoveContainerProcessId(unsigned pid)
@@ -153,10 +170,6 @@ bool ContainerService::Manager(unsigned id){
     while(g_keepAlive)
     {
         ///MessageBoxW(nullptr,L"SSS",L"Manager",MB_OK);
-        if(activeSemaphore==1)
-        {
-            ////Call Wait Semaphore
-        }
         Sleep(200);
     }
     return true;
