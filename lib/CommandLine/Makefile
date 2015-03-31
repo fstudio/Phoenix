@@ -2,7 +2,7 @@
 
 CC=cl
 AR = lib.exe
-CFLAGS=-nologo -c -TC -W3 -O2  -Zc:forScope -Zc:wchar_t 
+CFLAGS=-nologo -c -TC -W3 -O2  -Zc:forScope -Zc:wchar_t
 LIBRARY=getopt.lib
 OBJS=getopt.obj wgetopt.obj
 
@@ -13,7 +13,6 @@ $(LIBRARY):$(OBJS)
 
 {.}.c.obj::
 	$(CC) $(CFLAGS) -c $<
-	
+
 clean:
 	-del *.obj *.lib
-	
