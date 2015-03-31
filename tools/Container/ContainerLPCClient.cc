@@ -12,7 +12,7 @@
 
 RPC_WSTR pszStringBinding=nullptr;
 
-ContainerRpcManager::ContainerRpcManager()
+ContainerRpcManager::ContainerRpcManager():rpcStatus(false),destory(false)
 {
     RpcStringBindingComposeW(nullptr,
         (RPC_WSTR)L"ncalrpc",
@@ -110,9 +110,12 @@ void ContainerRpcManager::Destory()
     RpcEndExcept
     RpcStringFree(&pszStringBinding);
     RpcBindingFree(&ContainerServiceRPC_Binding);
+    this->destory=true;
 }
 ContainerRpcManager::~ContainerRpcManager()
 {
+    if(this->destory)
+        return ;
     RpcTryExcept{
        ::UnRegisterClient(GetCurrentProcessId());
     }

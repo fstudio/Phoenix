@@ -51,7 +51,7 @@ UriParser::Parse(const char* uri,
     char hostname_buf[256] = {0};
     char port_buf[11] = {0}; // 10==strlen(2^32)
     char path_buf[2049] = {'/', 0};
-  
+
     bool ok = false;
          if (4==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]/%2047s", scheme_buf, hostname_buf, port_buf, path_buf+1)) { ok = true; }
     else if (3==sscanf(uri, "%99[^:/]://%255[^/:]:%10[^/]", scheme_buf, hostname_buf, port_buf)) { ok = true; }

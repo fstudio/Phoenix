@@ -14,6 +14,7 @@
 class ContainerRpcManager{
 private:
     bool rpcStatus;
+    bool destory;
 public:
     ContainerRpcManager();
     ~ContainerRpcManager();
