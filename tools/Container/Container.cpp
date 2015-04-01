@@ -13,15 +13,35 @@
 #include "CommandLineArgumentsEx.hpp"
 #include <iostream>
 
-const wchar_t helpMessage[]=L"\nPhoenix Container Service\0";
+class ConsoleAttachEx{
+private:
+  bool isOpen;
+public:
+  ConsoleAttachEx()
+  {
+    if(AttachConsole(ATTACH_PARENT_PROCESS))
+    {
+      freopen("CONIN$" , "r+t" , stdin);
+      freopen("CONOUT$" , "w+t" , stdout);
+      freopen("CONOUT$", "w", stderr);
+      isOpen=true;
+    }else{
+      isOpen=false;
+    }
+  }
+  ~ConsoleAttachEx()
+  {
+    if(isOpen)
+    {
+      fclose(stdout);
+      fclose(stdin);
+      fclose(stderr);
+      FreeConsole();
+    }
+  }
+};
 
-int cmdUnknownArgument(const wchar_t *args, void *ClientData) {
-    ConsoleAttachEx aex;
-    std::wcerr << L"\ncmd Unknown Options " << args<< std::endl;
-    bool *p=static_cast<bool*>(ClientData);
-    *p=true;
-    return 1;
-}
+const wchar_t helpMessage[]=L"\nPhoenix Container Service\0";
 
 
 int HelpMessagePrint()
@@ -31,6 +51,14 @@ int HelpMessagePrint()
     WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), helpMessage, (DWORD) wcslen(helpMessage), &ws, NULL);
     return 0;
 }
+int cmdUnknownArgument(const wchar_t *args, void *) {
+    ConsoleAttachEx aex;
+    std::wcerr << L"\ncmd Unknown Options " << args<< std::endl;
+    std::wcout<<helpMessage<<std::endl;
+    return 1;
+}
+
+
 
 int PrintVersion()
 {
@@ -66,10 +94,8 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     int Argc=arguments.argc();
     wchar_t const  *const* Argv=arguments.argv();
     bool help=false;
-    bool bForeground=false;
     bool bVersion=false;
-    bool isParseFailed=false;
-    std::wstring  profile;
+    Parameters param;
 
     typedef Force::CommandLineArguments argT;
     Force::CommandLineArguments Args;
@@ -78,11 +104,10 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
         L"Print Phoenix Container help and exit");
     Args.AddArgument(L"--version", argT::NO_ARGUMENT, &bVersion,
         L"Print Phoenix Container version and exit");
-    Args.AddArgument(L"-Foreground", argT::NO_ARGUMENT, &bForeground,
+    Args.AddArgument(L"-Foreground", argT::NO_ARGUMENT, &(param.focegournd),
         L"Run Phoenix Container Foreground (debug)");
-    Args.AddArgument(L"-Profile",argT::SPACE_ARGUMENT,&profile,
+    Args.AddArgument(L"-Profile",argT::SPACE_ARGUMENT,&(param.profile),
         L"Set Default Profile");
-    Args.SetClientData(&isParseFailed);
     Args.SetUnknownArgumentCallback(cmdUnknownArgument);
     int parsed=Args.Parse();
     if(parsed){
@@ -90,11 +115,6 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
             return HelpMessagePrint();
         if(bVersion)
             return PrintVersion();
-        if(isParseFailed)
-        {
-            MessageBoxW(nullptr,L"Please Check your options!",L"Unknown Command",MB_OK);
-            return 1;
-        }
     }else{
         ///
         return 1;

@@ -66,32 +66,10 @@ void ContainerStopKeepAlive();
 bool InterlockedExchangeAddEx(bool model);
 unsigned LookAccessClientSize();
 
-class ConsoleAttachEx{
-private:
-  bool isOpen;
-public:
-  ConsoleAttachEx()
-  {
-    if(AttachConsole(ATTACH_PARENT_PROCESS))
-    {
-      freopen("CONIN$" , "r+t" , stdin);
-      freopen("CONOUT$" , "w+t" , stdout);
-      freopen("CONOUT$", "w", stderr);
-      isOpen=true;
-    }else{
-      isOpen=false;
-    }
-  }
-  ~ConsoleAttachEx()
-  {
-    if(isOpen)
-    {
-      fclose(stdout);
-      fclose(stdin);
-      fclose(stderr);
-      FreeConsole();
-    }
-  }
+
+struct Parameters{
+  bool focegournd;
+  std::wstring profile;
 };
 
 #endif
