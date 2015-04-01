@@ -9,6 +9,7 @@
   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
   See the License for more information.
 ============================================================================*/
+#define _CRT_SECURE_NO_WARNINGS
 #include "CommandLineArgumentsEx.hpp"
 
 #include <vector>
@@ -580,10 +581,10 @@ void CommandLineArguments::GenerateHelp()
       switch ( this->Internals->Callbacks[*sit].ArgumentType )
         {
         case CommandLineArguments::NO_ARGUMENT: break;
-        case CommandLineArguments::CONCAT_ARGUMENT: wcscat_s(argument,wcslen(L"opt"), L"opt"); break;
-        case CommandLineArguments::SPACE_ARGUMENT:  wcscat_s(argument,wcslen(L" opt"),L" opt"); break;
-        case CommandLineArguments::EQUAL_ARGUMENT:  wcscat_s(argument,wcslen(L"=opt"), L"=opt"); break;
-        case CommandLineArguments::MULTI_ARGUMENT:  wcscat_s(argument,wcslen(L" opt opt ..."),L" opt opt ..."); break;
+        case CommandLineArguments::CONCAT_ARGUMENT: wcscat(argument, L"opt"); break;
+        case CommandLineArguments::SPACE_ARGUMENT:  wcscat(argument,L" opt"); break;
+        case CommandLineArguments::EQUAL_ARGUMENT:  wcscat(argument, L"=opt"); break;
+        case CommandLineArguments::MULTI_ARGUMENT:  wcscat(argument,L" opt opt ..."); break;
         }
       wchar_t buffer[80];
       swprintf_s(buffer, format, argument);
