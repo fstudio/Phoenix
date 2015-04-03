@@ -29,7 +29,10 @@ unsigned UIWindow::Runable()
 
     return 0;
 }
-
+bool UIWindow::InitializeUI()
+{
+    return true;
+}
 //////////UI Window Function
 
 HRESULT UIWindow::OnPaint(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled)

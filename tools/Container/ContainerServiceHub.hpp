@@ -9,11 +9,13 @@
 #define CONTAINER_SERVICE_HUB_HPP
 #include <unordered_map>
 
+struct Parameters;
 class ContainerService{
 private:
+    Parameters m_param;
     bool Manager(unsigned id);
 public:
-    ContainerService();
+    ContainerService(Parameters &param);
     ~ContainerService();
     bool Execute();
     void Destory();

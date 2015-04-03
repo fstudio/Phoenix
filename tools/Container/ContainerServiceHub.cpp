@@ -141,7 +141,7 @@ DWORD WINAPI ContainerRPCService(LPVOID)
 
 
 
-ContainerService::ContainerService()
+ContainerService::ContainerService(Parameters &param):m_param(param)
 {
     InitializeCriticalSection(&g_cs);
 }

@@ -11,32 +11,23 @@
 #include <string>
 
 
-bool LauncherSelfWithNonElevated()
+bool LauncherSelfWithNonElevated(const wchar_t *pszcmdArgs)
 {
     wchar_t szPath[32767]={0};
     std::wstring strCmdLine;
     HRESULT hr=S_OK;
     if(GetModuleFileNameW(nullptr,szPath,32767)==ERROR_INSUFFICIENT_BUFFER)
         return false;
-    LPWSTR *szArgList;
-    int argCount;
-    szArgList = CommandLineToArgvW(GetCommandLineW(), &argCount);
-    for(int i=1;i<argCount;i++)
-    {
-        strCmdLine+=szArgList[i];
-        strCmdLine+=+L" ";
-    }
-    LocalFree(szArgList);
-    hr=ProcessLauncherWithNonElevated(szPath,strCmdLine.c_str(),nullptr);
+    hr=ProcessLauncherWithNonElevated(szPath,pszcmdArgs,nullptr);
     return hr==0;
 }
 
-int LauncherContainerStatChecker()
+int LauncherContainerStatChecker(std::wstring &cmdArgs)
 {
     int iRet=0;
     if(IsUserAnAdmin())
     {
-        LauncherSelfWithNonElevated();
+        LauncherSelfWithNonElevated(cmdArgs.empty()?nullptr:cmdArgs.c_str());
         iRet=1;
         return iRet;////
     }

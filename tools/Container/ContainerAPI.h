@@ -50,8 +50,8 @@ unsigned WINAPI ProcessLauncherMICEx(LPCWSTR exePath,
   LPCWSTR workDirectory);
 
 
-bool LauncherSelfWithNonElevated();
-int LauncherContainerStatChecker();
+bool LauncherSelfWithNonElevated(const wchar_t *pszcmdArgs);
+int LauncherContainerStatChecker(std::wstring &cmdArgs);
 
 bool InitializeLogger();
 void LoggerDestory();

@@ -14,6 +14,7 @@
 #include <atlcoll.h>
 #include <atlstr.h>
 #include <atlsimpstr.h>
+#include <d2d1.h>
 
 #ifndef COMMAND_ID_HANDLER_SYSCMD
 #define COMMAND_ID_HANDLER_SYSCMD(id, func) \
@@ -25,6 +26,13 @@
             return TRUE; \
         }
 #endif
+
+////UI Tab
+class UITab{
+public:
+    UITab();
+    bool ReSize();
+};
 
 
 class UIWindow:public CWindowImpl<UIWindow, CWindow, CFrameWinTraits>{
@@ -42,6 +50,7 @@ public:
     unsigned Runable();
 private:
     std::vector<std::wstring> tab;
+    bool InitializeUI();
 public:
     HRESULT OnPaint(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
     HRESULT OnCreate(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
@@ -67,11 +76,5 @@ public:
     bool IFileSaveWindowModeUNC(/*Out*/const wchar_t *sfile);
 };
 
-////UI Tab
-class UITab{
-public:
-    UITab();
-    bool ReSize();
-};
 
 #endif

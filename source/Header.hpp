@@ -10,6 +10,8 @@
 #ifndef _WINDOWS_
 #include <windows.h>
 #endif
+#include <string>
+#include <vector>
 
 class ForceHANDLE{
 public:
@@ -53,5 +55,22 @@ public:
         return *this;
     }
 };
+
+struct Parameters{
+    std::vector<std::wstring> filevector;
+    bool model;
+};
+
+////This COM Interface Release
+template <class Interface>
+inline void SafeRelease(Interface **pPtr)
+{
+    if(*pPtr!=NULL)
+    {
+        (*pPtr)->Relase();
+        (*pPtr)=nullptr;
+    }
+}
+
 
 #endif

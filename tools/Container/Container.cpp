@@ -76,12 +76,12 @@ int Foreground()
 #undef _CRT_SECURE_NO_WARNINGS
 
 
-int ContainerServiceInit()
+int ContainerServiceInit(Parameters &param,std::wstring &cmdArgs)
 {
     int ret=0;
-    if((ret=LauncherContainerStatChecker())!=0)
+    if((ret=LauncherContainerStatChecker(cmdArgs))!=0)
         return ret;
-    ContainerService containerService;
+    ContainerService containerService(param);
     if(!containerService.Execute())
         ret=1;
     containerService.Destory();
@@ -93,6 +93,12 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
     Arguments arguments=Arguments::Main();
     int Argc=arguments.argc();
     wchar_t const  *const* Argv=arguments.argv();
+    std::wstring cmdArgs;
+    for(int i=1;i<Argc;i++)
+    {
+        cmdArgs.assign(L" ");
+        cmdArgs.assign(Argv[i]);
+    }
     bool help=false;
     bool bVersion=false;
     Parameters param;
@@ -119,6 +125,6 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
         ///
         return 1;
     }
-    return ContainerServiceInit();
+    return ContainerServiceInit(param,cmdArgs);
 }
 
