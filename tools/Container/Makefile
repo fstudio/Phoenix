@@ -13,7 +13,7 @@ CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
 
 
 LDFLAGS=/NOLOGO -OPT:REF
-OBJS=Container.obj ProcessLauncher.obj  Containerlogger.obj \
+OBJS=Container.obj ProcessLauncher.obj  Containerlogger.obj logger.obj \
 ContainerJobManager.obj CommandLineArgumentsEx.obj AppContainer.obj ContainerStatus.obj ContainerServiceHub.obj Precompiled.obj
 RPCGENFILE=ContainerService_c.c ContainerService_s.c ContainerService.h
 ###This libcontainer.lib

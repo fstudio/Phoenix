@@ -1,6 +1,6 @@
 ﻿<##########################################################################################
 * configure.ps1
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 * Note: Phoeinx Configure PowerShell Script
 * E-mail:<forcemz@outlook.com>
 * @2014.08
@@ -26,7 +26,7 @@ Function PrintVersion
 {
    Write-Host "Phoeinx Configure Script Assistant"
    Write-Host "Phoenix Build System version: ${PhoenixBuildSystemVersion}  (${PBRevision}.Revision)"
-   Write-Host "Copyright © 2014 The Force Studio .All Rights Reserved."
+   Write-Host "Copyright © 2015 The Force Studio .All Rights Reserved."
 }
 
 IF($args.Count -ge 1)

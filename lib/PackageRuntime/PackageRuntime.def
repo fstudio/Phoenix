@@ -35,6 +35,10 @@ SendRequest
 SetUserAgent
 StandardRequest
 StandardURLResolve
+StringBufferAppend
+StringBufferCStr
+StringBufferDelete
+StringBufferNew
 URIGetPortFromSchemes
 XmlResolveDelete
 XmlResolveLoader

@@ -8,7 +8,7 @@ zlib
 log4z
 tinyxml2
 wtl
-
+dotnet coreclr
 Note:
 Tiny C Compiler use LGPLv2.1 License
 We use tcc Offical Precompiled binary and Dynamic libraries . 

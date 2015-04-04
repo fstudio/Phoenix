@@ -83,15 +83,15 @@
     <ClInclude Include="gcenv.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gccommon.cpp" />
-    <ClCompile Include="gceewks.cpp" />
-    <ClCompile Include="gcscan.cpp" />
-    <ClCompile Include="gcwks.cpp" />
-    <ClCompile Include="handletable.cpp" />
-    <ClCompile Include="handletablecache.cpp" />
-    <ClCompile Include="handletablecore.cpp" />
-    <ClCompile Include="handletablescan.cpp" />
-    <ClCompile Include="objecthandle.cpp" />
+    <ClCompile Include="..\gccommon.cpp" />
+    <ClCompile Include="..\gceewks.cpp" />
+    <ClCompile Include="..\gcscan.cpp" />
+    <ClCompile Include="..\gcwks.cpp" />
+    <ClCompile Include="..\handletable.cpp" />
+    <ClCompile Include="..\handletablecache.cpp" />
+    <ClCompile Include="..\handletablecore.cpp" />
+    <ClCompile Include="..\handletablescan.cpp" />
+    <ClCompile Include="..\objecthandle.cpp" />
     <ClCompile Include="gcenv.cpp" />
     <ClCompile Include="GCSample.cpp" />
     <ClCompile Include="common.cpp">

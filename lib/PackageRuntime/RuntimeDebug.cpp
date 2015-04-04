@@ -34,7 +34,7 @@ extern "C" void DestoryDebugIO()
 	if(defaultFp)
 		fclose(defaultFp);
 }
- 
+
 extern "C" void TRACE(FILE *fp,const char* format,...)
 {
   if(fp!=nullptr)
