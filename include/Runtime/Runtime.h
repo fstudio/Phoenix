@@ -1,8 +1,10 @@
 /****************************************************************************************************************
-* Phoenix Package Runtime Library
-* Author:Force
-* E-mail: forcemz@outlook.com
-* Copyright 2015 ForceStudio All Rights Reserved.
+*   Phoenix Package Runtime Library
+*   Note: Runtime
+*   Data: 2015.04.05
+*   Author: Force.Charlie
+*   E-mail: forcemz@outlook.com
+*   Copyright 2015 ForceStudio All Rights Reserved.
 *****************************************************************************************************************/
 #ifndef PHOENIX_PACKAGERUNTIME_H
 #define PHOENIX_PACKAGERUNTIME_H

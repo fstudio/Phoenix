@@ -20,7 +20,7 @@
 #define PACKAGEEXPORT 
 #endif
 
-
+#define DECLARE_TYPEPOINTER(name) struct name##__{int unused;}; typedef struct name##__ *name
 
 
 
