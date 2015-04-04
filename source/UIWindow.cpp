@@ -15,7 +15,7 @@
 #include <security.h>
 #include <ShlDisp.h>
 #include <Phoenix>
-
+#include "Header.hpp"
 #include "UIWindow.h"
 
 UIWindow::UIWindow()

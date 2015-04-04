@@ -61,16 +61,6 @@ struct Parameters{
     bool model;
 };
 
-////This COM Interface Release
-template <class Interface>
-inline void SafeRelease(Interface **pPtr)
-{
-    if(*pPtr!=NULL)
-    {
-        (*pPtr)->Relase();
-        (*pPtr)=nullptr;
-    }
-}
 
 
 #endif
