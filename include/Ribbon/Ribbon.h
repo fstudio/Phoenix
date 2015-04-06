@@ -3,7 +3,7 @@
 * Note: Ribbon UI Framework Help
 * Date: 2014.09
 * E-mail:<forcemz@outlook.com>
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIXRIBBON_H
 #define PHOENIXRIBBON_H

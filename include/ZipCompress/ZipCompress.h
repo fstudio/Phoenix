@@ -13,29 +13,55 @@
 
 DWORD WINAPI ZipCompressThread(LPVOID lParam);
 
+template <class T>
+class ZipCompressRootEx{
+protected:
+    std::function<bool(std::wstring,int,void *)> NotifyFunction;
+    void *clientPtr;
+public:
+    enum NotifyTypeEmun{
+        NOTIFY_FAILD=0,
+        NOTIFY_WARNING=1,
+        NOTIFY_ASK=2,
+        NOTIFY_TASK=3,
+    };
+    ZipCompressRootEx():clientPtr(nullptr)
+    {
+        ///
+    }
+    void SetNotifyFunction(std::function<bool(std::wstring,int,void *)> notifyFunc)
+    {
+        this->NotifyFunction=notifyFunc;
+    }
+    void SetClientPointer(void * Ptr)
+    {
+        this->clientPtr=Ptr;
+    }
+};
+
 class ZipCompress{
-    public:
-        enum MessageReportCode{
-            REPORT_FAILD=0,
-            REPORT_WARNING=1,
-            REPORT_ASK=2
-        };
-        ZipCompress(bool iskeep);
-        ~ZipCompress();
-        void SetMessageThrow(std::function<bool(std::wstring,int)> fun)
-        {
-            this->MessageThrow=fun;
-        }
-    private:
-        int iRet;
-        bool isdefault;
-        std::function<bool(std::wstring,int)> MessageThrow;
-    public:
-        bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::wstring zipfile);
-        bool CreateCompressBufferToBuffer(BYTE *buffer,size_t *bsize,BYTE *dest,size_t *dsize);
-        bool CreateCompressFile(std::wstring sourcefile,/*OutDir*/std::wstring zipfile);
-        bool UnCompressToBuffer(std::wstring zipfile,BYTE*dest,size_t *destlen);
-        bool UnCompressToDisk(std::wstring zipfile,std::wstring folder);
+public:
+    enum MessageReportCode{
+        REPORT_FAILD=0,
+        REPORT_WARNING=1,
+        REPORT_ASK=2
+    };
+    ZipCompress(bool iskeep);
+    ~ZipCompress();
+    void SetMessageThrow(std::function<bool(std::wstring,int)> fun)
+    {
+        this->MessageThrow=fun;
+    }
+private:
+    int iRet;
+    bool isdefault;
+    std::function<bool(std::wstring,int)> MessageThrow;
+public:
+    bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::wstring zipfile);
+    bool CreateCompressBufferToBuffer(BYTE *buffer,size_t *bsize,BYTE *dest,size_t *dsize);
+    bool CreateCompressFile(std::wstring sourcefile,/*OutDir*/std::wstring zipfile);
+    bool UnCompressToBuffer(std::wstring zipfile,BYTE*dest,size_t *destlen);
+    bool UnCompressToDisk(std::wstring zipfile,std::wstring folder);
 };
 
 ////////By default ZipCompiressA use by PackageRuntime.

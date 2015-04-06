@@ -1,6 +1,6 @@
 /*********************************************************************************************************
 * Phoenix.Windows.Runtime.h
-* Note: IShell Common Dialog.
+* Note: Phoenix.Windows.Runtime.
 * Date: @2014.08
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
@@ -54,28 +54,28 @@ inline bool CheckOSIsSupportWindowsRuntime()
 using namespace Platform;
 using namespace Windows::Data::Json;
 using namespace Windows::Data::Xml::Dom;
-using namespace Windows::Data::Xml::Xsl
+using namespace Windows::Data::Xml::Xsl;
 
 /*
 Compiler
-/ZW enable WinRT language extensions  
-/AI<dir> add to assembly search path  
-  <dir> is the folder where the compiler searches the winmd files    
-/FU<file> forced using assembly/module  
-  force the inclusion of the specified winmd file  
-/D "WINAPI_FAMILY=2"  
-  set this define to compile against the ModernSDK subset of Win32  
+/ZW enable WinRT language extensions
+/AI<dir> add to assembly search path
+  <dir> is the folder where the compiler searches the winmd files
+/FU<file> forced using assembly/module
+  force the inclusion of the specified winmd file
+/D "WINAPI_FAMILY=2"
+  set this define to compile against the ModernSDK subset of Win32
 Link
-/APPCONTAINER[:NO]  
-  marks the executable as runnable in the appcontainer (only)  
-/WINMD[:{NO|ONLY}]  
-  emits a winmd; if “ONLY” is specified, does not emit the executable, but just the winmd  
-/WINMDFILE:filename  
-  name of the winmd file to emit  
-/WINMDDELAYSIGN[:NO]  
-/WINMDKEYCONTAINER:name  
-/WINMDKEYFILE:filename  
-  used to sign the winmd  file  
+/APPCONTAINER[:NO]
+  marks the executable as runnable in the appcontainer (only)
+/WINMD[:{NO|ONLY}]
+  emits a winmd; if “ONLY” is specified, does not emit the executable, but just the winmd
+/WINMDFILE:filename
+  name of the winmd file to emit
+/WINMDDELAYSIGN[:NO]
+/WINMDKEYCONTAINER:name
+/WINMDKEYFILE:filename
+  used to sign the winmd  file
 
 */
 

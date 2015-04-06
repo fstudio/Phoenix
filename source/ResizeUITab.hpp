@@ -14,10 +14,12 @@ private:
 public:
     ResizeUITab();
     bool Create();
-    LRESULT OnInit();
-    LRESULT OnDraw();
-    LRESULT OnClose();
-    LRESULT OnClick();
+    LRESULT Initialize();
+    LRESULT Resize();
+    LRESULT Move();
+    LRESULT Draw();
+    LRESULT Close();
+    LRESULT Click();
 };
 
 #endif
