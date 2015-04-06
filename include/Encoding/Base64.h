@@ -4,7 +4,7 @@
 *   Note: Phoenix Universial Chardet Library
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
-*   Copyright (C) 2014 The ForceStudio All Rights Reserved.
+*   Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 
 bool Base64Encode(const std::string& input, std::string* output);

@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 *   Phoneix Encoding Deter Base IMutiLanguage
 *   Note: PhoenixMultiLanguage.h
-*   Data: 2015.01.16
+*   Date: 2015.01.16
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_MULTILANGUAGE_INTERNALE_H

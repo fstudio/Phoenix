@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * PhoenixAutoComplete.cpp
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
 * Note: AutoCompletion.
-* E-mail:<forcemz@outlook.com>
 * @2014.08
+* E-mail:<forcemz@outlook.com>
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include <Phoenix.h>
 

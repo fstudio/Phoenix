@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * PhoenixThread.cpp
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
-* Note:
+* Note: Phoenix Thread
+* Date: 2014.08
 * E-mail:<forcemz@outlook.com>
-* @2014.08
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include <Phoenix.h>
 #include "PhoenixThread.hpp"

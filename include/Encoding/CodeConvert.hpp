@@ -1,14 +1,14 @@
 /*********************************************************************************************************
 *   Phoneix Encoding Convert C++ Cross Platfrom
 *   Note: CodeConvert.hpp
-*   Data: 2015.01.25
+*   Date: 2015.01.25
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_CODECVT_HPP
 #define PHOENIX_CODECVT_HPP
-#if defined(_MSC_VER)&&_MSC_VER>=1800&&!defined(__clang__)
+#if defined(_MSC_VER) && _MSC_VER >= 1800
 #define CODECVT_ENABLE 1
-#elif defined(__clang__)&&__cplusplus>=201103L
+#elif defined(__cplusplus) && __cplusplus >= 201103L
 #define CODECVT_ENABLE 1
 #else
 #define CODECVT_ENABLE 0
@@ -17,9 +17,16 @@
 #if CODECVT_ENABLE
 #include <string>
 #include <locale>
+#if defined(_LIBCPP_VERSION) || defined(_MSC_VER)
+////GCC 5.0 add codecvt
+#include <codecvt>
+#elif defined(__GNUC__) && __GNUC__ >= 5
 #include <codecvt>
 #else
-#error "Not Enable codecvt template class"
+#include <bits/codecvt.h>
+#endif
+#else
+#error "Not Enable codecvt template "
 #endif
 
 

@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 *   Phoneix Xml Base Profile  Features
 *   Note: ProfileManager.h
-*   Data: 2015.01.06
+*   Date: 2015.01.06
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

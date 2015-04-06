@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * PhoenixThread.hpp
-* Copyright (C) 2015 The ForceStudio All Rights Reserved.
-* Note:
+* Note: Phoenix Thread
+* Date: 2015.01
 * E-mail:<forcemz@outlook.com>
-* @2015.01
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_THREAD_HPP
 #define PHOENIX_THREAD_HPP

@@ -1,9 +1,9 @@
 /*********************************************************************************************************
-* PhoenixUI.h
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
-* Note: PhoenixUI header
+* UIWindow.hpp
+* Note: UIWindow.hpp
+* Date: @2015.01
 * E-mail:<forcemz@outlook.com>
-* @2014.09
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_UI_H
 #define PHOENIX_UI_H
@@ -51,6 +51,7 @@ public:
 private:
     std::vector<std::wstring> tab;
     bool InitializeUI();
+    void ProcessMouseMessage(UINT message, LPARAM lParam);
 public:
     HRESULT OnPaint(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
     HRESULT OnCreate(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
@@ -58,23 +59,19 @@ public:
     HRESULT OnSize(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
 };
 
-class PhoenixIFileWindowUI{
-private:
-    HWND m_hParent;
-    std::wstring windowTitle;
+class IFileWindowUI{
 public:
-    PhoenixIFileWindowUI(HWND hParent);
-    void SetIFileWindowTitle(std::wstring wTitle);
-    bool IFileOpenWindow(/*Out*/const wchar_t *ofile);
-    bool IFileSaveWindow(/*Out*/const wchar_t *sfile);
-    bool GetFileNameFromOpenWindow(std::wstring *ofile,bool IsSelectUNC);
-    bool GetFileNameFromSaveWindow(std::wstring *sfile,bool IsSelectUNC);
-private:
-    unsigned CheckUNCPath();
-public:
-    bool IFileOpenWindowModeUNC(/*Out*/const wchar_t *ofile);
-    bool IFileSaveWindowModeUNC(/*Out*/const wchar_t *sfile);
+    IFileWindowUI();
 };
 
+class IFileOpenWindowUI:public IFileWindowUI{
+public:
+    IFileOpenWindowUI();
+};
+
+class IFileSaveWindowUI:public IFileWindowUI{
+public:
+    IFileSaveWindowUI();
+};
 
 #endif

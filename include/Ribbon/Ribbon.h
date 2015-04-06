@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * Ribbon.h
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
 * Note: Ribbon UI Framework Help
+* Date: 2014.09
 * E-mail:<forcemz@outlook.com>
-* @2014.09
+* Copyright (C) 2014 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIXRIBBON_H
 #define PHOENIXRIBBON_H
@@ -15,9 +15,9 @@
 #include <initguid.h>
 #include <Uiribbon.h>
 
-class PhoenixRibbonUI{
+class RibbonUI{
 public:
-    PhoenixRibbonUI()
+    RibbonUI()
     {
         //Init()
     }

@@ -1,8 +1,8 @@
 /*********************************************************************************************************
 * Container.cpp
-* Note: Phoenix Container
+* Note: Phoenix Container EntryPoint
+* Date: @2015.03
 * E-mail:<forcemz@outlook.com>
-* Data: @2015.03
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #define _CRT_SECURE_NO_WARNINGS

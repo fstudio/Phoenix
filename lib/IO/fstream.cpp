@@ -30,8 +30,8 @@ HRESULT CFileStream::OpenForRead(LPCWSTR wzFilePath)
         hr = E_INVALIDARG;
         goto Exit;
     }
-    
-    _hFile = WszCreateFile(wzFilePath, GENERIC_READ, 
+
+    _hFile = CreateFile(wzFilePath, GENERIC_READ,
                            dwShareMode, NULL,
                            OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (_hFile == INVALID_HANDLE_VALUE) {
@@ -53,11 +53,11 @@ HRESULT CFileStream::OpenForWrite(LPCWSTR wzFilePath)
         goto Exit;
     }
 
-    _hFile = WszCreateFile(wzFilePath, GENERIC_WRITE, 
+    _hFile = CreateFile(wzFilePath, GENERIC_WRITE,
                            FILE_SHARE_READ, NULL,
                            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-    
-    if (_hFile == INVALID_HANDLE_VALUE) 
+
+    if (_hFile == INVALID_HANDLE_VALUE)
     {
         hr = HRESULT_FROM_WIN32(GetLastError());
         goto Exit;
@@ -70,10 +70,10 @@ Exit:
 HRESULT CFileStream::QueryInterface(REFIID riid, void **ppv)
 {
     HRESULT                                    hr = S_OK;
-    
-    if (!ppv) 
+
+    if (!ppv)
         return E_POINTER;
-    
+
     *ppv = NULL;
 
     if (IsEqualIID(riid, IID_IUnknown) || IsEqualIID(riid, IID_IStream)) {
@@ -97,7 +97,7 @@ STDMETHODIMP_(ULONG) CFileStream::AddRef()
 
 STDMETHODIMP_(ULONG) CFileStream::Release()
 {
-    ULONG                    ulRef = InterlockedDecrement(&_cRef);
+    ULONG   ulRef = InterlockedDecrement(&_cRef);
 
     if (!ulRef) {
         delete this;
@@ -178,9 +178,6 @@ Exit:
 
 HRESULT CFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition)
 {
-#if 1 // SetFilePointerEx not supported on Win9x
-    return E_NOTIMPL;
-#else    
     HRESULT                                         hr = S_OK;
     DWORD                                           dwFileOrigin;
     BOOL                                            bRet;
@@ -195,20 +192,20 @@ HRESULT CFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER
         case STREAM_SEEK_SET:
             dwFileOrigin = FILE_BEGIN;
             break;
-            
+
         case STREAM_SEEK_CUR:
             dwFileOrigin = FILE_CURRENT;
             break;
-            
+
         case STREAM_SEEK_END:
             dwFileOrigin = FILE_END;
             break;
-            
+
         default:
             hr = E_UNEXPECTED;
             goto Exit;
     }
-    
+
     bRet = SetFilePointerEx(_hFile, dlibMove, (LARGE_INTEGER *)plibNewPosition,
                             dwFileOrigin);
     if (!bRet) {
@@ -219,7 +216,6 @@ HRESULT CFileStream::Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER
 
 Exit:
     return hr;
-#endif
 }
 
 HRESULT CFileStream::SetSize(ULARGE_INTEGER libNewSize)
@@ -278,7 +274,6 @@ HRESULT CFileStream::Clone(IStream **ppIStream)
 BOOL CFileStream::Close()
 {
     BOOL                            fSuccess = FALSE;
-    
     if (_hFile != INVALID_HANDLE_VALUE) {
         if (!::CloseHandle(_hFile)) {
             _hFile = INVALID_HANDLE_VALUE;
@@ -288,7 +283,7 @@ BOOL CFileStream::Close()
         _hFile = INVALID_HANDLE_VALUE;
     }
 
-    fSuccess = TRUE; 
+    fSuccess = TRUE;
 
 Exit:
     return fSuccess;

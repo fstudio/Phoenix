@@ -1,28 +1,23 @@
 /*********************************************************************************************************
-* PhoenixWindows.h
-* Note: Phoenix Editor Windows Platform Header.
-* Date: @2014.08
+* UIWindow.cpp
+* Note: ResizeUITab.cpp
+* Date: @2015.04
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#ifndef _PHOENIXWINDOWS_
-#define _PHOENIXWINDOWS_
-#ifdef _WIN32
-///add Unicode support
-#ifndef UNICODE
-#define UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
+#ifndef PHOENXI_RESIZEUITAB_HPP
+#define PHOENXI_RESIZEUITAB_HPP
 
-#include <Windows.h>
-
-
-
-
+class ResizeUITab{
+private:
+    RECT m_place;
+public:
+    ResizeUITab();
+    bool Create();
+    LRESULT OnInit();
+    LRESULT OnDraw();
+    LRESULT OnClose();
+    LRESULT OnClick();
+};
 
 #endif
-
-#endif //_PHOENIXWINDOWS_
-

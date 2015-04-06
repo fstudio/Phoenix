@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 *   Phoneix IntegrateAnalyzer  Features
 *   Note: IntegrateAnalyzer.h
-*   Data: 2015.01.21
+*   Date: 2015.01.21
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

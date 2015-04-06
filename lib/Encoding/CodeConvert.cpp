@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 *   Phoneix Encoding Convert C++ Cross Platfrom
 *   Note: CodeConvert.cpp
-*   Data: 2015.01.25
+*   Date: 2015.01.25
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <Encoding/CodeConvert.hpp>

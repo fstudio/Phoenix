@@ -1,8 +1,8 @@
 /*********************************************************************************************************
 * Phoenix.Windows.Runtime.h
-* Note: IShell Common Dialog.
+* Note: Phoenix.Windows.Runtime.
+* Date: @2014.08
 * E-mail:<forcemz@outlook.com>
-* Data: @2014.08
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Phoenix.Windows.Runtime.h"

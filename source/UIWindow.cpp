@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * UIWindow.cpp
-* Copyright (C) 2015 The ForceStudio All Rights Reserved.
-* Note: UIWindow Window Class
+* Note: UIWindow.cpp
+* Date: @2015.01
 * E-mail:<forcemz@outlook.com>
-* @2015.01
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 
 #define SECURITY_WIN32 1

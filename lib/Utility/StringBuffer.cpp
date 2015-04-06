@@ -1,7 +1,7 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime
+*   Phoneix Utility Library
 *   Note: StringBuffer, copy from coreclr
-*   Data: 2015.04.04
+*   Date: 2015.04.04
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <stdio.h>

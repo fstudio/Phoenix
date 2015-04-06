@@ -1,7 +1,7 @@
 /*********************************************************************************************************
 *   Phoneix Package Runtime
 *   Note: PackageInitialize.c This File is Single-Exe Entry .
-*   Data: 2015.01.13
+*   Date: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
 #include <memory.h>

@@ -1,8 +1,8 @@
 /*********************************************************************************************************
 * Phoenix Analysis.h
-* Copyright (C) 2015 The ForceStudio All Rights Reserved.
+* Date: 2015.01
 * E-mail:<forcemz@outlook.com>
-* @2015.01
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_ANALYSIS_H
 #define PHOENIX_ANALYSIS_H

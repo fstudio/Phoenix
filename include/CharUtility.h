@@ -8,7 +8,7 @@
 #else
 #if defined(UNCIDOE) ||defined(_UNICODE)
 #define TCHAR wchar_t
-#define __T(x)  L(x)
+#define __T(x)  L##x
 #define _T(x) __T(x)
 #else
 #define TCHAR char

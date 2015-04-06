@@ -1,8 +1,8 @@
 /*********************************************************************************************************
 * Direct2DResourceManager.cpp
 * Note: Phoenix Editor Direct2D Resource Manager
+* Date: @2015.03
 * E-mail:<forcemz@outlook.com>
-* Data: @2015.03
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Direct2D.hpp"

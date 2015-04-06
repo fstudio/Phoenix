@@ -7,7 +7,7 @@
 #ifndef __FSTREAM_H_INCLUDED__
 #define __FSTREAM_H_INCLUDED__
 
-#include <objidl.h> 
+#include <objidl.h>
 
 class CFileStream : public IStream
 {
@@ -26,7 +26,7 @@ class CFileStream : public IStream
         // ISequentialStream methods:
         STDMETHODIMP Read(void *pv, ULONG cb, ULONG *pcbRead);
         STDMETHODIMP Write(void const *pv, ULONG cb, ULONG *pcbWritten);
-    
+
         // IStream methods:
         STDMETHODIMP Seek(LARGE_INTEGER dlibMove, DWORD dwOrigin, ULARGE_INTEGER *plibNewPosition);
         STDMETHODIMP SetSize(ULARGE_INTEGER libNewSize);
@@ -44,7 +44,7 @@ class CFileStream : public IStream
     private:
         LONG                                _cRef;
         HANDLE                              _hFile;
-    
+
 };
 
 #endif
