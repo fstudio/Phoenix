@@ -1,11 +1,11 @@
 /*********************************************************************************************************
-*   Phoneix ZipCompress Features
-*   Note: ZipCompress.h
+*   Phoneix ZipProviders Features
+*   Note: ZipProviders.h
 *   Date: 2015.01.18
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#ifndef ZIPCOMPRESS_H
-#define ZIPCOMPRESS_H
+#ifndef ZIPPROVIDERS_H
+#define ZIPPROVIDERS_H
 #include <string>
 #include <functional>
 #include <Windows.h>
@@ -58,5 +58,12 @@ public:
     void AsynchronousProcess();
     bool ProcessContext();
 };
+
+///////////////////////////////////////////////////////////////
+/// int function(int status,void *date);
+typedef int(*ProvidersCallBack)(int ,void *);
+
+bool ZipProvidersResolve(const char *dest,const char *source,ProvidersCallBack cb,void *date);
+bool ZipProvidersCompress(const char *dest,const char *source,ProvidersCallBack cb,void *date);
 
 #endif

@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * PManager.cpp@PhoenixManager
-* Copyright (C) 2015 The ForceStudio All Rights Reserved.
-* Note:
+* Note:Phoenix Manager
+* Date: @2014.08
 * E-mail:<forcemz@outlook.com>
-* @2014.08
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include <Windows.h>
 

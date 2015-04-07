@@ -1,10 +1,10 @@
 /*********************************************************************************************************
-*   Phoneix ZipCompress Features
-*   Note: ZipCompress.cpp
+*   Phoneix ZipProviders Features
+*   Note: ZipProviders.cpp
 *   Date: 2015.01.18
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include <ZipCompress/ZipCompress.h>
+#include <ZipProviders/ZipProviders.h>
 #include "zlib.h"
 #include "zip.h"
 #include "unzip.h"
@@ -400,3 +400,14 @@ Close:
     unzClose(uf);
     return bRet;
 }
+
+
+bool ZipProvidersResolve(const char *dest,const char *source,ProvidersCallBack cb,void *date)
+{
+    return true;
+}
+bool ZipProvidersCompress(const char *dest,const char *source,ProvidersCallBack cb,void *date)
+{
+    return true;
+}
+

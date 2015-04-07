@@ -1,7 +1,7 @@
-#ZipCompress Module
+#ZipProviders Module
 #NMAKE Module
 
-PROJECT= ZipCompress.lib
+PROJECT= ZipProviders.lib
 CC = cl.exe
 AR = lib.exe
 LD = link.exe
@@ -19,11 +19,11 @@ OBJS = adler32.obj compress.obj crc32.obj deflate.obj gzclose.obj gzlib.obj gzre
  
 all: $(PROJECT) $(LIBCACHE)\$(PROJECT)
 
-$(PROJECT): ZipCompress.obj $(OBJS)
-	$(AR) ZipCompress.obj $(OBJS) -out:$@
+$(PROJECT): ZipProviders.obj $(OBJS)
+	$(AR) ZipProviders.obj $(OBJS) -out:$@
 
-ZipCompress.obj:
-	$(CC) $(CXXFLAGS) $(INCDIR) ZipCompress.cpp
+ZipProviders.obj:
+	$(CC) $(CXXFLAGS) $(INCDIR) ZipProviders.cpp
 
 {.}.c.obj::
 	$(CC) $(CFLAGS) -c $<
