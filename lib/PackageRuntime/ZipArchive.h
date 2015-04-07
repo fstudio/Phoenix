@@ -7,12 +7,6 @@
 #ifndef PHONEIX_PACKAGE_RUNTIME_ZIPARCHIVE_INTERNAL_H
 #define PHONEIX_PACKAGE_RUNTIME_ZIPARCHIVE_INTERNAL_H
 
-#ifdef __cplusplus
-/////this
-inline void AB()
-{
-///
-}
-#endif
+
 
 #endif

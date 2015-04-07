@@ -11,10 +11,8 @@
 #include <Windows.h>
 #include <ppltasks.h>
 
-DWORD WINAPI ZipCompressThread(LPVOID lParam);
 
-template <class T>
-class ZipCompressRootEx{
+class ZipOptionRootEx{
 protected:
     std::function<bool(std::wstring,int,void *)> NotifyFunction;
     void *clientPtr;
@@ -25,7 +23,7 @@ public:
         NOTIFY_ASK=2,
         NOTIFY_TASK=3,
     };
-    ZipCompressRootEx():clientPtr(nullptr)
+    ZipOptionRootEx():clientPtr(nullptr)
     {
         ///
     }
@@ -37,69 +35,28 @@ public:
     {
         this->clientPtr=Ptr;
     }
+    virtual void AsynchronousProcess()=0;
+    virtual bool ProcessContext()=0;
 };
 
-class ZipCompress{
-public:
-    enum MessageReportCode{
-        REPORT_FAILD=0,
-        REPORT_WARNING=1,
-        REPORT_ASK=2
-    };
-    ZipCompress(bool iskeep);
-    ~ZipCompress();
-    void SetMessageThrow(std::function<bool(std::wstring,int)> fun)
-    {
-        this->MessageThrow=fun;
-    }
+class ZipCompress:public ZipOptionRootEx{
 private:
-    int iRet;
-    bool isdefault;
-    std::function<bool(std::wstring,int)> MessageThrow;
+    std::wstring m_folder;
+    std::wstring m_file;
 public:
-    bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::wstring zipfile);
-    bool CreateCompressBufferToBuffer(BYTE *buffer,size_t *bsize,BYTE *dest,size_t *dsize);
-    bool CreateCompressFile(std::wstring sourcefile,/*OutDir*/std::wstring zipfile);
-    bool UnCompressToBuffer(std::wstring zipfile,BYTE*dest,size_t *destlen);
-    bool UnCompressToDisk(std::wstring zipfile,std::wstring folder);
+    ZipCompress(std::wstring &folder,std::wstring &file);
+    void AsynchronousProcess();
+    bool ProcessContext();
 };
 
-////////By default ZipCompiressA use by PackageRuntime.
-class ZipCompressA{
-public:
-    enum MessageReportCode{
-        REPORT_FAILD=0,
-        REPORT_WARNING=1,
-        REPORT_ASK=2
-    };
-    ZipCompressA(bool iskeep);
-    ~ZipCompressA();
-    void SetMessageThrow(std::function<bool(std::string,int)> fun)
-    {
-        this->MessageThrow=fun;
-    }
+class ZipExtract:public ZipOptionRootEx{
 private:
-    int iRet;
-    bool isdefault;
-    std::function<bool(std::string,int)> MessageThrow;
+    std::wstring m_folder;
+    std::wstring m_file;
 public:
-    bool CreateCompressBuffer(BYTE* buffer,/**/size_t* bszie,std::string zipfile);
-    bool CreateCompressBufferToBuffer(BYTE *buffer,size_t *bsize,BYTE *dest,size_t *dsize);
-    bool CreateCompressFile(std::string sourcefile,/*OutDir*/std::string zipfile);
-    bool UnCompressToBuffer(std::string zipfile,BYTE*dest,size_t *destlen);
-    bool UnCompressToDisk(std::string zipfile,std::string folder);
-};
-
-
-//Asynchronous Compress:
-class ZipAsynchronousCompress{
-private:
-    std::wstring filePath;
-    std::function<bool(int)> NotifyFunction;
-public:
-    ZipAsynchronousCompress(std::wstring filepath);
-    ~ZipAsynchronousCompress();
-    void SetAsynchronousNotify(std::function<bool(int)> fun);
+    ZipExtract(std::wstring &folder,std::wstring &file);
+    void AsynchronousProcess();
+    bool ProcessContext();
 };
 
 #endif

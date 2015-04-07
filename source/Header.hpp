@@ -13,6 +13,11 @@
 #include <string>
 #include <vector>
 
+#ifndef MAX_UNC_PATH
+#define MAX_UNC_PATH (32*1024-1)
+#endif
+
+
 class ForceHANDLE{
 public:
     HANDLE m_handle;

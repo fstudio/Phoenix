@@ -10,10 +10,9 @@
 #include <stdlib.h>
 #include <string>
 #include <strsafe.h>
+#include "Header.hpp"
 #include "UIWindow.h"
-#ifndef UNC_MAX_PATH
-#define UNC_MAX_PATH 32767
-#endif
+
 
 
 
