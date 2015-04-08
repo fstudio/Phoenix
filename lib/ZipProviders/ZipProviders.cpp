@@ -90,7 +90,7 @@ bool GetWideStringFromUTF8(const std::string &u8str,std::wstring &wstr)
 
 bool ZipAddFile(zipFile zf, LPCWSTR lpszFileNameInZip, LPCWSTR lpszFilePath, bool bUtf8 = false)
 {
-    DWORD dwFileAttr = GetFileAttributes(lpszFilePath);
+    DWORD dwFileAttr = GetFileAttributesW(lpszFilePath);
     if (dwFileAttr == INVALID_FILE_ATTRIBUTES){
         return false;
     }
@@ -155,9 +155,9 @@ bool ZipAddFile(zipFile zf, LPCWSTR lpszFileNameInZip, LPCWSTR lpszFilePath, boo
 
 bool ZipAddFiles(zipFile zf, LPCWSTR lpszFileNameInZip, LPCWSTR lpszFiles, bool bUtf8 = false)
 {
-    WIN32_FIND_DATA wfd;
+    WIN32_FIND_DATAW wfd;
     ZeroMemory(&wfd, sizeof(wfd));
-    HANDLE hFind = FindFirstFile(lpszFiles, &wfd);
+    HANDLE hFind = FindFirstFileW(lpszFiles, &wfd);
 
     if (hFind == INVALID_HANDLE_VALUE){
         return false;
@@ -206,7 +206,7 @@ bool ZipAddFiles(zipFile zf, LPCWSTR lpszFileNameInZip, LPCWSTR lpszFiles, bool 
             }
         }
 
-    } while (FindNextFile(hFind, &wfd));
+    } while (FindNextFileW(hFind, &wfd));
 
     return true;
 }
@@ -401,13 +401,271 @@ Close:
     return bRet;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool zipAddFileA(zipFile zf, LPCSTR lpszFileNameInZip, LPCSTR lpszFilePath)
+{
+    DWORD dwFileAttr = GetFileAttributesA(lpszFilePath);
+    if (dwFileAttr == INVALID_FILE_ATTRIBUTES){
+        return false;
+    }
+    DWORD dwOpenAttr = (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY) != 0 ? FILE_FLAG_BACKUP_SEMANTICS : 0;
+    HANDLE hFile = CreateFileA(lpszFilePath, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, dwOpenAttr, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE){
+        return false;
+    }
+    FILETIME ftUTC, ftLocal;
+    GetFileTime(hFile, nullptr, nullptr, &ftUTC);
+    FileTimeToLocalFileTime(&ftUTC, &ftLocal);
+    WORD wDate, wTime;
+    FileTimeToDosDateTime(&ftLocal, &wDate, &wTime);
+    zip_fileinfo FileInfo;
+    ZeroMemory(&FileInfo, sizeof(FileInfo));
+    FileInfo.dosDate = ((((DWORD)wDate) << 16) | (DWORD)wTime);
+    FileInfo.external_fa |= dwFileAttr;
+    bool bRet=true;
+    const DWORD BUFFER_SIZE = 4096;
+    BYTE byBuffer[BUFFER_SIZE];
+    LARGE_INTEGER li = {};
+    if(zipOpenNewFileInZip(zf, lpszFileNameInZip, &FileInfo, NULL, 0, NULL, 0, NULL, Z_DEFLATED, 9) != ZIP_OK){
+        bRet=false;
+        goto Close;
+     }
+    if ((dwFileAttr & FILE_ATTRIBUTE_DIRECTORY) != 0){
+        bRet=false;
+        goto ZIPCloseLab;
+    }
+    if (!GetFileSizeEx(hFile, &li)){
+        bRet=false;
+        goto ZIPCloseLab;
+    }
+    while (li.QuadPart > 0)
+    {
+        DWORD dwSizeToRead = li.QuadPart > (LONGLONG)BUFFER_SIZE ? BUFFER_SIZE : (DWORD)li.LowPart;
+        DWORD dwRead = 0;
+        if (!ReadFile(hFile, byBuffer, dwSizeToRead, &dwRead, nullptr)){
+            bRet=false;
+            goto ZIPCloseLab;
+        }
+        if (zipWriteInFileInZip(zf, byBuffer, dwRead) < 0){
+            bRet=false;
+            goto ZIPCloseLab;
+        }
+        li.QuadPart -= (LONGLONG)dwRead;
+    }
+ZIPCloseLab:
+    zipCloseFileInZip(zf);
+Close:
+    CloseHandle(hFile);
+    return bRet;
+}
+
+bool zipAddFilesA(zipFile zf, LPCSTR lpszFileNameInZip, LPCSTR lpszFiles)
+{
+    WIN32_FIND_DATAA wfd;
+    ZeroMemory(&wfd, sizeof(wfd));
+    HANDLE hFind = FindFirstFileA(lpszFiles, &wfd);
+    if (hFind == INVALID_HANDLE_VALUE){
+        return false;
+    }
+    bool bRet=true;
+
+    std::string strFilePath = lpszFiles;
+    int nPos = strFilePath.rfind('\\');
+    if (nPos !=std::string::npos){
+        strFilePath = strFilePath.substr(nPos + 1);
+    }else{
+        strFilePath.clear();
+    }
+    std::string strFileNameInZip = lpszFileNameInZip;
+    do
+    {
+        std::string strFileName = wfd.cFileName;
+
+        if (strFileName == "." || strFileName == "..")
+        {
+            continue;
+        }
+
+        if ((wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0)
+        {
+            std::string s=strFileNameInZip + strFileName + "/";
+            std::string s1=strFilePath + strFileName;
+            if (!zipAddFileA(zf,s.c_str() ,s1.c_str() ))
+            {
+                bRet=false;
+                goto FINDCLOSELab;
+            }
+            std::string s2=strFilePath + strFileName + "\\*";
+            if (!zipAddFilesA(zf,s.c_str(),s2.c_str()))
+            {
+                bRet=false;
+                goto FINDCLOSELab;
+            }
+        }
+        else
+        {
+            std::string s3=strFileNameInZip + strFileName;
+            std::string s4= strFilePath + strFileName;
+            if (!zipAddFileA(zf,s3.c_str(),s4.c_str()))
+            {
+                bRet=false;
+                goto FINDCLOSELab;
+            }
+        }
+
+    } while (FindNextFileA(hFind, &wfd));
+
+FINDCLOSELab:
+    FindClose(hFind);
+    return bRet;
+}
+////////////////////////
+bool zipExtractCurrentFileA(unzFile uf, LPCSTR lpszDestFolder)
+{
+    char szFilePathA[MAX_PATH];
+    unz_file_info64 FileInfo;
+    if (unzGetCurrentFileInfo64(uf, &FileInfo, szFilePathA, sizeof(szFilePathA), NULL, 0, NULL, 0) != UNZ_OK)
+    {
+        return false;
+    }
+
+    if (unzOpenCurrentFile(uf) != UNZ_OK)
+    {
+        return false;
+    }
+    LOKI_ON_BLOCK_EXIT(unzCloseCurrentFile, uf);
+
+    std::string strDestPath = lpszDestFolder;
+    std::string filepathA=szFilePathA;
+
+    int nLength = filepathA.size();
+    auto lpszFileName = filepathA.c_str();
+    auto lpszCurrentFile = lpszFileName;
+    //LOKI_ON_BLOCK_EXIT_OBJ(strFileName, &CString::ReleaseBuffer, -1);
+
+    for (int i = 0; i <= nLength; ++i)
+    {
+        if (lpszFileName[i] == '\0')
+        {
+            strDestPath += lpszCurrentFile;
+            break;
+        }
+
+        if (lpszFileName[i] == '\\' || lpszFileName[i] == '/')
+        {
+            strDestPath += lpszCurrentFile;
+            strDestPath += "\\";
+
+            CreateDirectoryA(strDestPath.c_str(), NULL);
+            lpszCurrentFile = lpszFileName + i + 1;
+        }
+    }
+
+    if (lpszCurrentFile[0] == '\0')
+    {
+        return TRUE;
+    }
+
+    HANDLE hFile = CreateFileA(strDestPath.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, 0, NULL);
+
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+         return FALSE;
+    }
+
+    LOKI_ON_BLOCK_EXIT(CloseHandle, hFile);
+
+    const DWORD BUFFER_SIZE = 4096;
+    BYTE byBuffer[BUFFER_SIZE];
+
+    while (true)
+    {
+        int nSize = unzReadCurrentFile(uf, byBuffer, BUFFER_SIZE);
+
+        if (nSize < 0)
+        {
+            return FALSE;
+        }
+        else if (nSize == 0)
+        {
+            break;
+        }
+        else
+        {
+            DWORD dwWritten = 0;
+
+            if (!WriteFile(hFile, byBuffer, (DWORD)nSize, &dwWritten, NULL) || dwWritten != (DWORD)nSize)
+            {
+                return FALSE;
+            }
+        }
+    }
+
+    FILETIME ftLocal, ftUTC;
+
+    DosDateTimeToFileTime((WORD)(FileInfo.dosDate>>16), (WORD)FileInfo.dosDate, &ftLocal);
+    LocalFileTimeToFileTime(&ftLocal, &ftUTC);
+    SetFileTime(hFile, &ftUTC, &ftUTC, &ftUTC);
+    return true;
+}
+
+
 
 bool ZipProvidersResolve(const char *dest,const char *source,ProvidersCallBack cb,void *date)
 {
-    return true;
+    unzFile uf=unzOpen64(source);
+    bool bRet=true;
+    unz_global_info64 gi;
+    std::string deststr=dest;
+    if(uf==NULL){
+        cb(false,date);
+        return false;
+    }
+
+    if(unzGetGlobalInfo64(uf,&gi)!=UNZ_OK)
+    {
+        bRet=false;
+        goto Close;
+    }
+    CreateDirectoryA(dest,NULL);
+    if(!deststr.empty()&&deststr.at(deststr.size()-1)!=L'\\')
+    {
+        deststr+="\\";
+    }
+    for(int i=0;i<gi.number_entry;++i)
+    {
+        if (!zipExtractCurrentFileA(uf, deststr.c_str()))
+        {
+            bRet= false;
+            goto Close;
+        }
+        if (i < gi.number_entry - 1){
+            if (unzGoToNextFile(uf) != UNZ_OK){
+                bRet=false;
+                goto Close;
+            }
+        }
+    }
+Close:
+    unzClose(uf);
+    cb(false,date);
+    return bRet;
 }
+
+
 bool ZipProvidersCompress(const char *dest,const char *source,ProvidersCallBack cb,void *date)
 {
-    return true;
+    zipFile zf=zipOpen64(dest,0);
+    bool bRet=true;
+    if(zf==NULL)
+        return false;
+    if(!zipAddFilesA(zf,"",source)){
+        bRet=false;
+        goto Close;
+    }
+Close:
+    zipClose(zf,NULL);
+    cb(bRet,date);
+    return bRet;
 }
 

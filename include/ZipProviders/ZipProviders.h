@@ -61,7 +61,7 @@ public:
 
 ///////////////////////////////////////////////////////////////
 /// int function(int status,void *date);
-typedef int(*ProvidersCallBack)(int ,void *);
+typedef int(*ProvidersCallBack)(bool ,void *);
 
 bool ZipProvidersResolve(const char *dest,const char *source,ProvidersCallBack cb,void *date);
 bool ZipProvidersCompress(const char *dest,const char *source,ProvidersCallBack cb,void *date);
