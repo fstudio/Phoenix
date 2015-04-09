@@ -11,8 +11,8 @@
 // complex implementation, because the CLR links to the wrong CRT.
 //
 
-#ifndef _COMPLEX_H_
-#define _COMPLEX_H_
+#ifndef _COMPLEX_HPP_
+#define _COMPLEX_HPP_
 
 #include <math.h>
 

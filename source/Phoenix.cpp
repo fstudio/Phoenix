@@ -23,9 +23,8 @@
 static std::map<int,HINSTANCE> ChildProcessMap;
 
 int cmdUnknownArgument(const wchar_t *args, void *) {
-std::wcout << L"cmd Unknown Options " << args
-              << std::endl;
-  return 1;
+    std::wcout << L"cmd Unknown Options " <<args<<std::endl;
+    return 1;
 }
 
 

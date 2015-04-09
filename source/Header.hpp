@@ -66,6 +66,21 @@ struct Parameters{
     bool model;
 };
 
+template <class T,class TVaule>
+class AutoRelease{
+private:
+    T callback;
+    TVaule value;
+public:
+    AutoRelease(T cb,TVaule va):callback(cb),value(va)
+    {
+        //
+    }
+    ~AutoRelease()
+    {
+        callback(value);
+    }
+};
 
-
+#define AUTO_RELEASEZ(x,y) AutoRelease<decltype(x),decltype(y)>(x,y) ar
 #endif
