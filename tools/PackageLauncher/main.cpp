@@ -29,7 +29,7 @@ bool GetDefualtLibraryPath(char *libdir)
 int Launcher(const char* source,const char* incdir,const char* libdir,const char* addlib,bool isScriptModule)
 {
     CompilerStatus *s=CompilerNew();
-    if(s==nullptr)
+    if(!s)
         return -1;
     CompilerDelete(s);
     return 0;
