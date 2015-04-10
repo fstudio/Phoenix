@@ -13,6 +13,7 @@
 #include <wchar.h>
 #include <string>
 #include <map>
+#include <vector>
 #include "PhoenixUI.h"
 #include "Header.hpp"
 #include "Arguments.hpp"
@@ -62,9 +63,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     bool newWindow=false;
     bool bVersion=false;
     bool bSetting=false;
-    std::wstring  textfile;
     std::wstring  profile;
-
+    std::vector<std::wstring> vfile;
     typedef Force::CommandLineArguments argT;
     Force::CommandLineArguments Args;
     /// AddCallback
@@ -105,6 +105,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
       arg.AddCallback("--long3", argT::EQUAL_ARGUMENT, argument, random_ptr, "Same as -C but a bit different");
       arg.AddCallback("--long4", argT::CONCAT_ARGUMENT, argument, random_ptr, "-C");
     */
+
     Args.Initialize(Argc,Argv);
     Args.AddArgument(L"--help", argT::NO_ARGUMENT, &help,
         L"Cmd Print Help");
@@ -122,7 +123,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
         L"Run Other Profile Environment");
     Args.AddArgument(L"-Setting",argT::NO_ARGUMENT,&bSetting,
         L"Reset Phoenix Editor Environment");
-    Args.AddArgument(L"-File",argT::SPACE_ARGUMENT,&textfile,
+    Args.AddArgument(L"-File",argT::MULTI_ARGUMENT,&vfile,
         L"Open File");
     Args.StoreUnusedArguments(true);
     Args.SetUnknownArgumentCallback(cmdUnknownArgument);

@@ -82,7 +82,9 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     {
       std::wcout<<L"Print Usage:"<<std::endl;
       return 0;
-    }
+    }else{
+		std::cout<<"No Help"<<std::endl;
+	}
     if(parsed)
     {
       std::wcout << L"Parser:" << parsed << std::endl;
