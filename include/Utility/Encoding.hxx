@@ -56,7 +56,7 @@ public:
    * Convert between char and wchar_t
    */
 
-#if cmsys_STL_HAS_WSTRING
+
 
   // Convert a narrow string to a wide string.
   // On Windows, UTF-8 is assumed, and on other platforms,
@@ -70,7 +70,7 @@ public:
   static std::string ToNarrow(const std::wstring& str);
   static std::string ToNarrow(const wchar_t* str);
 
-#endif // cmsys_STL_HAS_WSTRING
+
 
 }; // class Encoding
 } // namespace cmsys

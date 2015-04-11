@@ -1,5 +1,5 @@
 /*============================================================================
-  KWSys - Kitware System Library
+  Force - Kitware System Library
   Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
 
   Distributed under the OSI-approved BSD License (the "License");
@@ -28,12 +28,12 @@ namespace Force
 {
 #if defined(_WIN32) || defined(__APPLE__) || defined(__CYGWIN__)
 // On Windows and apple, no difference between lower and upper case
-# define KWSYS_GLOB_CASE_INDEPENDENT
+# define FORCE_GLOB_CASE_INDEPENDENT
 #endif
 
 #if defined(_WIN32) || defined(__CYGWIN__)
 // Handle network paths
-# define KWSYS_GLOB_SUPPORT_NETWORK_PATHS
+# define FORCE_GLOB_SUPPORT_NETWORK_PATHS
 #endif
 
 //----------------------------------------------------------------------------
@@ -41,7 +41,7 @@ class GlobInternals
 {
 public:
   std::vector<std::string> Files;
-  std::vector<kwsys::RegularExpression> Expressions;
+  std::vector<Force::RegularExpression> Expressions;
 };
 
 //----------------------------------------------------------------------------
@@ -182,7 +182,7 @@ std::string Glob::PatternToRegex(const std::string& pattern,
         // Escape the non-alphanumeric character.
         regex += "\\";
         }
-#if defined(KWSYS_GLOB_CASE_INDEPENDENT)
+#if defined(FORCE_GLOB_CASE_INDEPENDENT)
       else
         {
         // On case-insensitive systems file names are converted to lower
@@ -210,7 +210,7 @@ std::string Glob::PatternToRegex(const std::string& pattern,
 bool Glob::RecurseDirectory(std::string::size_type start,
   const std::string& dir, GlobMessages* messages)
 {
-  kwsys::Directory d;
+  Force::Directory d;
   if ( !d.Load(dir) )
     {
     return true;
@@ -235,13 +235,13 @@ bool Glob::RecurseDirectory(std::string::size_type start,
       realname = dir + "/" + fname;
       }
 
-#if defined( KWSYS_GLOB_CASE_INDEPENDENT )
+#if defined( FORCE_GLOB_CASE_INDEPENDENT )
     // On Windows and apple, no difference between lower and upper case
-    fname = kwsys::SystemTools::LowerCase(fname);
+    fname = Force::SystemTools::LowerCase(fname);
 #endif
 
-    bool isDir = kwsys::SystemTools::FileIsDirectory(realname);
-    bool isSymLink = kwsys::SystemTools::FileIsSymlink(realname);
+    bool isDir = Force::SystemTools::FileIsDirectory(realname);
+    bool isSymLink = Force::SystemTools::FileIsSymlink(realname);
 
     if ( isDir && (!isSymLink || this->RecurseThroughSymlinks) )
       {
@@ -327,7 +327,7 @@ bool Glob::RecurseDirectory(std::string::size_type start,
 void Glob::ProcessDirectory(std::string::size_type start,
   const std::string& dir, GlobMessages* messages)
 {
-  //kwsys_ios::cout << "ProcessDirectory: " << dir << kwsys_ios::endl;
+  //Force_ios::cout << "ProcessDirectory: " << dir << Force_ios::endl;
   bool last = ( start == this->Internals->Expressions.size()-1 );
   if ( last && this->Recurse )
     {
@@ -340,7 +340,7 @@ void Glob::ProcessDirectory(std::string::size_type start,
     return;
     }
 
-  kwsys::Directory d;
+  Force::Directory d;
   if ( !d.Load(dir) )
     {
     return;
@@ -365,19 +365,19 @@ void Glob::ProcessDirectory(std::string::size_type start,
       realname = dir + "/" + fname;
       }
 
-#if defined(KWSYS_GLOB_CASE_INDEPENDENT)
+#if defined(FORCE_GLOB_CASE_INDEPENDENT)
     // On case-insensitive file systems convert to lower case for matching.
-    fname = kwsys::SystemTools::LowerCase(fname);
+    fname = Force::SystemTools::LowerCase(fname);
 #endif
 
-    //kwsys_ios::cout << "Look at file: " << fname << kwsys_ios::endl;
-    //kwsys_ios::cout << "Match: "
-    // << this->Internals->TextExpressions[start].c_str() << kwsys_ios::endl;
-    //kwsys_ios::cout << "Real name: " << realname << kwsys_ios::endl;
+    //Force_ios::cout << "Look at file: " << fname << Force_ios::endl;
+    //Force_ios::cout << "Match: "
+    // << this->Internals->TextExpressions[start].c_str() << Force_ios::endl;
+    //Force_ios::cout << "Real name: " << realname << Force_ios::endl;
 
-    if( (!last && !kwsys::SystemTools::FileIsDirectory(realname))
+    if( (!last && !Force::SystemTools::FileIsDirectory(realname))
       || (!this->ListDirs && last &&
-          kwsys::SystemTools::FileIsDirectory(realname)) )
+          Force::SystemTools::FileIsDirectory(realname)) )
       {
       continue;
       }
@@ -406,9 +406,9 @@ bool Glob::FindFiles(const std::string& inexpr, GlobMessages* messages)
   this->Internals->Expressions.clear();
   this->Internals->Files.clear();
 
-  if ( !kwsys::SystemTools::FileIsFullPath(expr) )
+  if ( !Force::SystemTools::FileIsFullPath(expr) )
     {
-    expr = kwsys::SystemTools::GetCurrentWorkingDirectory();
+    expr = Force::SystemTools::GetCurrentWorkingDirectory();
     expr += "/" + inexpr;
     }
   std::string fexpr = expr;
@@ -430,13 +430,13 @@ bool Glob::FindFiles(const std::string& inexpr, GlobMessages* messages)
     }
   if ( last_slash > 0 )
     {
-    //kwsys_ios::cout << "I can skip: " << fexpr.substr(0, last_slash)
-    // << kwsys_ios::endl;
+    //Force_ios::cout << "I can skip: " << fexpr.substr(0, last_slash)
+    // << Force_ios::endl;
     skip = last_slash;
     }
   if ( skip == 0 )
     {
-#if defined( KWSYS_GLOB_SUPPORT_NETWORK_PATHS )
+#if defined( FORCE_GLOB_SUPPORT_NETWORK_PATHS )
     // Handle network paths
     if ( expr[0] == '/' && expr[1] == '/' )
       {
@@ -506,7 +506,7 @@ bool Glob::FindFiles(const std::string& inexpr, GlobMessages* messages)
 void Glob::AddExpression(const std::string& expr)
 {
   this->Internals->Expressions.push_back(
-    kwsys::RegularExpression(
+    Force::RegularExpression(
       this->PatternToRegex(expr)));
 }
 
@@ -536,7 +536,7 @@ void Glob::AddFile(std::vector<std::string>& files, const std::string& file)
 {
   if ( !this->Relative.empty() )
     {
-    files.push_back(kwsys::SystemTools::RelativePath(this->Relative, file));
+    files.push_back(Force::SystemTools::RelativePath(this->Relative, file));
     }
   else
     {
@@ -544,5 +544,5 @@ void Glob::AddFile(std::vector<std::string>& files, const std::string& file)
     }
 }
 
-} // namespace KWSYS_NAMESPACE
+} // namespace Force_NAMESPACE
 

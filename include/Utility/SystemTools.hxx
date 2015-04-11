@@ -17,7 +17,7 @@
 #include <vector>
 #include <map>
 
-#include <cmsys/String.hxx>
+#include <Utility/String.hxx>
 
 #include <sys/types.h>
 
@@ -25,23 +25,7 @@
 #include <stdarg.h>
 // Required for FILE*
 #include <stdio.h>
-#if cmsys_STL_HAVE_STD && !defined(va_list)
-// Some compilers move va_list into the std namespace and there is no way to
-// tell that this has been done. Playing with things being included before or
-// after stdarg.h does not solve things because we do not have control over
-// what the user does. This hack solves this problem by moving va_list to our
-// own namespace that is local for kwsys.
-namespace std {} // Required for platforms that do not have std namespace
-namespace cmsys_VA_LIST
-{
-  using namespace std;
-  typedef va_list hack_va_list;
-}
-namespace cmsys
-{
-  typedef cmsys_VA_LIST::hack_va_list va_list;
-}
-#endif // va_list
+
 
 namespace Force
 {
@@ -51,7 +35,7 @@ class SystemToolsTranslationMap;
  * \brief Use to make sure SystemTools is initialized before it is used
  * and is the last static object destroyed
  */
-class cmsys_EXPORT SystemToolsManager
+class  SystemToolsManager
 {
 public:
   SystemToolsManager();
@@ -66,7 +50,7 @@ static SystemToolsManager SystemToolsManagerInstance;
 /** \class SystemTools
  * \brief A collection of useful platform-independent system functions.
  */
-class cmsys_EXPORT SystemTools
+class  SystemTools
 {
 public:
 
@@ -484,7 +468,7 @@ public:
    * Unix just a pass through
    */
   static bool GetShortPath(const std::string& path, std::string& result);
-  
+
   /**
    * Read line from file. Make sure to get everything. Due to a buggy stream
    * library on the HP and another on Mac OS X, we need this very carefully
@@ -492,7 +476,7 @@ public:
    * end-of-file was reached. If the has_newline argument is specified, it will
    * be true when the line read had a newline character.
    */
-  static bool GetLineFromStream(kwsys_ios::istream& istr, 
+  static bool GetLineFromStream(std::istream& istr,
                                 std::string& line,
                                 bool* has_newline=0,
                                 long sizeLimit=-1);
@@ -946,10 +930,5 @@ private:
 
 } // namespace cmsys
 
-/* Undefine temporary macros.  */
-#if !defined (KWSYS_NAMESPACE) && !cmsys_NAME_IS_KWSYS
-# undef std
-# undef kwsys_ios
-#endif
 
 #endif

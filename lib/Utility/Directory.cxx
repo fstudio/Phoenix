@@ -13,7 +13,7 @@
 #include <Utility/Directory.hxx>
 
 
-#include KWSYS_HEADER(Encoding.hxx)
+#include <Utility/Encoding.hxx>
 
 #include <string>
 #include <vector>
@@ -75,7 +75,7 @@ void Directory::Clear()
   this->Internal->Files.clear();
 }
 
-} // namespace KWSYS_NAMESPACE
+} // namespace Force
 
 // First microsoft compilers
 
@@ -90,7 +90,7 @@ void Directory::Clear()
 #include <sys/stat.h>
 #include <sys/types.h>
 
-namespace KWSYS_NAMESPACE
+namespace Force
 {
 
 bool Directory::Load(const std::string& name)
@@ -184,7 +184,7 @@ unsigned long Directory::GetNumberOfFilesInDirectory(const std::string& name)
   return count;
 }
 
-} // namespace KWSYS_NAMESPACE
+} // namespace Force
 
 #else
 
@@ -207,7 +207,7 @@ unsigned long Directory::GetNumberOfFilesInDirectory(const std::string& name)
 # define kwsys_dirent dirent
 #endif
 
-namespace KWSYS_NAMESPACE
+namespace Force
 {
 
 bool Directory::Load(const std::string& name)
@@ -248,6 +248,6 @@ unsigned long Directory::GetNumberOfFilesInDirectory(const std::string& name)
   return count;
 }
 
-} // namespace KWSYS_NAMESPACE
+} // namespace Force
 
 #endif

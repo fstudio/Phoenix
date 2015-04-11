@@ -12,16 +12,13 @@
 #ifndef cmsys_FStream_hxx
 #define cmsys_FStream_hxx
 
-#include <cmsys/ios/fstream>
-#include <cmsys/Encoding.hxx>
+#include <fstream>
+#include <Utility/Encoding.hxx>
 
-namespace cmsys
+namespace Force
 {
-#if defined(_MSC_VER) && _MSC_VER >= 1400
-# if defined(_NOEXCEPT)
-#  define cmsys_FStream_NOEXCEPT _NOEXCEPT
-# else
-#  define cmsys_FStream_NOEXCEPT
+#if defined(_MSC_VER) && _MSC_VER <= 1800
+#define noexcept
 # endif
   template<typename CharType,typename Traits>
   class basic_filebuf : public std::basic_filebuf<CharType,Traits>
@@ -90,7 +87,7 @@ namespace cmsys
       return buf_;
     }
 
-    ~basic_ifstream() cmsys_FStream_NOEXCEPT
+    ~basic_ifstream() noexcept
     {
       buf_->close();
       delete buf_;
@@ -152,7 +149,7 @@ class basic_ofstream : public std::basic_ostream<CharType,Traits>
   {
     return buf_.get();
   }
-  ~basic_ofstream() cmsys_FStream_NOEXCEPT
+  ~basic_ofstream() noexcept
   {
     buf_->close();
     delete buf_;
@@ -165,11 +162,6 @@ class basic_ofstream : public std::basic_ostream<CharType,Traits>
   typedef basic_ifstream<char> ifstream;
   typedef basic_ofstream<char> ofstream;
 
-# undef cmsys_FStream_NOEXCEPT
-#else
-  using cmsys_ios_namespace::ofstream;
-  using cmsys_ios_namespace::ifstream;
-#endif
 
   namespace FStream
   {

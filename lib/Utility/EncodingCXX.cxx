@@ -132,7 +132,7 @@ char const* const* Encoding::CommandLineArguments::argv() const
   return &this->argv_[0];
 }
 
-#if std_HAS_WSTRING
+
 
 std::wstring Encoding::ToWide(const std::string& str)
 {
@@ -173,6 +173,6 @@ std::string Encoding::ToNarrow(const wchar_t* wcstr)
     }
   return str;
 }
-#endif // std_HAS_WSTRING
+
 
 } // namespace KWSYS_NAMESPACE

@@ -24,7 +24,7 @@ size_t kwsysEncoding_mbstowcs(wchar_t* dest, const char* str, size_t n)
     return (size_t)-1;
     }
 #ifdef _WIN32
-  return MultiByteToWideChar(KWSYS_ENCODING_DEFAULT_CODEPAGE, 0,
+  return MultiByteToWideChar(CP_ACP, 0,
                              str, -1, dest, (int)n) - 1;
 #else
   return mbstowcs(dest, str, n);
@@ -51,7 +51,7 @@ size_t kwsysEncoding_wcstombs(char* dest, const wchar_t* str, size_t n)
     return (size_t)-1;
     }
 #ifdef _WIN32
-  return WideCharToMultiByte(KWSYS_ENCODING_DEFAULT_CODEPAGE, 0, str, -1,
+  return WideCharToMultiByte(CP_ACP, 0, str, -1,
                              dest, (int)n, NULL, NULL) - 1;
 #else
   return wcstombs(dest, str, n);
