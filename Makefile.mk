@@ -10,9 +10,15 @@ AS=ml64
 AS=ml
 !END
 INCLUDE=./wtl/include
+
 Phoenix:
 	$(CXX) -I$(INCLUDE) 
-
+	cd lib &&nmake -f build.mk
+	cd source&&nmake -f Phoenix.mk
+	cd tools&&nmake -f build.mk
+	
 clean:
+	cd lib &&nmake -f build.mk clean
+	cd source&&nmake -f Phoenix.mk clean
 	del /s /q *.obj *.pdb *.exe *.res >NUL
 	

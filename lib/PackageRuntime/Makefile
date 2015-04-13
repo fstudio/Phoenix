@@ -33,5 +33,8 @@ $(RESOURCES):PackageRuntime.rc
 	$(CC) $(CXXFLAGS) -c $<
 
 clean:
-	-del *.obj *.dll *.res *.lib *.exp
-
+	@-if exist *.obj del /s /q *.obj >nul 2>nul
+	@-if exist *.lib  del /s /q *.lib >nul 2>nul
+	@-if exist *.res del /s /q *.res >nul 2>nul
+	@-if exist *.dll  del /s /q *.dll >nul 2>nul
+	@-if exist *.exp del /s /q *.exp >nul 2>nul

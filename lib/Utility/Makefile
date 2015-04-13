@@ -22,4 +22,5 @@ $(LIBRARYNAME):$(COBJS) $(CXXOBJS)
 	$(CC) $(CXXFLAGS) $<
 
 clean:
-	-del *.obj *.lib
+	@-if exist *.obj del /s /q *.obj >nul 2>nul
+	@-if exist *.lib  del /s /q *.lib >nul 2>nul

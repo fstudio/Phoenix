@@ -32,7 +32,8 @@ $(LIBCACHE)\$(PROJECT):$(PROJECT)
 	copy $(PROJECT) $@
 	
 clean:
-	-del /s /q *.obj *.lib >nul 2>nul
+	@-if exist *.obj del /s /q *.obj >nul 2>nul
+	@-if exist *.lib  del /s /q *.lib >nul 2>nul
 
 	
 	
