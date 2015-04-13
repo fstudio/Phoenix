@@ -59,19 +59,19 @@ public:
     HRESULT OnSize(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
 };
 
-class IFileWindowUI{
-public:
-    IFileWindowUI();
-};
 
-class IFileOpenWindowUI:public IFileWindowUI{
-public:
-    IFileOpenWindowUI();
-};
+bool FileOpenWindowProvider(
+    HWND hParent,
+    std::wstring &filename,
+    const wchar_t *pszSuffix ,
+    const wchar_t *pszDefaultSuffix,
+    const wchar_t pszWindow);
+bool FileSavaWindowProvider(
+    HWND hParent,
+    std::wstring &filename,
+    const wchar_t *pszSuffix,
+    const wchar_t *pszDefaultSuffix,
+    const wchar_t *pszWindow);
 
-class IFileSaveWindowUI:public IFileWindowUI{
-public:
-    IFileSaveWindowUI();
-};
 
 #endif
