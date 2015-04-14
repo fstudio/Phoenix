@@ -1,6 +1,6 @@
 /*********************************************************************************************************
-* SearchWindow.cpp
-* Note: Phoenix Search Window
+* SearchWindowSelf.cpp
+* Note: Phoenix Search Window Self
 * Date: @2015.03
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.

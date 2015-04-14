@@ -39,10 +39,10 @@ public:
     std::wstring &info,
     int errorLevel=0);//Default is zero
     static HRESULT MessageWindowShowCStr(HWND hParent,
-    LPCWSTR &titleText,
-    LPCWSTR &note,
-    LPCWSTR &content,
-    LPCWSTR &info,
+    LPCWSTR titleText,
+    LPCWSTR note,
+    LPCWSTR content,
+    LPCWSTR info,
     int errorLevel=0);
 };
 

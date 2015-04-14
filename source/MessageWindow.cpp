@@ -57,7 +57,7 @@ __in LONG_PTR lpRefData
     case TDN_BUTTON_CLICKED:
         break;
     case TDN_HYPERLINK_CLICKED:
-        ShellExecute(hwnd, NULL, (LPCTSTR) lParam, NULL, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(hwnd, NULL, (LPCWSTR) lParam, NULL, NULL, SW_SHOWNORMAL);
         break;
     }
 
@@ -86,7 +86,6 @@ bool MessageWindowImpl::InitializeWindowImpl()
     int nButton=0;
     int nRadioButton=0;
     TASKDIALOGCONFIG tdConfig;
-    BOOL bElevated = FALSE;
     memset(&tdConfig, 0, sizeof(tdConfig));
     tdConfig.cbSize = sizeof(tdConfig);
     tdConfig.hwndParent = this->m_hParent;
@@ -97,9 +96,9 @@ bool MessageWindowImpl::InitializeWindowImpl()
     TDF_ENABLE_HYPERLINKS;
     tdConfig.nDefaultRadioButton = nRadioButton;
 
-    tdConfig.pszWindowTitle =this->m_title.c_str();
-    tdConfig.pszMainInstruction = this->m_note.c_str();
-    tdConfig.pszContent = this->m_content.c_str();
+    tdConfig.pszWindowTitle =this->m_title.empty()?nullptr:this->m_title.c_str();
+    tdConfig.pszMainInstruction = this->m_note.empty()?nullptr:this->m_note.c_str();
+    tdConfig.pszContent =this->m_content.empty()?nullptr:this->m_content.c_str();
     switch(errorlevel)
     {
         case ERROR_LEVEL_FLAGS::WARNING_LEVEL:
@@ -158,15 +157,49 @@ HRESULT MessageWindowImpl::MessageWindowShow(HWND hParent,
 }
 
 HRESULT MessageWindowImpl::MessageWindowShowCStr(HWND hParent,
-    LPCWSTR &titleText,
-    LPCWSTR &note,
-    LPCWSTR &content,
-    LPCWSTR &info,
+    LPCWSTR titleText,
+    LPCWSTR note,
+    LPCWSTR content,
+    LPCWSTR info,
     int errorLevel)
 {
-    std::wstring t=titleText;
-    std::wstring n=note;
-    std::wstring c=content;
-    std::wstring i=info;
-    return MessageWindowImpl::MessageWindowShow(hParent,t,n,c,i,errorLevel);
+    int nButton=0;
+    int nRadioButton=0;
+    HRESULT hr=S_OK;
+    TASKDIALOGCONFIG tdConfig;
+    memset(&tdConfig, 0, sizeof(tdConfig));
+    tdConfig.cbSize = sizeof(tdConfig);
+    tdConfig.hwndParent = this->m_hParent;
+    tdConfig.hInstance = GetModuleHandle(nullptr);
+    tdConfig.dwFlags =TDF_ALLOW_DIALOG_CANCELLATION |
+    TDF_EXPAND_FOOTER_AREA |
+    TDF_POSITION_RELATIVE_TO_WINDOW|
+    TDF_ENABLE_HYPERLINKS;
+    tdConfig.nDefaultRadioButton = nRadioButton;
+
+    tdConfig.pszWindowTitle =titleText;
+    tdConfig.pszMainInstruction = note;
+    tdConfig.pszContent =content;
+    switch(errorlevel)
+    {
+        case ERROR_LEVEL_FLAGS::WARNING_LEVEL:
+        tdConfig.pszMainIcon=TD_WARNING_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::ERROR_LEVEL:
+        tdConfig.pszMainIcon=TD_ERROR_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::SHIELD_LEVEL:
+        tdConfig.pszMainIcon=TD_SHIELD_ICON;
+        break;
+        case ERROR_LEVEL_FLAGS::NORMAL_LEVEL:
+        default:
+        tdConfig.pszMainIcon=TD_INFORMATION_ICON;
+        break;
+    }
+    tdConfig.pszExpandedInformation =info;
+
+    tdConfig.pszCollapsedControlText = L"More information";
+    tdConfig.pszExpandedControlText = L"Less information";
+    tdConfig.pfCallback = TaskWindowCallBackProc;
+    return TaskDialogIndirect(&tdConfig, &nButton, &nRadioButton, NULL);;
 }

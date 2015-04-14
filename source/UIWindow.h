@@ -14,7 +14,10 @@
 #include <atlcoll.h>
 #include <atlstr.h>
 #include <atlsimpstr.h>
+#include <ShlObj.h>
 #include <d2d1.h>
+#include <string>
+#include <vector>
 
 #ifndef COMMAND_ID_HANDLER_SYSCMD
 #define COMMAND_ID_HANDLER_SYSCMD(id, func) \
@@ -59,19 +62,21 @@ public:
     HRESULT OnSize(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled);
 };
 
+typedef COMDLG_FILTERSPEC FilterSpec;
+
 
 bool FileOpenWindowProvider(
     HWND hParent,
     std::wstring &filename,
-    const wchar_t *pszSuffix ,
+    std::vector<FilterSpec> *vSuffix,
     const wchar_t *pszDefaultSuffix,
-    const wchar_t pszWindow);
-bool FileSavaWindowProvider(
+    const wchar_t *pszWindowTitle);
+bool FileSaveWindowProvider(
     HWND hParent,
     std::wstring &filename,
-    const wchar_t *pszSuffix,
+    std::vector<FilterSpec> *vSuffix,
     const wchar_t *pszDefaultSuffix,
-    const wchar_t *pszWindow);
+    const wchar_t *pszWindowTitle);
 
 
 #endif
