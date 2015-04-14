@@ -11,7 +11,7 @@ CXXFLAGS=-Tp -C -MT
 LDFLAGS= -
 
 LIBRARY=Shell32.lib Comctl32.lib Gdi32.lib d2d1.lib dwrite.lib windowcodecs.lib \
-msimg32.lib usp10.lib Uxtheme.lib kernel32.lib Advapi32.lib Ole32.lib Userenv.lib Rpcrt4.lib propsys.lib shlwapi.lib
+msimg32.lib usp10.lib Uxtheme.lib kernel32.lib Advapi32.lib Ole32.lib Userenv.lib Rpcrt4.lib  shlwapi.lib
 
 APPNAME=Phoenix.exe
 

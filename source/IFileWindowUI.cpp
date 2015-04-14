@@ -54,52 +54,40 @@ bool FileOpenWindowProvider(
     const wchar_t *pszDefaultSuffix,
     const wchar_t *pszWindowTitle)
 {
-    HRESULT hr = S_OK;
-    IFileDialog *pfd = NULL;
+    HRESULT hr;
     bool bRet=false;
-    hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER,IID_PPV_ARGS(&pfd));
-    if (SUCCEEDED(hr))
-    {
-        if (SUCCEEDED(hr)){
-            hr = pfd->SetTitle(pszWindowTitle?pszWindowTitle:L"Open File Providers");
-        }
-        if (SUCCEEDED(hr)){
-            if(vSuffix)
-            {
-                hr = pfd->SetFileTypes(3,filterSpec);
-            }else{
-                hr = pfd->SetFileTypes(vSuffix->size(),getFilterSpecPointer(*vSuffix));
-            }
-            if (SUCCEEDED(hr))
-            {
-                hr = pfd->SetFileTypeIndex(1);
-            }
-        }
-        if (SUCCEEDED(hr)){
-            hr = pfd->SetDefaultExtension(pszDefaultSuffix?pszDefaultSuffix:defaultSubffix);
-        }
-        if (SUCCEEDED(hr)){
-            hr = pfd->Show(hParent);
-            if (SUCCEEDED(hr)){
-                IShellItem *psiResult = nullptr;
-                hr = pfd->GetResult(&psiResult);
-                if (SUCCEEDED(hr)){
-                    PWSTR pszPath = nullptr;
-                    hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszPath);
-                    if (SUCCEEDED(hr)){
-                        filename=pszPath;
-                        bRet=true;
-                        CoTaskMemFree(pszPath);
-                    }
-                    psiResult->Release();
-                }
-            }
-        }
-        pfd->Release();
-    }
+    CComPtr<IFileOpenDialog> pDlg;
+    // Create the file-open dialog COM object.
+    hr = pDlg.CoCreateInstance (__uuidof(FileOpenDialog));
     if (FAILED(hr)){
-        if (hr != HRESULT_FROM_WIN32(ERROR_CANCELLED)){
-            ReportErrorMessage(L"FileOpenWindowProvider", hr);
+        ReportErrorMessage(L"FileOpenWindowProvider",hr);
+        return false;
+    }
+
+    // Set the dialog's caption text and the available file types.
+    // NOTE: Error handling omitted here for clarity.
+    if(vSuffix){
+        hr = pDlg->SetFileTypes(3,filterSpec);
+    }else{
+        hr = pDlg->SetFileTypes(vSuffix->size(),getFilterSpecPointer(*vSuffix));
+    }
+    pDlg->SetTitle(pszWindowTitle?pszWindowTitle:L"Open File Provider");
+    pDlg->SetDefaultExtension(pszDefaultSuffix?pszDefaultSuffix:defaultSubffix);
+    // Show the dialog.
+    hr = pDlg->Show(hParent);
+    if(SUCCEEDED(hr)){
+        CComPtr<IShellItem> pItem;
+        hr = pDlg->GetResult(&pItem);
+        if(SUCCEEDED(hr))
+        {
+            PWSTR pwsz = NULL;
+            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
+            if(SUCCEEDED(hr))
+            {
+                filename=pwsz;
+                bRet=true;
+                CoTaskMemFree(pwsz);
+            }
         }
     }
     return bRet;
@@ -112,9 +100,47 @@ bool FileSaveWindowProvider(
     std::wstring &filename,
     std::vector<FilterSpec> *vSuffix,
     const wchar_t *pszDefaultSuffix,
+    const wchar_t *pszDefaultFileName,
     const wchar_t *pszWindowTitle)
 {
-    return true;
+    HRESULT hr;
+    bool bRet=false;
+    CComPtr<IFileSaveDialog> pDlg;
+    hr = pDlg.CoCreateInstance ( __uuidof(FileSaveDialog) );
+    if ( FAILED(hr)){
+        ReportErrorMessage(L"FileSaveWindowProvider",hr);
+        return false;
+    }
+    // Set the dialog's caption text, file types, Save button label,
+    // default file name, and default extension.
+    // NOTE: Error handling omitted here for clarity.
+    if(vSuffix){
+        hr = pDlg->SetFileTypes(3,filterSpec);
+    }else{
+        hr = pDlg->SetFileTypes(vSuffix->size(),getFilterSpecPointer(*vSuffix));
+    }
+    pDlg->SetTitle(pszWindowTitle?pszWindowTitle:L"Save File Provider");
+    pDlg->SetOkButtonLabel(L"D&o It!");
+    pDlg->SetFileName(pszDefaultFileName?pszDefaultFileName:L"code.cpp");
+    pDlg->SetDefaultExtension(pszDefaultSuffix?pszDefaultSuffix:defaultSubffix);
+    // Show the dialog.
+    hr = pDlg->Show (hParent);
+    // If the user chose a file, save the user's data to that file.
+    if(SUCCEEDED(hr)){
+        CComPtr<IShellItem> pItem;
+        hr = pDlg->GetResult (&pItem);
+        if(SUCCEEDED(hr))
+        {
+            PWSTR pwsz = NULL;
+            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
+            if ( SUCCEEDED(hr)){
+                filename=pwsz;
+                CoTaskMemFree ( pwsz );
+                bRet=true;
+            }
+        }
+    }
+    return bRet;
 }
 
 

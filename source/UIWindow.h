@@ -76,6 +76,7 @@ bool FileSaveWindowProvider(
     std::wstring &filename,
     std::vector<FilterSpec> *vSuffix,
     const wchar_t *pszDefaultSuffix,
+    const wchar_t *pszDefaultFileName,
     const wchar_t *pszWindowTitle);
 
 
