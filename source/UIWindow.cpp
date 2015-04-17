@@ -23,6 +23,10 @@ UIWindow::UIWindow()
 
 }
 
+void UIWindow::ProcessMouseMessage()
+{
+    //
+}
 
 unsigned UIWindow::Runable()
 {

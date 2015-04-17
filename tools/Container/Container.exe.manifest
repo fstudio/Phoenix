@@ -8,6 +8,11 @@
       </requestedPrivileges>
     </security>
   </trustInfo>
+  	<dependency optional="yes">
+		<dependentAssembly>
+			<assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.1.0" publicKeyToken="6595b64144ccf1df" language="*" processorArchitecture="*"></assemblyIdentity>
+		</dependentAssembly>
+	</dependency>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
 	    <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/> <!--Windows 7-->
