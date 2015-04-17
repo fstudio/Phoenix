@@ -11,50 +11,33 @@
 #include "ContainerServiceHub.hpp"
 #include "Arguments.hpp"
 #include "CommandLineArgumentsEx.hpp"
-#include <iostream>
+#include <sstream>
+#include "Container.h"
 
-class ConsoleAttachEx{
-private:
-  bool isOpen;
-public:
-  ConsoleAttachEx()
-  {
-    if(AttachConsole(ATTACH_PARENT_PROCESS))
-    {
-      freopen("CONIN$" , "r+t" , stdin);
-      freopen("CONOUT$" , "w+t" , stdout);
-      freopen("CONOUT$", "w", stderr);
-      isOpen=true;
-    }else{
-      isOpen=false;
-    }
-  }
-  ~ConsoleAttachEx()
-  {
-    if(isOpen)
-    {
-      fclose(stdout);
-      fclose(stdin);
-      fclose(stderr);
-      FreeConsole();
-    }
-  }
-};
 
-const wchar_t helpMessage[]=L"\nPhoenix Container Service\0";
+const wchar_t helpMessage[]=L"\nPhoenix Container Service\n\
+--help\t\tPrint Phoenix Container help and exit\n\
+--version\t\tPrint Phoenix Container version and exit\n\
+-Foreground\tRun Phoenix Container Foreground (debug)\n\
+-Profile\t\tSet Default Profile\0";
 
+bool bParsedFailed=false;
 
 int HelpMessagePrint()
 {
-    ConsoleAttachEx aex;
-    DWORD ws;
-    WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), helpMessage, (DWORD) wcslen(helpMessage), &ws, NULL);
+    MessageBoxW(nullptr,helpMessage,L"Container Help Message",MB_OK|MB_ICONINFORMATION);
     return 0;
 }
 int cmdUnknownArgument(const wchar_t *args, void *) {
-    ConsoleAttachEx aex;
-    std::wcerr << L"\ncmd Unknown Options " << args<< std::endl;
-    std::wcout<<helpMessage<<std::endl;
+    int nB=0;
+    auto ret=TaskDialog(nullptr,GetModuleHandle(nullptr),
+        L"Container Failed Message",
+        L"cmd Unknown Options:",
+        args,
+        TDCBF_OK_BUTTON,
+        TD_ERROR_ICON,
+        &nB);
+    bParsedFailed=true;
     return 1;
 }
 
@@ -62,8 +45,16 @@ int cmdUnknownArgument(const wchar_t *args, void *) {
 
 int PrintVersion()
 {
-    ConsoleAttachEx aex;
-    std::cout<<"\n1.0.0.1\n"<<std::endl;
+    int nB=0;
+    std::wstringstream wstr;
+    wstr<<L"1.0.1-Alpha";
+    auto ret=TaskDialog(nullptr,GetModuleHandle(nullptr),
+        L"Phoenix Container",
+        L"Container Information:",
+        wstr.str().c_str(),
+        TDCBF_OK_BUTTON,
+        TD_INFORMATION_ICON,
+        &nB);
     return 0;
 }
 
@@ -116,6 +107,8 @@ int WINAPI wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
         L"Set Default Profile");
     Args.SetUnknownArgumentCallback(cmdUnknownArgument);
     int parsed=Args.Parse();
+    if(bParsedFailed)
+        return 1;
     if(parsed){
         if(help)
             return HelpMessagePrint();

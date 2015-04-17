@@ -1,7 +1,7 @@
 #Makefile
 TARGET=Container.exe
 DBGTARGET=ContainerD.exe
-LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib Shell32.lib Userenv.lib Rpcrt4.lib
+LIBS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Ole32.lib Shell32.lib Userenv.lib Rpcrt4.lib Comctl32.lib
 CC=cl
 LD=link
 RC=rc
