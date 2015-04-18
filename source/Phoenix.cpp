@@ -14,12 +14,12 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "PhoenixUI.h"
+#include "UIWindow.h"
 #include "Header.hpp"
 #include "Arguments.hpp"
 #include "CommandLineArgumentsEx.hpp"
 #include "TaskProcess.hpp"
-
+#include <iostream>
 //class UIWindow;
 static std::map<int,HINSTANCE> ChildProcessMap;
 
@@ -31,14 +31,14 @@ int cmdUnknownArgument(const wchar_t *args, void *) {
 
 int WINAPI PhoenixUIModel()
 {
-    if(!PhoenixCreateMutex())
+    /*if(!PhoenixCreateMutex())
     {
          if(PhoenixRadio())
             return 0;
         return 1;
-    }
+    }*/
     UIWindow  windowUI;
-    windowUI->Runable();
+    windowUI.Runable();
     //while()
     return 0;
 }
@@ -46,12 +46,14 @@ int WINAPI PhoenixUIModel()
 
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANC hPrevInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR lpCmdLine,
     _In_ int nCmdShow)
 {
+    UNREFERENCED_PARAMETER(hInstance);
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
     Arguments arguments=Arguments::Main();
     int Argc=arguments.argc();
     wchar_t const  *const* Argv=arguments.argv();
@@ -133,7 +135,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
         return 1;
     if(bTask)
     {
-        TaskProcess taskProcess;
+        Task::TaskProcess taskProcess;
         return taskProcess.Execute();
     }
     wchar_t** newArgv = 0;

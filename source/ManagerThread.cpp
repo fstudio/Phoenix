@@ -10,12 +10,7 @@
 
 DWORD WINAPI  SupervisionChildProcess(LPVOID lParam)
 {
-    if(ChildProcessMap.empty())
-    {
-        //
-    }else{
-    //Query
-    }
+    ///
     return 0;
 }
 

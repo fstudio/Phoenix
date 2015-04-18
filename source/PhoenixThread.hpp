@@ -12,9 +12,10 @@
 
 class PhoenixThread{
 private:
-    unsigned IdOfThread;
+    DWORD IdOfThread;
     LPVOID m_param;
     HANDLE hThread;
+    bool IsRunOnce;
     ExecuteFunction m_eFunc;
 public:
     PhoenixThread(ExecuteFunction efunc,LPVOID param);

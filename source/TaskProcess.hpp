@@ -20,7 +20,7 @@ private:
     DWORD dwParent;
     bool SetParentProcess();
 public:
-    TaskProcess(int Argv,wchar_t *Argv);
+    TaskProcess(int Argc,wchar_t **Argv);
     TaskProcess(std::vector<std::wstring> &Args);
     TaskProcess();
     int Execute();

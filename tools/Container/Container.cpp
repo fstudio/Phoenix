@@ -21,7 +21,7 @@ const wchar_t helpMessage[]=L"\nPhoenix Container Service\n\
 -Foreground\tRun Phoenix Container Foreground (debug)\n\
 -Profile\t\tSet Default Profile\0";
 
-bool bParsedFailed=false;
+static bool bParsedFailed=false;
 
 int HelpMessagePrint()
 {

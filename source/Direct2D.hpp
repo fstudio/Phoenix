@@ -11,9 +11,8 @@
 #include <d2d1.h>
 #include <dwrite.h>
 #include <Strsafe.h>
+#include <Wincodec.h>
 
-#pragma comment(lib, "d2d1.lib")
-#pragma comment(lib,"dwrite.lib")
 
 #ifndef ASSERT
 #ifdef _DEBUG

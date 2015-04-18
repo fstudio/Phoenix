@@ -14,18 +14,13 @@
 #include <wincrypt.h>
 #include <security.h>
 #include <ShlDisp.h>
-#include <Phoenix>
+#include <Phoenix.h>
 #include "Header.hpp"
 #include "UIWindow.h"
 
 UIWindow::UIWindow()
 {
 
-}
-
-void UIWindow::ProcessMouseMessage()
-{
-    //
 }
 
 unsigned UIWindow::Runable()
@@ -38,7 +33,10 @@ bool UIWindow::InitializeUI()
     return true;
 }
 //////////UI Window Function
-
+void UIWindow::ProcessMouseMessage(UINT message, LPARAM lParam)
+{
+    ///
+}
 HRESULT UIWindow::OnPaint(UINT nMsg, WPARAM wParam, LPARAM lParam, BOOL & bHandled)
 {
     return S_OK;

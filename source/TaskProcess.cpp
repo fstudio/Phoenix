@@ -5,6 +5,7 @@
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
+#include <Windows.h>
 #include <winternl.h>
 #include <Processthreadsapi.h>
 #include <wchar.h>
@@ -28,7 +29,7 @@ __out_opt PULONG ReturnLength
 
 using namespace Task;
 
-typedef NTSTATUS (__stdcall * NTQUERYINFORMATIONPROCESS)
+typedef NTSTATUS (WINAPI * NTQUERYINFORMATIONPROCESS)
 (
     HANDLE ProcessHandle,
     PROCESSINFOCLASS ProcessInformationClass,
@@ -37,6 +38,7 @@ typedef NTSTATUS (__stdcall * NTQUERYINFORMATIONPROCESS)
     PULONG ReturnLength
 );
 
+/*
 typedef struct _PROCESS_BASIC_INFORMATION {
     PVOID Reserved1;
     PPEB PebBaseAddress;
@@ -44,6 +46,8 @@ typedef struct _PROCESS_BASIC_INFORMATION {
     ULONG_PTR UniqueProcessId;
     PVOID Reserved3;
 } PROCESS_BASIC_INFORMATION;
+
+*/
 
 //Task Process start
 DWORD  WINAPI  FollowParentQuit(LPVOID lParam)
@@ -83,7 +87,7 @@ DWORD  WINAPI  FollowParentQuit(LPVOID lParam)
 }
 
 
-TaskProcess::TaskProcess(int Argv,wchar_t *Argv)
+TaskProcess::TaskProcess(int Argc,wchar_t **Argv)
 {
 
 }

@@ -169,7 +169,7 @@ HRESULT MessageWindowImpl::MessageWindowShowCStr(HWND hParent,
     TASKDIALOGCONFIG tdConfig;
     memset(&tdConfig, 0, sizeof(tdConfig));
     tdConfig.cbSize = sizeof(tdConfig);
-    tdConfig.hwndParent = this->m_hParent;
+    tdConfig.hwndParent = hParent;
     tdConfig.hInstance = GetModuleHandle(nullptr);
     tdConfig.dwFlags =TDF_ALLOW_DIALOG_CANCELLATION |
     TDF_EXPAND_FOOTER_AREA |
@@ -180,7 +180,7 @@ HRESULT MessageWindowImpl::MessageWindowShowCStr(HWND hParent,
     tdConfig.pszWindowTitle =titleText;
     tdConfig.pszMainInstruction = note;
     tdConfig.pszContent =content;
-    switch(errorlevel)
+    switch(errorLevel)
     {
         case ERROR_LEVEL_FLAGS::WARNING_LEVEL:
         tdConfig.pszMainIcon=TD_WARNING_ICON;

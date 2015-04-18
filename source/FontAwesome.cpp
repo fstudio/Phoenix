@@ -74,7 +74,7 @@ FontAwesome::FontAwesome(std::wstring& fontfile):loadOK(false)
 FontAwesome::~FontAwesome()
 {
   if(loadOK){
-    RemoveFontResourceEx(m_fontfile.c_str());
+    RemoveFontResourceEx(m_fontfile.c_str(),FR_PRIVATE,0);
     ::SendMessage(HWND_BROADCAST, WM_FONTCHANGE, 0, 0);
   }
 }

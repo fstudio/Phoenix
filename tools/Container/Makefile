@@ -33,7 +33,7 @@ all:$(TARGET) $(LIBCONTAINER)
 
 
 $(TARGET):Container.res ContainerService_s.obj ContainerService.obj $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) ContainerService_s.obj ContainerService.obj Container.res -OUT:$@ $(LIBS)
+	$(LD) $(LDFLAGS)  -OUT:$@ $** $(LIBS)
 
 Container.res:
 	$(RC) Container.rc

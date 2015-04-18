@@ -6,7 +6,6 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Direct2D.hpp"
-
 #define SAFE_RELEASE(P) if(P){P->Release() ; P = NULL ;}
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

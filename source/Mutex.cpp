@@ -9,7 +9,7 @@
 
 bool PhoenixCreateMutex()
 {
-    HANDLE hMutex = CreateMutex(NULL, FALSE, _T("PhoenixMutex+UIChannel"));
+    HANDLE hMutex = CreateMutexW(NULL, FALSE, L"PhoenixMutex+UIChannel");
     if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
         return false;
