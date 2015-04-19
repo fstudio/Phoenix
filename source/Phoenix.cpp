@@ -29,20 +29,26 @@ int cmdUnknownArgument(const wchar_t *args, void *) {
 }
 
 
-int WINAPI PhoenixUIModel()
+int WINAPI UIChannelProviders(bool isNew)
 {
-    /*if(!PhoenixCreateMutex())
+    if(!isNew)
     {
-         if(PhoenixRadio())
-            return 0;
-        return 1;
-    }*/
+        if(!CreateMutexProviders())
+        {
+            return 1;
+        }
+    }
     UIWindow  windowUI;
     windowUI.Runable();
     //while()
     return 0;
 }
 
+
+int WINAPI TaskChannelProviders()
+{
+    return 0;
+}
 
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance,

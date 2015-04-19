@@ -1,9 +1,9 @@
 /*********************************************************************************************************
 * Phoenix.h
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
-* Note: Application->Entry
+* Note: Main Header
+* Date: 2014.08
 * E-mail:<forcemz@outlook.com>
-* @2014.08
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef _PHOENIX_BASE_
 #define _PHOENIX_BASE_
@@ -37,10 +37,6 @@ typedef struct VersionTags_{
    unsigned patch;
    unsigned buildtimes;
 }version_t;
-
-typedef DWORD (WINAPI *ExecuteFunction)(
-    LPVOID lpThreadParameter
-    );
 
 #endif
 

@@ -6,10 +6,10 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Header.hpp"
-
-bool PhoenixCreateMutex()
+/////default Create Mutex
+bool CreateMutexProviders(const wchar_t *mn)
 {
-    HANDLE hMutex = CreateMutexW(NULL, FALSE, L"PhoenixMutex+UIChannel");
+    HANDLE hMutex = CreateMutexW(NULL, FALSE,mn?mn:L"Phoenix.APIv1.Mutex+UIChannel");
     if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
         return false;

@@ -10,15 +10,18 @@
 #include <Windows.h>
 #include <functional>
 
+typedef DWORD (WINAPI *ThreadCallBack)(LPVOID lpThreadParameter);
+
+
 class PhoenixThread{
 private:
     DWORD IdOfThread;
     LPVOID m_param;
     HANDLE hThread;
     bool IsRunOnce;
-    ExecuteFunction m_eFunc;
+    ThreadCallBack m_eFunc;
 public:
-    PhoenixThread(ExecuteFunction efunc,LPVOID param);
+    PhoenixThread(ThreadCallBack efunc,LPVOID param);
     unsigned GetThreadObjectId(){return this->IdOfThread;}
     bool Run();
     bool Suspend();

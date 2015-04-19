@@ -18,6 +18,7 @@
 #include <d2d1.h>
 #include <string>
 #include <vector>
+#include "Resource.h"
 
 #ifndef COMMAND_ID_HANDLER_SYSCMD
 #define COMMAND_ID_HANDLER_SYSCMD(id, func) \
@@ -29,6 +30,9 @@
             return TRUE; \
         }
 #endif
+
+
+
 
 ////UI Tab
 class UITab{

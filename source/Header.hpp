@@ -17,6 +17,7 @@
 #define MAX_UNC_PATH (32*1024-1)
 #endif
 
+bool CreateMutexProviders(const wchar_t *mn=nullptr);
 
 class ForceHANDLE{
 public:

@@ -9,7 +9,7 @@
 #include "PhoenixThread.hpp"
 
 
-PhoenixThread::PhoenixThread(ExecuteFunction efunc,LPVOID param):m_param(param),hThread(nullptr),
+PhoenixThread::PhoenixThread(ThreadCallBack efunc,LPVOID param):m_param(param),hThread(nullptr),
 m_eFunc(efunc),
 IdOfThread(0)
 {

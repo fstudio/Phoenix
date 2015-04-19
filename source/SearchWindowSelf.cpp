@@ -23,12 +23,20 @@ HWND WINAPI GetSelfClassActiveWindowHwnd()
     return nullptr;
 }
 
-bool WINAPI TellActiveWindowOpenFile(HWND hWnd,std::wstring file)
+bool WINAPI TellActiveWindowOpenFile(HWND hWnd,std::wstring &file)
 {
-    return true;
+    if(hWnd&&!file.empty())
+    {
+        ::PostMessage(hWnd,WM_COMMAND,(WPARAM)IDC_OPEN_FILE,(LPARAM)(file.c_str()));
+    }
+    return false;
 }
 
-bool WINAPI TellActiveWindowOpenFileCstr(HWND hWnd,const wchar_t *filestr)
+bool WINAPI TellActiveWindowOpenFileCstr(HWND hWnd,const wchar_t *fstr)
 {
-    return true;
+    if(hWnd&&fstr)
+    {
+        ::PostMessage(hWnd,WM_COMMAND,(WPARAM)IDC_OPEN_FILE,(LPARAM)fstr);
+    }
+    return false;
 }

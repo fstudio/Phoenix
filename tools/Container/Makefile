@@ -10,7 +10,8 @@ CFLAGS=-nologo  -DUNICODE -D_UNICODE -TC -W3
 CXXFLAGS=-nologo  -DUNICODE -D_UNICODE -TP  -W4 -EHsc -Zc:forScope -Zc:wchar_t
 CXXDEBUG=-Od -MTd -DDEBUG
 CXXNDEBUG=-O1 -Oi -MT -DNDEBUG
-
+LIBCOPY=../../lib/LibraryCache/libcontainer.lib
+HEADERCOPY=../../include/Container/ContainerLPCClient.hpp
 
 LDFLAGS=/NOLOGO -OPT:REF
 OBJS=Container.obj ProcessLauncher.obj  Containerlogger.obj logger.obj \
@@ -29,8 +30,13 @@ CCFLAGS=$(CCFLAGS) $(CXXNDEBUG)
 !ENDIF
 
 
-all:$(TARGET) $(LIBCONTAINER)
+all:$(TARGET) $(LIBCOPY) $(HEADERCOPY)
 
+$(LIBCOPY):$(LIBCONTAINER)
+	copy libcontainer.lib  ..\..\lib\LibraryCache /Y
+
+$(HEADERCOPY):ContainerLPCClient.hpp
+	copy ContainerLPCClient.hpp ..\..\include\Container /Y
 
 $(TARGET):Container.res ContainerService_s.obj ContainerService.obj $(OBJS)
 	$(LD) $(LDFLAGS)  -OUT:$@ $** $(LIBS)
