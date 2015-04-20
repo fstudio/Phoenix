@@ -22,7 +22,7 @@ private:
   IXmlReader *pReader;
   std::wstring m_xmlfile;
   bool XmlAttributesResolve(IXmlReader *pReader,
-                            std::map<std::wstring, std::wstring> &kv) {
+    std::map<std::wstring, std::wstring> &kv) {
     const WCHAR *pwszPrefix;
     const WCHAR *pwszLocalName;
     const WCHAR *pwszValue;

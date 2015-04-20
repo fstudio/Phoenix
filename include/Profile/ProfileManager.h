@@ -12,7 +12,7 @@
 
 #include <Windows.h>
 #include <string>
-#include <map>
+#include <unordered_map>
 
 #ifndef __cplusplus
 #error "Only Support C++"
@@ -23,8 +23,8 @@ class XmlIntegratedAnalyzer;
 class ProfileManager {
 private:
   XmlIntegratedAnalyzer *xiaptr;
-  std::map<std::wstring, std::wstring> kvmap;
-  std::map<std::wstring, std::wstring> appsettingkv;
+  std::unordered_map<std::wstring, std::wstring> kvmap;
+  std::unordered_map<std::wstring, std::wstring> appsettingkv;
   std::wstring configfile;
   bool BeWriteProfile();
   bool BeReadProfile();

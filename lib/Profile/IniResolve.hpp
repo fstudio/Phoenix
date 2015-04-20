@@ -10,7 +10,6 @@
 #define PHOENIX_INIRESOLVE_HPP
 #include <string>
 #include <vector>
-#include <map>
 #include <unordered_map>
 #include <list>
 #include <UniversalChardet/UniversalChardet.h>
@@ -59,8 +58,8 @@ public:
 protected:
     T m_iniFile;
     bool Modify;
-    std::map<T, std::vector<ParametersNV> > treeMode;/// Replace unordered_map.
-    std::map<unsigned,T> commentsMap;
+    std::unordered_map<T, std::vector<ParametersNV> > treeMode;/// Replace unordered_map.
+    std::unordered_map<unsigned,T> commentsMap;
     std::vector<ParametersNV> anonymousNV;
     T currentSection;
     std::vector<ParametersNV>* currentPtr;//current vector cache Pointer.
