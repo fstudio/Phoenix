@@ -23,7 +23,7 @@ class Flavorless{
 public:
     typedef std::base_string<Character> String;
 private:
-    Flavor_FileTYPE  rawType;
+    FlavorTP  rawType;
     std::unordered_map<String,String> nov;
     std::list<std::unordered_map<String,String>> nodelist
 public:

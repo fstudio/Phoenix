@@ -37,24 +37,19 @@
 
 #ifdef _WIN32
 #define fread fread_s
-#define OPENFLAGS "rb"
-#define OPENFLAGSW L"rb"
-#else
-#define OPENFLAGS "r"
-#define OPENFLAGSW L"r"
 #endif
 
 #include <codecvt>
 
-
+///Warning this detect encoding: file must hava bom ,or your can user universalchardet
 inline FlavorTP DetectFileEncoding(const char *filePtr)
 {
     FILE *fp;
 #ifdef _MSC_VER
-    if(fopen_s(&fp,filePtr,OPENFLAGS)!=0||!fp)
+    if(fopen_s(&fp,filePtr,"rb")!=0||!fp)
         return FlavorTP::FILETYPE_FAILED;
 #else
-    if((fp=fopen(filePtr,OPENFLAGS))==NULL)
+    if((fp=fopen(filePtr,"rb"))==NULL)
         return FlavorTP::FILETYPE_FAILED;
 #endif
     FlavorTP tp;
@@ -80,23 +75,26 @@ inline FlavorTP DetectFileEncoding(const wchar_t *filePtr)
 {
     FILE *fp;
 #ifdef _WIN32
-    if(_wfopen_s(&fp,filePtr,OPENFLAGSW)!=0)
+    if(_wfopen_s(&fp,filePtr,L"rb")!=0)
         return FlavorTP::FILETYPE_FAILED;
 #else
     std::wstring wstr=filePtr;
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     std::string u8str = conv.to_bytes(wstr);
-    if((fp=fopen(u8str.c_str(),OPENFLAGS))==nullptr)
+    if((fp=fopen(u8str.c_str(),"rb"))==nullptr)
         return FlavorTP::FILETYPE_FAILED;
 #endif
     FlavorTP tp;
     char buffer[4]={0};
+    fseek(fp, 0,SEEK_SET);
     if(fread(buffer,4,14,fp)==0)
     {
+        //printf("Buffer: %s\n",buffer);
         fclose(fp);
         return FlavorTP::FILETYPE_FAILED;
     }
     fclose(fp);
+    //printf("Buffer: %02X-%02X-%02X-%02X\n",(unsigned char)buffer[0],buffer[1],buffer[2],buffer[3]);
     if((unsigned char)buffer[0]==0xFF&&(unsigned char)buffer[1]==0xFE)
         tp=FILETYPE_UTF16LE;
     else if((unsigned char)buffer[0]==0xFE&&(unsigned char)buffer[1]==0xFF)
@@ -107,6 +105,9 @@ inline FlavorTP DetectFileEncoding(const wchar_t *filePtr)
         tp=FILETYPE_UNKNWON;
     return tp;
 }
+
+
+
 
 template<class Character>
 class FlavorlessLoader{

@@ -1,9 +1,9 @@
 #include "FlavorlessLoader.hpp"
-
+#include <iostream>
 
 int main()
 {
     FlavorlessLoader<wchar_t> sz;
-    sz.Detect(L"./FlavorlessLoader.hpp");
+    //std::cout<<sz.Detect(L"./uddd")<<std::endl;
     return 0;
 }
