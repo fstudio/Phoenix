@@ -106,16 +106,33 @@ inline FlavorTP DetectFileEncoding(const wchar_t *filePtr)
     return tp;
 }
 
+inline int64_t LastChangeTime(const char *filePtr)
+{
+    return 0;
+}
 
+inline int64_t LastChangeTime(const wchar_t *filePtr)
+{
+    return 0;
+}
 
 
 template<class Character>
 class FlavorlessLoader{
+private:
+    int64_t filetime;
+    int64_t filesize;
+    String file;
 public:
     typedef std::basic_fstream<Character> Fstream;
     typedef std::basic_string<Character> String;
     FlavorlessLoader(){}
     bool Loader(const Character *filePtr)
+    {
+        file=filePtr;
+        return true;
+    }
+    bool IsChanged(const Character *filePtr=nullptr)
     {
         return true;
     }
