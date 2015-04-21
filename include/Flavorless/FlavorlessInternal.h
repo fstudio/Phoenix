@@ -14,6 +14,7 @@
 #include <list>
 #include <algorithm>
 #include <stdio.h>
+#include <unordered_map>
 
 #ifdef _WIN32
 
@@ -69,5 +70,23 @@ typedef enum Flavor_FileTYPE_Flags
 #define NEWLINE_CRLFW L"\r\n"
 #define NEWLINE_LF "\n"
 #define NEWLINE_LFW  L"\n"
+
+template <class Character>
+class InitializeStructure{
+public:
+    InitializeStructure(){
+        ///
+    }
+    typedef std::basic_string<Character> String;
+    struct Section{
+        const Character *name;
+        std::unordered_map<String,String> nv;
+        std::unordered_map<int,String> comments;
+        int nOrder;
+    };
+    std::list<Section> listSection;
+};
+
+
 
 #endif

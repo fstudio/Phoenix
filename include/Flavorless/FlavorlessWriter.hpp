@@ -9,6 +9,13 @@
 #define FLAVORLESS_WRITER_HPP
 #include <sstream>
 
+
+inline bool WriteLine(std::string line)
+{
+    return true;
+}
+
+
 template <class Character>
 class FlavorlessWriter{
 public:
@@ -17,7 +24,7 @@ public:
     {
         ///
     }*/
-    bool Save()
+    bool Save(InitializeStructure &iniStructure)
     {
         return true;
     }

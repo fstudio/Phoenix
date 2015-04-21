@@ -11,90 +11,51 @@
 #include <fstream>
 
 
-/*
-
-    file.open(filePtr,std::ios_base::in|std::ios_base::binary);
-    if(file.good())
-    {
-        char szPtr[3]={0};
-        file.read(szPtr,sizeof(char)*3);
-        if((unsigned char)szPtr[0]==0xFF&&(unsigned char)szPtr[1]==0xFE)
-            tp=FILETYPE_UTF16LE;
-        else if((unsigned char)szPtr[0]==0xFE&&(unsigned char)szPtr[1]==0xFF)
-            tp=FILETYPE_UTF16BE;
-        else if((unsigned char)szPtr[0]==0xEF&&(unsigned char)szPtr[1]==0xBB&&(unsigned char)szPtr[2]==0xBF)
-            tp=FILETYPE_UTF8;
-        else{
-#ifdef _WIN32
-            tp=FILETYPE_ANSI;
-#else
-            tp=FILETYPE_UTF8;
-#endif
-        }
-    }
-    file.close();
-*/
-
 #ifdef _WIN32
 #define fread fread_s
 #endif
-
+// GCC 5.0 support and clang+libcxx support MSVC 11 or later support
 #include <codecvt>
 
-///Warning this detect encoding: file must hava bom ,or your can user universalchardet
-inline FlavorTP DetectFileEncoding(const char *filePtr)
+
+inline FILE *Open(const char *file)
 {
     FILE *fp;
 #ifdef _MSC_VER
     if(fopen_s(&fp,filePtr,"rb")!=0||!fp)
-        return FlavorTP::FILETYPE_FAILED;
+        return nullptr;
 #else
     if((fp=fopen(filePtr,"rb"))==NULL)
-        return FlavorTP::FILETYPE_FAILED;
+        return nullptr;
 #endif
-    FlavorTP tp;
-    char buffer[4]={0};
-    if(fread(buffer,4,14,fp)==0)
-    {
-        fclose(fp);
-        return FlavorTP::FILETYPE_FAILED;
-    }
-    fclose(fp);
-    if((unsigned char)buffer[0]==0xFF&&(unsigned char)buffer[1]==0xFE)
-        tp=FILETYPE_UTF16LE;
-    else if((unsigned char)buffer[0]==0xFE&&(unsigned char)buffer[1]==0xFF)
-        tp=FILETYPE_UTF16BE;
-    else if((unsigned char)buffer[0]==0xEF&&(unsigned char)buffer[1]==0xBB&&(unsigned char)buffer[2]==0xBF)
-        tp=FILETYPE_UTF8;
-    else
-        tp=FILETYPE_UNKNWON;
-    return tp;
+    return fp;
 }
 
-inline FlavorTP DetectFileEncoding(const wchar_t *filePtr)
+inline FILE *Open(const wchar_t *file)
 {
     FILE *fp;
 #ifdef _WIN32
     if(_wfopen_s(&fp,filePtr,L"rb")!=0)
-        return FlavorTP::FILETYPE_FAILED;
+        return nullptr;
 #else
     std::wstring wstr=filePtr;
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
     std::string u8str = conv.to_bytes(wstr);
     if((fp=fopen(u8str.c_str(),"rb"))==nullptr)
-        return FlavorTP::FILETYPE_FAILED;
+        return nullptr;
 #endif
+    return fp;
+}
+
+///Warning this detect encoding: file must hava bom ,or your can user universalchardet
+inline FlavorTP CharDet(FILE *fp)
+{
     FlavorTP tp;
     char buffer[4]={0};
-    fseek(fp, 0,SEEK_SET);
     if(fread(buffer,4,14,fp)==0)
     {
-        //printf("Buffer: %s\n",buffer);
-        fclose(fp);
         return FlavorTP::FILETYPE_FAILED;
     }
-    fclose(fp);
-    //printf("Buffer: %02X-%02X-%02X-%02X\n",(unsigned char)buffer[0],buffer[1],buffer[2],buffer[3]);
     if((unsigned char)buffer[0]==0xFF&&(unsigned char)buffer[1]==0xFE)
         tp=FILETYPE_UTF16LE;
     else if((unsigned char)buffer[0]==0xFE&&(unsigned char)buffer[1]==0xFF)
@@ -106,16 +67,57 @@ inline FlavorTP DetectFileEncoding(const wchar_t *filePtr)
     return tp;
 }
 
+#if defined(_MSC_VER) && (_MSC_VER > 1310)
+static int stat(const wchar_t *path, struct _stat64i32 *buffer) {
+    return _wstat(path, buffer);
+}
+#else
+static int stat(const wchar_t *path, struct _stat *buffer) {
+    return _wstat(path, buffer);
+}
+#endif
+
 inline int64_t LastChangeTime(const char *filePtr)
 {
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER > 1310)
+    struct _stat64i32 statusFile;
+#else
+    struct _stat statusFile;
+#endif
+#else
+    struct stat statusFile;
+#endif
+    if (stat(filePtr, &statusFile) != -1)
+        return statusFile.st_mtime;
     return 0;
 }
 
 inline int64_t LastChangeTime(const wchar_t *filePtr)
 {
+#ifdef _WIN32
+#if defined(_MSC_VER) && (_MSC_VER > 1310)
+    struct _stat64i32 statusFile;
+#else
+    struct _stat statusFile;
+#endif
+#else
+    struct stat statusFile;
+#endif
+    if (stat(filePtr, &statusFile) != -1)
+        return statusFile.st_mtime;
     return 0;
 }
 
+inline bool Read(FILE *fp,wchar_t *buffer,size_t bufferSize)
+{
+    return true;
+}
+
+inline bool Read(FILE *fp,char *buffer,size_t bufferSize)
+{
+    return true;
+}
 
 template<class Character>
 class FlavorlessLoader{
@@ -127,18 +129,31 @@ public:
     typedef std::basic_fstream<Character> Fstream;
     typedef std::basic_string<Character> String;
     FlavorlessLoader(){}
-    bool Loader(const Character *filePtr)
+    bool Loader(const Character *filePtr,InitializeStructure &iniStructure)
     {
+        if(!filePtr)
+            return false;
         file=filePtr;
+        FILE *fp=Open(filePtr);
+        if(!fp)
+            return false;
+        this->filetime=LastChangeTime(filePtr);
         return true;
     }
     bool IsChanged(const Character *filePtr=nullptr)
     {
+        if(LastChangeTime(filePtr?filePtr:file.c_str())==filetime) ///Not Changed
+            return false;
         return true;
     }
     FlavorTP Detect(const Character *filePtr)
     {
-        return DetectFileEncoding(filePtr);
+        FILE *fp=Open(filePtr);
+        if(!fp)
+            return FlavorTP::FILETYPE_FAILED;
+        auto i=CharDet(fp);
+        fclose(fp);
+        return i;
     }
 };
 

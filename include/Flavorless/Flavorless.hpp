@@ -8,7 +8,6 @@
 #ifndef FLAVORLESS_LIBRARY_HPP
 #define FLAVORLESS_LIBRARY_HPP
 #include "FlavorlessInternal.h"
-#include <unordered_map>
 #include "FlavorlessLoader.hpp"
 #include "FlavorlessWriter.hpp"
 
@@ -16,10 +15,10 @@
 #define FLAVORLESS_VERSION_CODE(x,y,z) \
   (((x)*100000) + ((y)*100) + (z))
 
-//FlavorlessInitial 
+//FlavorlessInitial
 //not support UTF32 encoding
 template<class Character>
-class Flavorless{
+class FlavorlessImpl{
 public:
     typedef std::base_string<Character> String;
 private:
@@ -27,10 +26,9 @@ private:
     FlavorTP  rawType;
     FlavorlessLoader loader;
     FlavorlessWriter writer;
-    std::unordered_map<String,String> nov;
-    std::unordered_map<String,std::unordered_map<String,String>> nodePtree;
+    InitializeStructure iniStructure;
 public:
-    Flavorless():isUpdate(false),rawType(FlavorTP::FILETYPE_UNKNWON)
+    FlavorlessImpl():isUpdate(false),rawType(FlavorTP::FILETYPE_UNKNWON)
     {
         //////
     }
@@ -39,18 +37,12 @@ public:
         rawType=loader.Detect(file);
         if(rawType==FlavorTP::FILETYPE_FAILED)
             return false;
-        return loader.Loader(file);
+        return loader.Loader(file,this->iniStructure);
     }
     String get(const Character *key,const Character *node,const Character *preset=nullptr)
     {
         if(!key)
             return String();
-        if(!node)
-        {
-            if(nov.find(key)!=nov.end())
-                return nov.at(key);
-            return preset;
-        }
         return preset;
     }
     bool set(const Character *key,const Character *node,const Character value)
@@ -69,6 +61,7 @@ public:
         if(isUpdate||loader.IsChanged())
         {
             ////
+            writer.Save(this->iniStructure);
         }else{
             return true;
         }
@@ -76,11 +69,16 @@ public:
     }
     void Clear()
     {
-        nov.clear();
-        nodelist.clear();
+        ///
     }
 };
-typedef Flavorless<wchar_t> FlavorlessWide;
-typedef Flavorless<char> FlavorlessA;
+typedef FlavorlessImpl<wchar_t> FlavorlessWide;
+typedef FlavorlessImpl<char> FlavorlessA;
+
+#ifdef _WIN32
+#define Flavorless FlavorlessWide
+#else
+#define Flavorless FlavorlessA
+#endif
 
 #endif
