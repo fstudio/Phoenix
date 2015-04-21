@@ -1,29 +1,27 @@
 /*********************************************************************************************************
-* FlavorlessWriter.hpp
+* FlavorlessConvert.hpp
 * Note: Phoenix Flavorless Library
 * Date: @2015.04
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#ifndef FLAVORLESS_WRITER_HPP
-#define FLAVORLESS_WRITER_HPP
-#include <sstream>
+#ifndef FLAVORLESS_CONVERT_HPP
+#define FLAVORLESS_CONVERT_HPP
+#include "FlavorlessInternal.h"
 
-template <class Character>
-class FlavorlessWriter{
+template <class Character,class T> inline std::basic_string<Character> to_string(T value)
+{
+    std::basic_stringstream ss;
+    ss<<val;
+    return ss.str();
+}
+
+template <class Character,class T>
+class FlavorlessConvert{
 public:
-    typedef std::basic_stringstream<Character> Stringstream;
-    /*FlavorlessWriter(const FlavorlessWriter &fw)
-    {
-        ///
-    }*/
-    bool Save()
-    {
-        return true;
-    }
-private:
-    Stringstream stream;
+    FlavorlessConvert();
 };
+
 
 
 #endif

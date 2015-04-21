@@ -15,6 +15,26 @@
 #include <algorithm>
 #include <stdio.h>
 
+#ifdef _WIN32
+
+#ifndef FORCE_USE_WCHAR
+#define FORCE_USE_WCHAR 1
+#endif
+
+#else
+
+#ifndef FORCE_USE_WCHAR
+#define FORCE_USE_WCHAR 0
+#endif
+
+#endif
+
+#if FORCE_USE_WCHAR
+#define Char wchar_t
+#else
+#define Char char
+#endif
+
 #ifdef _DEBUG
 #ifndef assert
 #include <cassert>
@@ -32,7 +52,18 @@ enum FlavorError{
     FLAVOR_FAILED=-1,
     FLAVOR_NORMAL=-2,
     FLAVOR_FILE=-3
-}
+};
+
+typedef enum Flavor_FileTYPE_Flags
+{
+    FILETYPE_ANSI=0,
+    FILETYPE_UTF8=1,
+    FILETYPE_UTF16LE=2,
+    FILETYPE_UTF16BE=3,
+    FILETYPE_UNKNWON=4,
+    FILETYPE_FAILED=5
+}FlavorTP;
+
 
 #define NEWLINE_CRLF "\r\n"
 #define NEWLINE_CRLFW L"\r\n"

@@ -16,12 +16,14 @@
 #define FLAVORLESS_VERSION_CODE(x,y,z) \
   (((x)*100000) + ((y)*100) + (z))
 
-//FlavorlessInitial
+//FlavorlessInitial 
+//not support UTF32 encoding
 template<class Character>
 class Flavorless{
 public:
     typedef std::base_string<Character> String;
 private:
+    Flavor_FileTYPE  rawType;
     std::unordered_map<String,String> nov;
     std::list<std::unordered_map<String,String>> nodelist
 public:
@@ -37,6 +39,22 @@ public:
         }
         return preset;
     }
+    bool set(const Character *key,const Character *node,const Character value)
+    {
+
+        return true;
+    }
+    bool RemoveSection(const Character *node)
+    {
+        return true;
+    }
+    void Clear()
+    {
+        nov.clear();
+        nodelist.clear();
+    }
 };
+typedef Flavorless<wchar_t> FlavorlessWide;
+typedef Flavorless<char> FlavorlessA;
 
 #endif
