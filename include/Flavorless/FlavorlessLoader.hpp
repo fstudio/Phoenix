@@ -9,7 +9,7 @@
 #define FLAVORLESS_LOADER_HPP
 #include "FlavorlessInternal.h"
 #include <fstream>
-
+#include <sys/stat.h>
 
 #ifdef _WIN32
 #define fread fread_s
@@ -22,10 +22,10 @@ inline FILE *Open(const char *file)
 {
     FILE *fp;
 #ifdef _MSC_VER
-    if(fopen_s(&fp,filePtr,"rb")!=0||!fp)
+    if(fopen_s(&fp,file,"rb")!=0||!fp)
         return nullptr;
 #else
-    if((fp=fopen(filePtr,"rb"))==NULL)
+    if((fp=fopen(file,"rb"))==NULL)
         return nullptr;
 #endif
     return fp;
@@ -35,13 +35,13 @@ inline FILE *Open(const wchar_t *file)
 {
     FILE *fp;
 #ifdef _WIN32
-    if(_wfopen_s(&fp,filePtr,L"rb")!=0)
+    if(_wfopen_s(&fp,file,L"rb")!=0)
         return nullptr;
 #else
-    std::wstring wstr=filePtr;
+    std::wstring wstr=file;
     std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-    std::string u8str = conv.to_bytes(wstr);
-    if((fp=fopen(u8str.c_str(),"rb"))==nullptr)
+    std::string u8file = conv.to_bytes(wstr);
+    if((fp=fopen(u8file.c_str(),"rb"))==nullptr)
         return nullptr;
 #endif
     return fp;
@@ -66,7 +66,8 @@ inline FlavorTP CharDet(FILE *fp)
         tp=FILETYPE_UNKNWON;
     return tp;
 }
-
+////stat add wchar_t support
+#ifdef _WIN32
 #if defined(_MSC_VER) && (_MSC_VER > 1310)
 static int stat(const wchar_t *path, struct _stat64i32 *buffer) {
     return _wstat(path, buffer);
@@ -74,6 +75,15 @@ static int stat(const wchar_t *path, struct _stat64i32 *buffer) {
 #else
 static int stat(const wchar_t *path, struct _stat *buffer) {
     return _wstat(path, buffer);
+}
+#endif
+#else
+static int stat(const wchar_t *path,struct stat *buffer)
+{
+    std::wstring wstr=path;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+    std::string u8file = conv.to_bytes(wstr);
+    return stat(u8file.c_str(),buffer);
 }
 #endif
 
@@ -122,14 +132,15 @@ inline bool Read(FILE *fp,char *buffer,size_t bufferSize)
 template<class Character>
 class FlavorlessLoader{
 private:
+    typedef std::basic_fstream<Character> Fstream;
+    typedef std::basic_string<Character> String;
+private:
     int64_t filetime;
     int64_t filesize;
     String file;
 public:
-    typedef std::basic_fstream<Character> Fstream;
-    typedef std::basic_string<Character> String;
     FlavorlessLoader(){}
-    bool Loader(const Character *filePtr,InitializeStructure &iniStructure)
+    bool Loader(const Character *filePtr,InitializeStructure<Character> &iniStructure)
     {
         if(!filePtr)
             return false;

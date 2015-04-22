@@ -26,7 +26,7 @@ private:
     FlavorTP  rawType;
     FlavorlessLoader loader;
     FlavorlessWriter writer;
-    InitializeStructure iniStructure;
+    InitializeStructure<Character> iniStructure;
 public:
     FlavorlessImpl():isUpdate(false),rawType(FlavorTP::FILETYPE_UNKNWON)
     {
