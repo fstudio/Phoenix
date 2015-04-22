@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <unordered_map>
+#include <codecvt>
 
 #ifdef _WIN32
 
@@ -35,6 +36,13 @@
 #else
 #define Char char
 #endif
+
+#if defined(_WIN32)
+#define CHAR_IS_UTF8 0
+#else
+#define CHAR_IS_UTF8 1
+#endif
+
 
 #ifdef _DEBUG
 #ifndef assert
@@ -70,6 +78,27 @@ typedef enum Flavor_FileTYPE_Flags
 #define NEWLINE_CRLFW L"\r\n"
 #define NEWLINE_LF "\n"
 #define NEWLINE_LFW  L"\n"
+
+/*
+Sequence:
+
+Common escape sequences
+Sequence    Meaning
+\\  \ (a single backslash, escaping the escape character)
+\0  Null character
+\a  Bell/Alert/Audible
+\b  Backspace, Bell character for some applications
+\t  Tab character
+\r  Carriage return
+\n  Line feed
+\;  Semicolon
+\#  Number sign
+\=  Equals sign
+\:  Colon
+\x????  Unicode character with hexadecimal code point corresponding to ????
+
+*/
+
 
 template <class Character>
 class InitializeStructure{

@@ -12,10 +12,10 @@
 #include <sys/stat.h>
 
 #ifdef _WIN32
+#include <Windows.h>
 #define fread fread_s
 #endif
 // GCC 5.0 support and clang+libcxx support MSVC 11 or later support
-#include <codecvt>
 
 
 inline FILE *Open(const char *file)
@@ -119,16 +119,112 @@ inline int64_t LastChangeTime(const wchar_t *filePtr)
     return 0;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// + FlavorNizProcess Prase IniFile
+// + inline wchar_t///
+//
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 inline bool FlavorNizProcess(FILE *fp,FlavorTP tp,InitializeStructure<wchar_t> &iniStructure)
 {
+    FLAVORASSERT(fp);
+    switch(tp)
+    {
+        case FILETYPE_UTF8:
+        break;
+        case FILETYPE_UTF16LE:
+        break;
+        case FILETYPE_UTF16BE:
+        break;
+        case FILETYPE_ANSI:
+        default:
+        break;
+    }
     return true;
 }
 
 inline bool FlavorNizProcess(FILE *fp,FlavorTP tp,InitializeStructure<char> &iniStructure)
 {
+    FLAVORASSERT(fp);
     return true;
 }
+
+
+#ifdef _WIN32
+inline bool FlavorNizProcessNT(const wchar_t *file,FlavorTP tp,InitializeStructure<wchar_t> &iniStructure)
+{
+    HANDLE hFile;
+    LARGE_INTEGER FileSize;
+    bool bRet=true;
+    LPVOID mPtr=nullptr;
+    LPVOID pBuffer;
+    DWORD NumberOfBytesRead;
+    hFile=CreateFileW(file,GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    if(hFile==INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    GetFileSizeEx(hFile,&FileSize);
+    auto mSize=FileSize.QuadPart;
+    if(mSize>0x8000000)
+    {
+        CloseHandle(hFile);
+        return false;
+    }
+    mPtr=malloc(sizeof(char)*mSize+1); ///Big Memory.
+    memset(mPtr,0,sizeof(char)*mSize+1);
+    ReadFile(hFile,mPtr,mSize,&NumberOfBytesRead,NULL);
+    switch(tp)
+    {
+        case FILETYPE_UTF8:{
+            auto u8Ptr=reinterpret_cast<char*>(mPtr);
+        }
+        break;
+        case FILETYPE_UTF16LE:
+        {
+            auto wPtr=reinterpret_cast<wchar_t*>(mPtr);
+            ///Not Convert
+        }
+        break;
+        case FILETYPE_UTF16BE:
+        break;
+        case FILETYPE_ANSI:
+        default:
+        break;
+    }
+
+    ////The End
+    if(mPtr)
+        free(mPtr);
+    CloseHandle(hFile);
+    return bRet;
+}
+
+inline bool FlavorNizProcessNT(const char* file,FlavorTP tp,InitializeStructure<char> &iniStructure)
+{
+    HANDLE hFile;
+    LARGE_INTEGER FileSize;
+    bool bRet=true;
+    hFile=CreateFileA(file,GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    if(hFile==INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    GetFileSizeEx(hFile,&FileSize);
+    auto mSize=FileSize.QuadPart;
+    if(mSize>0x8000000)
+        goto Close;
+Close:
+    CloseHandle(hFile);
+    return true;
+}
+
+
+
+#endif
+
+
+
 
 template<class Character>
 class FlavorlessLoader{
