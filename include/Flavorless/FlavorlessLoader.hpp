@@ -119,12 +119,13 @@ inline int64_t LastChangeTime(const wchar_t *filePtr)
     return 0;
 }
 
-inline bool Read(FILE *fp,wchar_t *buffer,size_t bufferSize)
+
+inline bool FlavorNizProcess(FILE *fp,FlavorTP tp,InitializeStructure<wchar_t> &iniStructure)
 {
     return true;
 }
 
-inline bool Read(FILE *fp,char *buffer,size_t bufferSize)
+inline bool FlavorNizProcess(FILE *fp,FlavorTP tp,InitializeStructure<char> &iniStructure)
 {
     return true;
 }
@@ -149,6 +150,9 @@ public:
         if(!fp)
             return false;
         this->filetime=LastChangeTime(filePtr);
+        auto tp=CharDet(fp);
+        auto bRet=FlavorNizProcess(fp,tp,iniStructure);
+        fclose(fp);
         return true;
     }
     bool IsChanged(const Character *filePtr=nullptr)
