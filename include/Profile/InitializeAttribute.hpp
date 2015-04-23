@@ -11,14 +11,26 @@
 #ifndef _WIN32
 //#error "Only Support Windows System"
 #endif
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <unordered_map>
 #include <map>
 #include <vector>
 
+
 #define ANONYMOUSSEC L"#anonymous"
 
+
+
+/*
+Determines whether a character is either an alphabetical or a numeric character. This determination is based on the semantics of the language selected by the user during setup or through Control Panel.
+
+BOOL WINAPI IsCharAlphaNumeric(
+  _In_  TCHAR ch
+);
+
+*/
 class InitializeStructure {
 private:
   bool isChanged;
@@ -41,7 +53,9 @@ public:
     std::wstring comment;
     std::vector<Parameters> items;
   };
+  /////////////////////////////////////////////////////////////////////
   std::unordered_map<std::wstring, IniSection *> attrTable;
+  ////////////////////////////////////////////////////////////////////
   bool DeleteSection(const wchar_t *sec) {
     auto it = attrTable.find(sec);
     if (it != attrTable.end()) {
@@ -165,45 +179,41 @@ public:
 
   bool IsChanged() { return this->isChanged; }
   ////Debug Method; sava file not used it
-  std::wstring Print() {
-    std::wstringstream wstream;
-    auto an = attrTable.find(ANONYMOUSSEC);
-    if (an != attrTable.end()) {
-      for (const auto &t : an->second->items) {
-        wstream << t.key << L"=" << t.value << (isCRLF ? L"\r\n" : L"\n");
-        if (!t.comments.empty())
-          wstream << L"#" << t.comments << (isCRLF ? L"\r\n" : L"\n");
-      }
-    }
-    for (const auto &it : attrTable) {
-      if (it.first != ANONYMOUSSEC) {
-        wstream << L"[" << it.first << L"]" << (isCRLF ? L"\r\n" : L"\n");
-        for (auto &t : it.second->items) {
-          wstream << t.key << L"=" << t.value << (isCRLF ? L"\r\n" : L"\n");
-          if (!t.comments.empty()) {
-            wstream << L"#" << t.comments << (isCRLF ? L"\r\n" : L"\n");
-          }
-        }
-      }
-    }
-    return wstream.str();
-  }
+  std::wstring Print();
+  bool InitializeFileAnalysis(wchar_t *buffer,size_t size);
 };
 
 class InitializeAttribute {
 private:
   std::wstring mfile;
   InitializeStructure initializeStructure;
-
+  bool isEffective;
+  bool isUpdate;
+  int64_t lastTime;
+  bool isParseOK;
+  bool GetFileAttributesZues(int64_t *now=nullptr);
+  bool EffectiveAutoChecker();
+  bool LoadData();
 public:
   InitializeAttribute &operator=(const InitializeAttribute &rhs) {
     /// value=value
+    mfile=rhs.mfile;
+    isEffective=rhs.isEffective;
     return *this;
   }
   InitializeAttribute(const InitializeAttribute &iattr) { operator=(iattr); }
-  InitializeAttribute(const wchar_t *filePath) : mfile(filePath) {
-    ////
+  InitializeAttribute(const wchar_t *filePath) : mfile(filePath),isEffective(false),isUpdate(false),isParseOK(false) {
+    if(EffectiveAutoChecker())
+        isEffective=true;
+    else{
+        return ;
+    }
+    if(LoadData())
+        isParseOK=true;
   }
+  bool IsEffectiveFile(){return this->isEffective;}
+  bool IsParseOK(){return this->isParseOK;}
+  bool IsUpdated();
 };
 
 #endif
