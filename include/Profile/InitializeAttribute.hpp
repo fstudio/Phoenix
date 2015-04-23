@@ -9,39 +9,56 @@
 #define INITIALIZEATTRIBUTE_HPP
 
 #ifndef _WIN32
-#error "Only Support Windows System"
+//#error "Only Support Windows System"
 #endif
 #include <unordered_map>
 #include <string>
+#include <map>
 #include <vector>
 
-
 class InitializeStructure{
+private:
+    bool isChanged;
 public:
-    struct Section{
-        std::wstring keyName;
-        std::unordered_map<std::wstring,std::wstring> attrTable;
-        std::unordered_map<unsigned,std::wstring> comments;
+    struct Parameters{
+        std::wstring key;
+        std::wstring value;
+        std::wstring comments;
+        int nOrder;
+        Parameters(std::wstring k,
+            std::wstring v,
+            std::wstring c,
+            int nOrder=0):key(k),value(v),comments(c),nOrder(nOrder){ } ///////
+        Parameters(){}
     };
-    std::vector<Section*> attrVector
+    struct IniSection{
+        typedef std::vector<Parameters>::iterator iterator;
+        iterator begin(){return items.begin();}
+        iterator end(){return items.end();}
+        std::wstring comment;
+        std::vector<Parameters> items;
+    };
+    std::unordered_map<std::wstring,IniSection*> attrTable;
     ~InitializeStructure()
     {
-        for(auto &i:attrVector)
+        for(auto &i:attrTable)
         {
-            if(i)
-                delete i;
+            if(i.second)
+                delete i.second;
         }
-        attrVector.clear();
+        attrTable.clear();
     }
     std::wstring get(const wchar_t *sec,const wchar_t *key,const wchar_t *preset,int Order=0)
     {
         return preset;
     }
+    bool IsChanged(){return this->isChanged;}
 };
 
 class InitializeAttribute{
 private:
     std::wstring mfile;
+    InitializeStructure initializeStructure;
 public:
     InitializeAttribute &operator=(const InitializeAttribute &rhs){
         ///value=value
