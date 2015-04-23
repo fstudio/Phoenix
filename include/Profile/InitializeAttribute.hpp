@@ -33,6 +33,10 @@ public:
         }
         attrVector.clear();
     }
+    std::wstring get(const wchar_t *sec,const wchar_t *key,const wchar_t *preset,int Order=0)
+    {
+        return preset;
+    }
 };
 
 class InitializeAttribute{
