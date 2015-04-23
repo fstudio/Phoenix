@@ -169,7 +169,7 @@ public:
     std::wstringstream wstream;
     auto an = attrTable.find(ANONYMOUSSEC);
     if (an != attrTable.end()) {
-      for (auto &t : an->second->items) {
+      for (const auto &t : an->second->items) {
         wstream << t.key << L"=" << t.value << (isCRLF ? L"\r\n" : L"\n");
         if (!t.comments.empty())
           wstream << L"#" << t.comments << (isCRLF ? L"\r\n" : L"\n");
