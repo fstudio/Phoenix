@@ -56,45 +56,8 @@ public:
   /////////////////////////////////////////////////////////////////////
   std::unordered_map<std::wstring, IniSection *> attrTable;
   ////////////////////////////////////////////////////////////////////
-  bool DeleteSection(const wchar_t *sec) {
-    auto it = attrTable.find(sec);
-    if (it != attrTable.end()) {
-      if (it->second) {
-        delete it->second;
-      }
-      attrTable.erase(it);
-      isChanged = true;
-      return true;
-    }
-    return false;
-  }
-  bool DeleteParameters(const wchar_t *sec, const wchar_t *key, int Order = 0) {
-    const wchar_t *Ptr;
-    if (!sec) {
-      Ptr = ANONYMOUSSEC;
-    } else {
-      Ptr = sec;
-    }
-    auto it = attrTable.find(Ptr);
-    if (it == attrTable.end() || !it->second)
-      return false;
-    auto iter = it->second->begin();
-    auto end = it->second->end();
-    auto index = 0;
-    while (iter != end) {
-      if (iter->key.compare(key) == 0) ////Key ==key
-      {
-        if (index == Order) {
-          it->second->items.erase(iter);
-          isChanged = true;
-          return true;
-        }
-        index++;
-      }
-      iter++;
-    }
-    return true;
-  }
+  bool DeleteSection(const wchar_t *sec);
+  bool DeleteParameters(const wchar_t *sec, const wchar_t *key, int Order = 0);
   void Clear() {
     for (auto &i : attrTable) {
       if (i.second)
@@ -111,72 +74,9 @@ public:
     }
     attrTable.clear();
   }
-  std::wstring get(const wchar_t *sec, const wchar_t *key,
-                   const wchar_t *preset, int Order = 0) {
-    const wchar_t *Ptr;
-    if (!sec) {
-      Ptr = ANONYMOUSSEC;
-    } else {
-      Ptr = sec;
-    }
-    auto it = attrTable.find(Ptr);
-    if (it == attrTable.end() || !it->second)
-      return preset;
-    auto iter = it->second->begin();
-    auto end = it->second->end();
-    while (iter != end) {
-      if (iter->key.compare(key) == 0) ////Key ==key
-      {
-        if (Order == iter->nOrder) {
-          return iter->value;
-        }
-      }
-      iter++;
-    }
-    /// if(iter->second.)
-    return preset;
-  }
-  bool set(const wchar_t *sec, const wchar_t *key, const wchar_t *value,
-           int Order = 0) {
-    const wchar_t *Ptr;
-    if (!sec) {
-      Ptr = ANONYMOUSSEC;
-    } else {
-      Ptr = sec;
-    }
-    auto it = attrTable.find(Ptr);
-    if (it == attrTable.end() || !it->second)
-      return false;
-    auto iter = it->second->begin();
-    auto end = it->second->end();
-    bool bSet = false;
-    while (iter != end) {
-      if (iter->key.compare(key) == 0) ////Key ==key
-      {
-        if (Order == iter->nOrder) {
-          iter->value = value;
-          return true;
-        }
-        bSet = true;
-      }
-      iter++;
-    }
-    if (!bSet) {
-      it->second->items.push_back(Parameters(key, value, std::wstring()));
-    }
-    /// if(iter->second.)
-    return true;
-  }
-  bool InsertNewSection(const wchar_t *sec) {
-    auto it = attrTable.find(sec);
-    if (it != attrTable.end())
-      return false;
-    auto mSec = new IniSection();
-    attrTable.insert(std::pair<std::wstring, decltype(mSec)>(sec, mSec));
-    isChanged = true;
-    return true;
-  }
-
+  std::wstring get(const wchar_t *sec, const wchar_t *key,const wchar_t *preset, int Order = 0);
+  bool set(const wchar_t *sec, const wchar_t *key, const wchar_t *value,int Order = 0);
+  bool InsertNewSection(const wchar_t *sec);
   bool IsChanged() { return this->isChanged; }
   ////Debug Method; sava file not used it
   std::wstring Print();
@@ -186,11 +86,12 @@ public:
 class InitializeAttribute {
 private:
   std::wstring mfile;
-  InitializeStructure initializeStructure;
+  InitializeStructure iniStructure;
   bool isEffective;
   bool isUpdate;
   int64_t lastTime;
   bool isParseOK;
+  bool mReadOnly;
   bool GetFileAttributesZues(int64_t *now=nullptr);
   bool EffectiveAutoChecker();
   bool LoadData();
@@ -202,7 +103,7 @@ public:
     return *this;
   }
   InitializeAttribute(const InitializeAttribute &iattr) { operator=(iattr); }
-  InitializeAttribute(const wchar_t *filePath) : mfile(filePath),isEffective(false),isUpdate(false),isParseOK(false) {
+  InitializeAttribute(const wchar_t *filePath,bool isReadOnly=false) : mfile(filePath),isEffective(false),isUpdate(false),isParseOK(false) ,mReadOnly(isReadOnly){
     if(EffectiveAutoChecker())
         isEffective=true;
     else{

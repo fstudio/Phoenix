@@ -10,7 +10,7 @@
 
 static uint16_t ByteSwap(uint16_t i)
 {
-    unsigned short j;
+    uint16_t j;
     j =  (i << 8);
     j += (i >> 8);
     return j;
@@ -19,12 +19,121 @@ static uint16_t ByteSwap(uint16_t i)
 static inline void ByteSwapShortBuffer(WCHAR *buffer,int len)
 {
     int i;
-    uint16_t *sb=static_cast<uint16_t*>(buffer);
+    uint16_t *sb=reinterpret_cast<uint16_t*>(buffer);
     for(i=0;i<len;i++)
         sb[i]=ByteSwap(sb[i]);
 }
 
+bool InitializeStructure::DeleteSection(const wchar_t *sec) {
+    auto it = attrTable.find(sec);
+    if (it != attrTable.end()) {
+      if (it->second) {
+        delete it->second;
+      }
+      attrTable.erase(it);
+      isChanged = true;
+      return true;
+    }
+    return false;
+}
 
+bool InitializeStructure::DeleteParameters(const wchar_t *sec, const wchar_t *key, int Order) {
+    const wchar_t *Ptr;
+    if (!sec) {
+      Ptr = ANONYMOUSSEC;
+    } else {
+      Ptr = sec;
+    }
+    auto it = attrTable.find(Ptr);
+    if (it == attrTable.end() || !it->second)
+      return false;
+    auto iter = it->second->begin();
+    auto end = it->second->end();
+    auto index = 0;
+    while (iter != end) {
+      if (iter->key.compare(key) == 0) ////Key ==key
+      {
+        if (index == Order) {
+          it->second->items.erase(iter);
+          isChanged = true;
+          return true;
+        }
+        index++;
+      }
+      iter++;
+    }
+    return true;
+}
+
+///Get
+std::wstring InitializeStructure::get(const wchar_t *sec, const wchar_t *key,
+                   const wchar_t *preset, int Order ) {
+    const wchar_t *Ptr;
+    if (!sec) {
+      Ptr = ANONYMOUSSEC;
+    } else {
+      Ptr = sec;
+    }
+    auto it = attrTable.find(Ptr);
+    if (it == attrTable.end() || !it->second)
+      return preset;
+    auto iter = it->second->begin();
+    auto end = it->second->end();
+    while (iter != end) {
+      if (iter->key.compare(key) == 0) ////Key ==key
+      {
+        if (Order == iter->nOrder) {
+          return iter->value;
+        }
+      }
+      iter++;
+    }
+    /// if(iter->second.)
+    return preset;
+}
+
+bool InitializeStructure::set(const wchar_t *sec, const wchar_t *key, const wchar_t *value,
+           int Order ) {
+    const wchar_t *Ptr;
+    if (!sec) {
+      Ptr = ANONYMOUSSEC;
+    } else {
+      Ptr = sec;
+    }
+    auto it = attrTable.find(Ptr);
+    if (it == attrTable.end() || !it->second)
+      return false;
+    auto iter = it->second->begin();
+    auto end = it->second->end();
+    bool bSet = false;
+    while (iter != end) {
+      if (iter->key.compare(key) == 0) ////Key ==key
+      {
+        if (Order == iter->nOrder) {
+          iter->value = value;
+          return true;
+        }
+        bSet = true;
+      }
+      iter++;
+    }
+    if (!bSet) {
+      it->second->items.push_back(Parameters(key, value, std::wstring()));
+    }
+    /// if(iter->second.)
+    return true;
+}
+
+bool InitializeStructure::InsertNewSection(const wchar_t *sec) {
+    auto it = attrTable.find(sec);
+    if (it != attrTable.end())
+      return false;
+    auto mSec = new IniSection();
+    attrTable.insert(std::pair<std::wstring, decltype(mSec)>(sec, mSec));
+    isChanged = true;
+    return true;
+}
+/////
 std::wstring InitializeStructure::Print() {
     std::wstringstream wstream;
     auto an = attrTable.find(ANONYMOUSSEC);
@@ -52,6 +161,9 @@ std::wstring InitializeStructure::Print() {
 
 bool InitializeStructure::InitializeFileAnalysis(wchar_t *buffer,size_t size)
 {
+    if(!buffer||size==0)
+        return false;
+    ///
     return true;
 }
 
@@ -63,14 +175,20 @@ bool InitializeAttribute::LoadData()
     WCHAR* szFile;
     LPVOID buffer=nullptr;
     LPSTR pBuffer;
-    hFile=CreateFileW(this->mfile.c_str(),GENRIC_READ,FILE_SHARE_READ | FILE_SHARE_WRITE,NULL,OPEN_EXISTING,FILE_ATTRIBUE_NORMAL,NULL);
+    hFile=CreateFileW(this->mfile.c_str(),
+        (mReadOnly?GENERIC_READ:GENERIC_READ|GENERIC_WRITE),
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
     if(hFile==INVALID_HANDLE_VALUE)
     {
         return false;
     }
     GetFileSizeEx(hFile,&FileSize);
     auto mSize=FileSize.QuadPart;
-    if(mSize>0x8000000||mSize=<2)
+    if((mSize>=0x8000000)||(mSize<=2))
     {
         CloseHandle(hFile);
         return false;
@@ -87,14 +205,14 @@ bool InitializeAttribute::LoadData()
         return false;
     }
     auto zm=static_cast<unsigned char*>(buffer);
-    if(dwFileSize>=3&&zm[0]==0xEF&&zm[1]==BB&&zm[2]==BF)
+    if(dwFileSize>=3&&zm[0]==0xEF&&zm[1]==0xBB&&zm[2]==0xBF)
     {
         pBuffer=(char *)buffer+3;
         auto len=MultiByteToWideChar(CP_UTF8,0,const_cast<const char*>(pBuffer),dwFileSize,NULL,0);
-        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*size(WCHAR));
+        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t));
         if(!szFile)
         {
-            HeapFree(GetProcessHeap(),0,mPtr);
+            HeapFree(GetProcessHeap(),0,buffer);
             CloseHandle(hFile);
             return false;
         }
@@ -107,7 +225,7 @@ bool InitializeAttribute::LoadData()
         szFile=(wchar_t*)buffer+2;
         ByteSwapShortBuffer(szFile,(dwFileSize-2)/sizeof(wchar_t));
         bRet=iniStructure.InitializeFileAnalysis(szFile,dwFileSize-2);
-    }else if(zm[0]==0xFF&&zn[1]=0xFE) ///0xFFFE LE
+    }else if(zm[0]==0xFF&&zm[1]==0xFE) ///0xFFFE LE
     {
         szFile=(wchar_t*)buffer+2;
         bRet=iniStructure.InitializeFileAnalysis(szFile,dwFileSize-2);
@@ -115,10 +233,10 @@ bool InitializeAttribute::LoadData()
     }else{
         pBuffer=static_cast<char*>(buffer);
         auto len=MultiByteToWideChar(CP_ACP,0,const_cast<const char*>(pBuffer),dwFileSize,NULL,0);
-        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*size(WCHAR));
+        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t));
         if(!szFile)
         {
-            HeapFree(GetProcessHeap(),0,mPtr);
+            HeapFree(GetProcessHeap(),0,buffer);
             CloseHandle(hFile);
             return false;
         }
@@ -166,5 +284,7 @@ bool InitializeAttribute::IsUpdated()
 {
     int64_t nowTime=0;
     auto bRet=GetFileAttributesZues(&nowTime);
-    return (!bRet||(nowTime!=this->lastTime)||IsUpdated);
+    if(nowTime!=this->lastTime)
+        return false;
+    return bRet&&(!isUpdate);
 }
