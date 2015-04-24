@@ -81,12 +81,12 @@ public:
   ////Debug Method; sava file not used it
   std::wstring Print();
   bool InitializeFileAnalysis(wchar_t *buffer,size_t size);
+  bool InitializeFileAnalysisEx(wchar_t *buffer,size_t size);
 };
 
 class InitializeAttribute {
 private:
   std::wstring mfile;
-  InitializeStructure iniStructure;
   bool isEffective;
   bool isUpdate;
   int64_t lastTime;
@@ -96,6 +96,7 @@ private:
   bool EffectiveAutoChecker();
   bool LoadData();
 public:
+  InitializeStructure iniStructure;
   InitializeAttribute &operator=(const InitializeAttribute &rhs) {
     /// value=value
     mfile=rhs.mfile;

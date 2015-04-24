@@ -6,7 +6,10 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include <Windows.h>
+#include <iostream>
 #include <Profile/InitializeAttribute.hpp>
+#include <ctype.h>
+#define LINE_MAX_SIZE  8196
 
 static uint16_t ByteSwap(uint16_t i)
 {
@@ -157,15 +160,90 @@ std::wstring InitializeStructure::Print() {
     }
     return wstream.str();
 }
+static inline int isSpace(wchar_t c)
+{
+    return isspace(c)||c==0x1A;
+}
 
-
+/////By ReactOS is use it ,but too many bugs.
+//// so we not use it.
 bool InitializeStructure::InitializeFileAnalysis(wchar_t *buffer,size_t size)
 {
     if(!buffer||size==0)
         return false;
-    ///
+    auto nextline=const_cast<const wchar_t*>(buffer);
+    std::wcout<<L"NextLine:\n"<<nextline<<std::endl;
+    auto szEnd=const_cast<const wchar_t*>(buffer+size);
+    const wchar_t *szLineStart,*szLineEnd;
+    const WCHAR *szValueStart;
+    wchar_t szStr[LINE_MAX_SIZE]={0};
+    wchar_t szKey[LINE_MAX_SIZE]={0};
+    wchar_t szValue[LINE_MAX_SIZE]={0};
+    int line=0,len;
+    bool bEscape=false;
+    auto anonymous=new IniSection();
+    auto currentSec=anonymous;
+    while(nextline<szEnd)
+    {
+        szLineStart=nextline;
+        nextline=reinterpret_cast<const wchar_t *>(memchr(szLineStart,'\n',szEnd-szLineStart));
+        if(!nextline)nextline=reinterpret_cast<const wchar_t*>(memchr(szLineStart,'\r',szEnd-szLineStart));
+        if(!nextline)nextline=szEnd;
+        else nextline++;
+        szLineEnd=nextline;
+        line++;
+        while(szLineStart<szLineEnd&&isSpace(*szLineStart))szLineStart++;
+        while((szLineEnd>szLineStart)&&isSpace(szLineEnd[-1]))szLineEnd--;
+        if(szLineStart>=szLineEnd)continue;
+        if(*szLineStart=='[')
+        {
+            const WCHAR * szSectionEnd;
+            if(!(szSectionEnd=reinterpret_cast<const wchar_t *>(memchr(szLineStart,']',szLineEnd-szLineStart))))
+            {
+                //// Failed.
+            }else{
+                szLineStart++;
+                len=(int)(szSectionEnd-szLineStart);
+                memset(szStr,0,LINE_MAX_SIZE*sizeof(WCHAR));
+                memcpy(szStr,szLineStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE:len)*sizeof(WCHAR));
+                currentSec=new IniSection();
+                attrTable.insert(std::pair<std::wstring, decltype(currentSec)>(szStr, currentSec));
+                continue;
+            }
+        }
+        len=szLineEnd-szLineStart;
+        if ((szValueStart = reinterpret_cast<const wchar_t*>(memchr( szLineStart, '=', szLineEnd - szLineStart ))) != NULL)
+        {
+            const WCHAR *szNameEnd = szValueStart;
+            while ((szNameEnd > szLineStart) && isSpace(szNameEnd[-1])) szNameEnd--;
+            len = szNameEnd - szLineStart;
+            szValueStart++;
+            while (szValueStart < szLineEnd && isSpace(*szValueStart)) szValueStart++;
+        }
+        if(len)
+        {
+            memset(szKey,0,LINE_MAX_SIZE*sizeof(WCHAR));
+            memcpy(szKey,szLineStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE:len)*sizeof(WCHAR));
+            if(szValueStart)
+            {
+                len=(int)(szLineEnd-szValueStart);
+                if(len<LINE_MAX_SIZE-1)szValue[len]=0;
+                else szValue[LINE_MAX_SIZE-1]=0;
+                memcpy(szValue,szValueStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE-1:len)*sizeof(WCHAR));
+            }
+            Parameters pam(szKey,szValue,std::wstring(),0);
+            currentSec->items.push_back(pam);
+        }
+    }
     return true;
 }
+
+////Note , this Initialize Analysis support space escape,and other.
+bool InitializeStructure::InitializeFileAnalysisEx(wchar_t *buffer,size_t size)
+{
+    return true;
+}
+
 
 bool InitializeAttribute::LoadData()
 {
@@ -217,18 +295,18 @@ bool InitializeAttribute::LoadData()
             return false;
         }
         MultiByteToWideChar(CP_UTF8, 0, const_cast<const char*>(pBuffer), dwFileSize, szFile, len);
-        bRet=iniStructure.InitializeFileAnalysis(szFile,len);
+        bRet=iniStructure.InitializeFileAnalysisEx(szFile,len);
         HeapFree(GetProcessHeap(),0,szFile);
         //this UTF8 with BOM
     }else if(zm[0]==0xFE&&zm[1]==0xFF) ///0xFEFF BE
     {
         szFile=(wchar_t*)buffer+2;
         ByteSwapShortBuffer(szFile,(dwFileSize-2)/sizeof(wchar_t));
-        bRet=iniStructure.InitializeFileAnalysis(szFile,dwFileSize-2);
+        bRet=iniStructure.InitializeFileAnalysisEx(szFile,dwFileSize-2);
     }else if(zm[0]==0xFF&&zm[1]==0xFE) ///0xFFFE LE
     {
         szFile=(wchar_t*)buffer+2;
-        bRet=iniStructure.InitializeFileAnalysis(szFile,dwFileSize-2);
+        bRet=iniStructure.InitializeFileAnalysisEx(szFile,dwFileSize-2);
         //
     }else{
         pBuffer=static_cast<char*>(buffer);
@@ -241,9 +319,10 @@ bool InitializeAttribute::LoadData()
             return false;
         }
         MultiByteToWideChar(CP_ACP, 0, const_cast<const char*>(pBuffer), dwFileSize, szFile, len);
-        bRet=iniStructure.InitializeFileAnalysis(szFile,len);
+        bRet=iniStructure.InitializeFileAnalysisEx(szFile,len);
         HeapFree(GetProcessHeap(),0,szFile);
     }
+    std::wcout<<L"Load Success"<<std::endl;
     CloseHandle(hFile);
     HeapFree(GetProcessHeap(),0,buffer);
     return bRet;

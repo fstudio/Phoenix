@@ -10,9 +10,15 @@
 #include <Profile/ProfileManager.h>
 #include <Encoding/Encode.h>
 #include <Shlwapi.h>
+using namespace Force;
 
-namespace Profile {
-class XmlIntegratedAnalyzer {
+class ProfileStructure{
+public:
+  ProfileStructure(){}
+};
+
+
+class XMLAnalyzer {
 private:
   struct ConfigSettingMark {
     bool cfg;
@@ -22,7 +28,7 @@ private:
   IXmlReader *pReader;
   std::wstring m_xmlfile;
   bool XmlAttributesResolve(IXmlReader *pReader,
-    std::map<std::wstring, std::wstring> &kv) {
+    std::unordered_map<std::wstring, std::wstring> &kv) {
     const WCHAR *pwszPrefix;
     const WCHAR *pwszLocalName;
     const WCHAR *pwszValue;
@@ -116,11 +122,11 @@ private:
   }
 
 public:
-  XmlIntegratedAnalyzer(std::wstring xmlfile)
+  XMLAnalyzer(std::wstring xmlfile)
       : m_xmlfile(xmlfile), pXmlStream(nullptr), pReader(nullptr) {
         /////Resource Initialize
       }
-  ~XmlIntegratedAnalyzer() {
+  ~XMLAnalyzer() {
     // Release COM Interface
     if (pReader)
       pReader->Release();
@@ -138,63 +144,3 @@ public:
     return true;
   }
 };
-
-ProfileManager::ProfileManager(std::wstring profile)
-    : configfile(profile), beFailed(false) {
-  xiaptr = new XmlIntegratedAnalyzer(this->configfile);
-  if (BeReadProfile()) {
-    beFailed = true;
-    auto iter = this->appsettingkv.begin();
-    return;
-  }
-}
-ProfileManager::ProfileManager() : beFailed(false) {
-  wchar_t szPath[30276] = {0};
-  /////nullptr
-  GetModuleFileNameW(nullptr, szPath, 30276);
-  wcscat_s(szPath, L".config");
-  this->configfile = szPath;
-  xiaptr = new XmlIntegratedAnalyzer(this->configfile);
-  if (BeReadProfile()) {
-    beFailed = true;
-    return;
-  }
-}
-ProfileManager::~ProfileManager() {
-  xiaptr->Writer(this->appsettingkv);
-  if (xiaptr)
-    delete xiaptr;
-}
-
-bool ProfileManager::BeReadProfile() { return xiaptr->Reader(appsettingkv); }
-
-bool ProfileManager::BeWriteProfile() { return xiaptr->Writer(appsettingkv); }
-
-std::wstring ProfileManager::Get(std::wstring &key) {
-  return appsettingkv[key];
-}
-
-std::wstring ProfileManager::CharGet(const wchar_t *str)
-{
-  return this->Get(std::wstring(str));
-}
-std::string ProfileManager::CharGet(const char *str)
-{
-  return this->Get(std::string(str));
-}
-std::string ProfileManager::Get(std::string &key) {
-  std::wstring wkey = MultiByteToUnicode(key);
-  return UnicodeToMultiByte(appsettingkv[wkey]);
-}
-
-bool ProfileManager::Set(std::wstring &key, std::wstring &value) {
-  appsettingkv[key] = value;
-  return true;
-}
-
-bool ProfileManager::Set(std::string &key, std::string &value) {
-  std::wstring wkey = MultiByteToUnicode(key);
-  appsettingkv[wkey] = MultiByteToUnicode(value);
-  return true;
-}
-}

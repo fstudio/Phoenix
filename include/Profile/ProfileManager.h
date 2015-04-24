@@ -18,32 +18,17 @@
 #error "Only Support C++"
 #endif
 
-namespace Profile {
-class XmlIntegratedAnalyzer;
+namespace Force {
+class XMLAnalyzer;
+class ProfileStructure;
 class ProfileManager {
 private:
-  XmlIntegratedAnalyzer *xiaptr;
-  std::unordered_map<std::wstring, std::wstring> kvmap;
-  std::unordered_map<std::wstring, std::wstring> appsettingkv;
-  std::wstring configfile;
-  bool BeWriteProfile();
-  bool BeReadProfile();
-  bool beFailed;
-
+  XMLAnalyzer *xmlAnalyzer;
+  ProfileStructure profileStructure;
 public:
   ProfileManager(std::wstring profile);
   ProfileManager();
   ~ProfileManager();
-  std::wstring Get(std::wstring &key);
-  std::wstring CharGet(const wchar_t *str);
-  std::string CharGet(const char *str);
-  std::string Get(std::string &key);
-  // std::string Get(const char *key);
-  bool Set(std::wstring &key, std::wstring &value);
-  bool Set(std::string &key, std::string &value);
-  bool CreateNewConfig(std::wstring &filename);
-  bool OpenOtherConfig(std::wstring &configpath);
-  bool IsParserFaild() { return beFailed; };
 };
 
 typedef ProfileManager ConfiguretionManager;
