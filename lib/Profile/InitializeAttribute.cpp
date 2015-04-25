@@ -10,6 +10,101 @@
 #include <Profile/InitializeAttribute.hpp>
 #include <ctype.h>
 #define LINE_MAX_SIZE  8196
+/*
+typedef struct _INIFILE_CACHE {
+    struct _INIFILE_CACHE *Next;
+    ULONG EnvironmentUpdateCount;
+    UNICODE_STRING NtFileName;
+    PINIFILE_MAPPING_FILENAME FileMapping;
+    HANDLE FileHandle;
+    BOOLEAN WriteAccess;
+    BOOLEAN UnicodeFile;
+    BOOLEAN LockedFile;
+    ULONG EndOfFile;
+    PVOID BaseAddress;
+    ULONG CommitSize;
+    ULONG RegionSize;
+    ULONG UpdateOffset;
+    ULONG UpdateEndOffset;
+    ULONG DirectoryInformationLength;
+    FILE_BASIC_INFORMATION BasicInformation;
+    FILE_STANDARD_INFORMATION StandardInformation;
+} INIFILE_CACHE, *PINIFILE_CACHE;
+
+typedef enum _INIFILE_OPERATION {
+    FlushProfiles,
+    ReadKeyValue,
+    WriteKeyValue,
+    DeleteKey,
+    ReadKeyNames,
+    ReadSectionNames,
+    ReadSection,
+    WriteSection,
+    DeleteSection,
+    RefreshIniFileMapping
+} INIFILE_OPERATION;
+
+typedef struct _INIFILE_PARAMETERS {
+    INIFILE_OPERATION Operation;
+    BOOLEAN WriteOperation;
+    BOOLEAN Unicode;
+    BOOLEAN ValueBufferAllocated;
+    PINIFILE_MAPPING_FILENAME IniFileNameMapping;
+    PINIFILE_CACHE IniFile;
+    UNICODE_STRING BaseFileName;
+    UNICODE_STRING FileName;
+    UNICODE_STRING NtFileName;
+    ANSI_STRING ApplicationName;
+    ANSI_STRING VariableName;
+    UNICODE_STRING ApplicationNameU;
+    UNICODE_STRING VariableNameU;
+    BOOLEAN MultiValueStrings;
+    union {
+        //
+        // This structure filled in for write operations
+        //
+        struct {
+            LPSTR ValueBuffer;
+            ULONG ValueLength;
+            PWSTR ValueBufferU;
+            ULONG ValueLengthU;
+        };
+        //
+        // This structure filled in for read operations
+        //
+        struct {
+            ULONG ResultChars;
+            ULONG ResultMaxChars;
+            LPSTR ResultBuffer;
+            PWSTR ResultBufferU;
+        };
+    };
+
+
+    //
+    // Remaining fields only valid when parsing an on disk .INI file mapped into
+    // memory.
+    //
+
+    PVOID TextCurrent;
+    PVOID TextStart;
+    PVOID TextEnd;
+
+    ANSI_STRING SectionName;
+    ANSI_STRING KeywordName;
+    ANSI_STRING KeywordValue;
+    PANSI_STRING AnsiSectionName;
+    PANSI_STRING AnsiKeywordName;
+    PANSI_STRING AnsiKeywordValue;
+    UNICODE_STRING SectionNameU;
+    UNICODE_STRING KeywordNameU;
+    UNICODE_STRING KeywordValueU;
+    PUNICODE_STRING UnicodeSectionName;
+    PUNICODE_STRING UnicodeKeywordName;
+    PUNICODE_STRING UnicodeKeywordValue;
+} INIFILE_PARAMETERS, *PINIFILE_PARAMETERS;
+
+*/
 
 static uint16_t ByteSwap(uint16_t i)
 {
@@ -241,11 +336,31 @@ bool InitializeStructure::InitializeFileAnalysis(wchar_t *buffer,size_t size)
 ////Note , this Initialize Analysis support space escape,and other.
 bool InitializeStructure::InitializeFileAnalysisEx(wchar_t *buffer,size_t size)
 {
+    if(!buffer||szie=0)
+        return false;
+    IniSection *currentSec;
+    int line=0;
+    size_t index=0;
+    ///GetLine
+    ///Parser Line
     return true;
 }
 
+bool InitializeAttribute::SaveChanged()
+{
+    HANDLE hFile;
+    hFile=CreateFileW(this->mfile.c_str(),
+        GENERIC_READ | GENERIC_WRITE,
+        FILE_SHARE_READ,
+        NULL,
+        OPEN_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+    CloseHandle(hFile);
+    return true;
+}
 
-bool InitializeAttribute::LoadData()
+bool InitializeAttribute::VirtualLoader()
 {
     HANDLE hFile;
     LARGE_INTEGER FileSize;
@@ -254,12 +369,48 @@ bool InitializeAttribute::LoadData()
     LPVOID buffer=nullptr;
     LPSTR pBuffer;
     hFile=CreateFileW(this->mfile.c_str(),
-        (mReadOnly?GENERIC_READ:GENERIC_READ|GENERIC_WRITE),
-        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        GENERIC_READ ,
+        FILE_SHARE_READ | FILE_SHARE_WRITE|FILE_SHARE_DELETE,
         NULL,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
+    ////Microsoft use NtAllocateVirtualMemory
+    if(hFile==INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    GetFileSizeEx(hFile,&FileSize);
+    auto mSize=FileSize.QuadPart;
+    auto mMax=(unsigned)-1;///this max 32bit
+    if(mSize>(uint64_t)mMax*2)
+    {
+        ////Failed ,your vitual memory support this size file ?
+    }
+    auto mem=VirtualAlloc(NULL,(mSize+4)*sizeof(wchar_t),MEM_RESERVE,PAGE_READWRITE);
+    //VirtualAlloc()
+    ReadFile(hFile,mem,mSize,&mSize,NULL);
+    //VirtualFree()
+    VirtualFree(mem);
+    return true;
+}
+
+bool InitializeAttribute::Loader()
+{
+    HANDLE hFile;
+    LARGE_INTEGER FileSize;
+    bool bRet=true;
+    WCHAR* szFile;
+    LPVOID buffer=nullptr;
+    LPSTR pBuffer;
+    hFile=CreateFileW(this->mfile.c_str(),
+        GENERIC_READ ,
+        FILE_SHARE_READ | FILE_SHARE_WRITE|FILE_SHARE_DELETE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL);
+    ////Microsoft use NtAllocateVirtualMemory
     if(hFile==INVALID_HANDLE_VALUE)
     {
         return false;
@@ -269,7 +420,7 @@ bool InitializeAttribute::LoadData()
     if((mSize>=0x8000000)||(mSize<=2))
     {
         CloseHandle(hFile);
-        return false;
+        return this->VirtualLoader();//// this Parser to big file.
     }
     auto dwFileSize=static_cast<DWORD>(mSize);
     buffer= HeapAlloc(GetProcessHeap(), 0 , dwFileSize); ///Big Memory.

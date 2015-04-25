@@ -91,10 +91,10 @@ private:
   bool isUpdate;
   int64_t lastTime;
   bool isParseOK;
-  bool mReadOnly;
   bool GetFileAttributesZues(int64_t *now=nullptr);
   bool EffectiveAutoChecker();
-  bool LoadData();
+  bool Loader();
+  bool VirtualLoader();
 public:
   InitializeStructure iniStructure;
   InitializeAttribute &operator=(const InitializeAttribute &rhs) {
@@ -104,18 +104,19 @@ public:
     return *this;
   }
   InitializeAttribute(const InitializeAttribute &iattr) { operator=(iattr); }
-  InitializeAttribute(const wchar_t *filePath,bool isReadOnly=false) : mfile(filePath),isEffective(false),isUpdate(false),isParseOK(false) ,mReadOnly(isReadOnly){
+  InitializeAttribute(const wchar_t *filePath) : mfile(filePath),isEffective(false),isUpdate(false),isParseOK(false) {
     if(EffectiveAutoChecker())
         isEffective=true;
     else{
         return ;
     }
-    if(LoadData())
+    if(Loader())
         isParseOK=true;
   }
   bool IsEffectiveFile(){return this->isEffective;}
   bool IsParseOK(){return this->isParseOK;}
   bool IsUpdated();
+  bool SaveChanged();
 };
 
 #endif
