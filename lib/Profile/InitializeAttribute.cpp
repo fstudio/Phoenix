@@ -9,7 +9,10 @@
 #include <iostream>
 #include <Profile/InitializeAttribute.hpp>
 #include <ctype.h>
+#include <list>
 #define LINE_MAX_SIZE  8196
+#define MAX_FILE_VIRTUALMEMSIZE 0x100000000
+#define MAX_FILE_NOVIRTUALMEMSIZE 0x10000000
 /*
 typedef struct _INIFILE_CACHE {
     struct _INIFILE_CACHE *Next;
@@ -105,6 +108,40 @@ typedef struct _INIFILE_PARAMETERS {
 } INIFILE_PARAMETERS, *PINIFILE_PARAMETERS;
 
 */
+
+/*
+LF U+000A
+VT U+000B
+FF U+000C
+CR U+000D
+CR+LF U+000D+LF U+000A
+NEL U+0085
+LS U+2028
+PS U+2029
+*/
+enum NewLineType{
+    NewLine_CRLF=0, ///New Line CRLF is a ISO
+    NewLine_LF=1,//Unix like system use it
+    NewLine_CR=2//Old Apple Ma
+};
+
+template <typename T>
+struct MoveLine{
+    T beigin;
+    T end;
+    int newLine;
+    MoveLine(T b,T e,int ne=0):begin(b),end(e),newLine(ne){}
+    MoveLine<T> &operator =(const MoveLine<T> &ml)
+    {
+        begin=ml.begin;
+        end=ml.end;
+        newLine=ml.newLine;
+    }
+    MoveLine<T> &operator==(const MoveLine<T> &ml)
+    {
+        return (begin==ml.begin&&end==ml.end&&newLine==ml.newLine);
+    }
+};
 
 static uint16_t ByteSwap(uint16_t i)
 {
@@ -382,12 +419,8 @@ bool InitializeAttribute::VirtualLoader()
     }
     GetFileSizeEx(hFile,&FileSize);
     auto mSize=FileSize.QuadPart;
-    auto mMax=(unsigned)-1;///this max 32bit
-    if(mSize>(uint64_t)mMax*2)
-    {
-        ////Failed ,your vitual memory support this size file ?
-    }
-    auto mem=VirtualAlloc(NULL,(mSize+4)*sizeof(wchar_t),MEM_RESERVE,PAGE_READWRITE);
+    //////We don't known this file uncoding,and load this size ...
+    auto mem=VirtualAlloc(NULL,(mSize+4),MEM_RESERVE,PAGE_READWRITE);
     //VirtualAlloc()
     ReadFile(hFile,mem,mSize,&mSize,NULL);
     //VirtualFree()
@@ -417,12 +450,17 @@ bool InitializeAttribute::Loader()
     }
     GetFileSizeEx(hFile,&FileSize);
     auto mSize=FileSize.QuadPart;
-    if((mSize>=0x8000000)||(mSize<=2))
+    if(mSize>=MAX_FILE_VIRTUALMEMSIZE||(mSize<=2))
     {
         CloseHandle(hFile);
-        return this->VirtualLoader();//// this Parser to big file.
+        return false;//// this file size is to big, now we not support it.or empty file
+    }else if(mSize>MAX_FILE_NOVIRTUALMEMSIZE)
+    {
+        CloseHandle(hFile); ///256MB~4GB size
+        return this->VirtualLoader();
     }
     auto dwFileSize=static_cast<DWORD>(mSize);
+    ///Because rea
     buffer= HeapAlloc(GetProcessHeap(), 0 , dwFileSize); ///Big Memory.
     if(!buffer) ////HeapAlloc Failed
         return false;
