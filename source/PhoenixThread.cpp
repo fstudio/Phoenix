@@ -8,6 +8,15 @@
 #include <Phoenix.h>
 #include "PhoenixThread.hpp"
 
+/*
+Syntax
+
+HWND WINAPI GetSendMessageReceiver ( 
+    DWORD threadId 
+)
+
+URL: http://undoc.airesoft.co.uk/user32.dll/GetSendMessageReceiver.php
+*/
 
 PhoenixThread::PhoenixThread(ThreadCallBack efunc,LPVOID param):m_param(param),hThread(nullptr),
 m_eFunc(efunc),

@@ -31,7 +31,53 @@
         }
 #endif
 
+/*
+CalculatePopupWindowPosition
 
+Calculate Popup Window Point
+
+BOOL WINAPI CalculatePopupWindowPosition(
+  _In_      const POINT *anchorPoint,
+  _In_      const SIZE *windowSize,
+  _In_      UINT flags,
+  _In_opt_  RECT *excludeRect,
+  _Out_     RECT *popupWindowPosition
+);
+
+URL:https://msdn.microsoft.com/en-us/library/windows/desktop/dd565861(v=vs.85).aspx
+
+
+CreateWindowInBand  ////
+
+CreateWindowIndirect
++...
+HWND GUIAPI CreateMainWindowIndirect(PDLGTEMPLATE pDlgTemplate,HWND hOwner,WNDPROC WndProc);
+BOOL GUIAPI DestroyMainWindowIndirect(HWND hMainWin);
+...
+UpdateLayeredWindowIndirect
+
+BOOL WINAPI ChangeWindowMessageFilterEx(
+  _In_         HWND hWnd,
+  _In_         UINT message,
+  _In_         DWORD action,
+  _Inout_opt_  PCHANGEFILTERSTRUCT pChangeFilterStruct
+);
+URL:https://msdn.microsoft.com/en-us/library/windows/desktop/dd388202(v=vs.85).aspx
+
+In Search Window.
+UINT WINAPI GetWindowModuleFileName(
+  _In_   HWND hwnd,
+  _Out_  LPTSTR lpszFileName,
+  _In_   UINT cchFileNameMax
+);
+Layout:
+int MapWindowPoints(
+  _In_     HWND hWndFrom,
+  _In_     HWND hWndTo,
+  _Inout_  LPPOINT lpPoints,
+  _In_     UINT cPoints
+);
+*/
 
 
 ////UI Tab
