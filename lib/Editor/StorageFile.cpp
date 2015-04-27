@@ -56,7 +56,7 @@ bool StorageFile::GetStoreFileSize()
         //CreateFileW New
         return false;
     }
-    if(mSize>0x8000000) //128MByte
+    if(mSize>0x10000000) 
         return false;
     return true;
 }
