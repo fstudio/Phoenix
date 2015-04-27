@@ -142,6 +142,9 @@ struct MoveLine{
         return (begin==ml.begin&&end==ml.end&&newLine==ml.newLine);
     }
 };
+///Portability At ABI Boundaries (Modern C++)
+//Boundaries
+
 
 static uint16_t ByteSwap(uint16_t i)
 {
@@ -373,13 +376,108 @@ bool InitializeStructure::InitializeFileAnalysis(wchar_t *buffer,size_t size)
 ////Note , this Initialize Analysis support space escape,and other.
 bool InitializeStructure::InitializeFileAnalysisEx(wchar_t *buffer,size_t size)
 {
-    if(!buffer||szie=0)
+    if(!buffer||size==0)
         return false;
     IniSection *currentSec;
     int line=0;
     size_t index=0;
     ///GetLine
     ///Parser Line
+    return true;
+}
+
+bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size,int separator)
+{
+    wchar_t *p=buffer;
+    wchar_t *end=buffer+size;
+    wchar_t *secStart=nullptr;
+    wchar_t *keyStart=nullptr;
+    wchar_t *valueStart=nullptr;
+    auto anonymous=new IniSection();
+    auto currentSec=anonymous;
+    enum _FSMState{
+        STAT_NONE=0,
+        STAT_SECTION,
+        STAT_KEY,
+        STAT_VALUE,
+        STAT_COMMENT
+    }state=STAT_NONE;
+    for(;p<end;p++)
+    {
+        switch(state)
+        {
+            case STAT_NONE:
+            {
+                if(*p==L'[')
+                {
+                    state=STAT_SECTION;
+                    secStart=p+1;
+                }else if(*p=='#'||*p==';')
+                {
+                    state=STAT_COMMENT;
+                }else if(!isspace(*p)){
+                    state=STAT_KEY;
+                    keyStart=p;
+                }
+                break;
+            }
+            case STAT_SECTION:
+            {
+                if(*p==']')
+                {
+                    *p='\0';
+                    currentSec=new IniSection();
+                    std::wstring sec=secStart;
+                    attrTable.insert(std::pair<std::wstring, decltype(currentSec)>(sec, currentSec));
+                    state=STAT_NONE;
+                }
+                break;
+            }
+            case STAT_COMMENT:
+            {
+                if(*p=='\n')
+                {
+                    state=STAT_NONE;
+                    break;
+                }
+                break;
+            }
+            case STAT_KEY:
+            {
+                if(*p==separator||*p=='\t')
+                {
+                    *p='\0';
+                    state=STAT_VALUE;
+                    valueStart=p+1;
+                }
+                break;
+            }
+            case STAT_VALUE:
+            {
+                if(*p=='\n'||*p=='\r')
+                {
+                    *p='\0';
+                    std::wstring ke=keyStart;
+                    std::wstring va=valueStart;
+                    Parameters pam(szKey,szValue,std::wstring(),0);
+                    currentSec->items.push_back(pam);
+                    state=STAT_NONE;
+                }
+                break;
+            }
+            default:
+            break;
+        }
+    }
+    if(state==STAT_VALUE)
+    {
+        ////
+    }
+    return true;
+}
+
+bool InitializeStructure::FiniteStateMachineAnalysis(char *buffer,size_t size,int separator,int codepage)
+{
     return true;
 }
 
@@ -403,8 +501,6 @@ bool InitializeAttribute::VirtualLoader()
     LARGE_INTEGER FileSize;
     bool bRet=true;
     WCHAR* szFile;
-    LPVOID buffer=nullptr;
-    LPSTR pBuffer;
     hFile=CreateFileW(this->mfile.c_str(),
         GENERIC_READ ,
         FILE_SHARE_READ | FILE_SHARE_WRITE|FILE_SHARE_DELETE,
@@ -422,9 +518,28 @@ bool InitializeAttribute::VirtualLoader()
     //////We don't known this file uncoding,and load this size ...
     auto mem=VirtualAlloc(NULL,(mSize+4),MEM_RESERVE,PAGE_READWRITE);
     //VirtualAlloc()
-    ReadFile(hFile,mem,mSize,&mSize,NULL);
+    DWORD zSize=UINT32_MAX;
+    auto imSize=mSize;
+    if(mSize>zSize)
+    {
+        wchar_t* mp=static_cast<wchar_t *>(mem);
+        while(imSize>zSize)
+        {
+            ReadFile(hFile,mp,zSize,&zSize,NULL);
+            mp+=zSize;
+            imSize-=zSize;
+        }
+        if(imSize<=zSize)
+        {
+            DWORD dmSize=static_cast<DWORD>(imSize);
+            ReadFile(hFile,mem,dmSize,&dmSize,NULL);
+        }
+    }else{
+        DWORD dmSize=static_cast<DWORD>(mSize);
+        ReadFile(hFile,mem,dmSize,&dmSize,NULL);
+    }
     //VirtualFree()
-    VirtualFree(mem);
+    VirtualFree(mem,0,MEM_RELEASE);
     return true;
 }
 
