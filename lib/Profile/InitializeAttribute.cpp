@@ -108,7 +108,34 @@ typedef struct _INIFILE_PARAMETERS {
 } INIFILE_PARAMETERS, *PINIFILE_PARAMETERS;
 
 */
-
+class wcharget{
+private:
+    wchar_t *wstr;
+public:
+    wcharget(const char *str):wstr(nullptr)
+    {
+        if(str==nullptr)
+            return ;
+        size_t len =strlen(str);
+        int unicodeLen = ::MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+        if(unicodeLen==0)
+            return ;
+        this->wstr = new wchar_t[unicodeLen + 1];
+        memset(this->wstr, 0, (unicodeLen + 1) * sizeof(wchar_t));
+        ::MultiByteToWideChar(CP_ACP, 0,str, -1, (LPWSTR)this->wstr,unicodeLen);
+    }
+    const wchar_t *Get()
+    {
+        if(!wstr)
+            return nullptr;
+        return const_cast<const wchar_t *>(wstr);
+    }
+    ~wcharget()
+    {
+        if(wstr)
+            delete[] wstr;
+    }
+};
 /*
 LF U+000A
 VT U+000B
@@ -300,92 +327,6 @@ static inline int isSpace(wchar_t c)
     return isspace(c)||c==0x1A;
 }
 
-/////By ReactOS is use it ,but too many bugs.
-//// so we not use it.
-bool InitializeStructure::InitializeFileAnalysis(wchar_t *buffer,size_t size)
-{
-    if(!buffer||size==0)
-        return false;
-    auto nextline=const_cast<const wchar_t*>(buffer);
-    std::wcout<<L"NextLine:\n"<<nextline<<std::endl;
-    auto szEnd=const_cast<const wchar_t*>(buffer+size);
-    const wchar_t *szLineStart,*szLineEnd;
-    const WCHAR *szValueStart;
-    wchar_t szStr[LINE_MAX_SIZE]={0};
-    wchar_t szKey[LINE_MAX_SIZE]={0};
-    wchar_t szValue[LINE_MAX_SIZE]={0};
-    int line=0,len;
-    bool bEscape=false;
-    auto anonymous=new IniSection();
-    auto currentSec=anonymous;
-    while(nextline<szEnd)
-    {
-        szLineStart=nextline;
-        nextline=reinterpret_cast<const wchar_t *>(memchr(szLineStart,'\n',szEnd-szLineStart));
-        if(!nextline)nextline=reinterpret_cast<const wchar_t*>(memchr(szLineStart,'\r',szEnd-szLineStart));
-        if(!nextline)nextline=szEnd;
-        else nextline++;
-        szLineEnd=nextline;
-        line++;
-        while(szLineStart<szLineEnd&&isSpace(*szLineStart))szLineStart++;
-        while((szLineEnd>szLineStart)&&isSpace(szLineEnd[-1]))szLineEnd--;
-        if(szLineStart>=szLineEnd)continue;
-        if(*szLineStart=='[')
-        {
-            const WCHAR * szSectionEnd;
-            if(!(szSectionEnd=reinterpret_cast<const wchar_t *>(memchr(szLineStart,']',szLineEnd-szLineStart))))
-            {
-                //// Failed.
-            }else{
-                szLineStart++;
-                len=(int)(szSectionEnd-szLineStart);
-                memset(szStr,0,LINE_MAX_SIZE*sizeof(WCHAR));
-                memcpy(szStr,szLineStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE:len)*sizeof(WCHAR));
-                currentSec=new IniSection();
-                attrTable.insert(std::pair<std::wstring, decltype(currentSec)>(szStr, currentSec));
-                continue;
-            }
-        }
-        len=szLineEnd-szLineStart;
-        if ((szValueStart = reinterpret_cast<const wchar_t*>(memchr( szLineStart, '=', szLineEnd - szLineStart ))) != NULL)
-        {
-            const WCHAR *szNameEnd = szValueStart;
-            while ((szNameEnd > szLineStart) && isSpace(szNameEnd[-1])) szNameEnd--;
-            len = szNameEnd - szLineStart;
-            szValueStart++;
-            while (szValueStart < szLineEnd && isSpace(*szValueStart)) szValueStart++;
-        }
-        if(len)
-        {
-            memset(szKey,0,LINE_MAX_SIZE*sizeof(WCHAR));
-            memcpy(szKey,szLineStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE:len)*sizeof(WCHAR));
-            if(szValueStart)
-            {
-                len=(int)(szLineEnd-szValueStart);
-                if(len<LINE_MAX_SIZE-1)szValue[len]=0;
-                else szValue[LINE_MAX_SIZE-1]=0;
-                memcpy(szValue,szValueStart,(len>LINE_MAX_SIZE?LINE_MAX_SIZE-1:len)*sizeof(WCHAR));
-            }
-            Parameters pam(szKey,szValue,std::wstring(),0);
-            currentSec->items.push_back(pam);
-        }
-    }
-    return true;
-}
-
-////Note , this Initialize Analysis support space escape,and other.
-bool InitializeStructure::InitializeFileAnalysisEx(wchar_t *buffer,size_t size)
-{
-    if(!buffer||size==0)
-        return false;
-    IniSection *currentSec;
-    int line=0;
-    size_t index=0;
-    ///GetLine
-    ///Parser Line
-    return true;
-}
-
 bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size,int separator)
 {
     wchar_t *p=buffer;
@@ -395,6 +336,102 @@ bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size
     wchar_t *valueStart=nullptr;
     auto anonymous=new IniSection();
     auto currentSec=anonymous;
+    setlocale( LC_ALL, "C" );
+    enum _FSMState{
+        STAT_NONE=0,
+        STAT_SECTION,
+        STAT_KEY,
+        STAT_VALUE,
+        STAT_COMMENT
+    }state=STAT_NONE;
+    for(;p<end;p++)
+    {
+        switch(state)
+        {
+            case STAT_NONE:
+            {
+                if(*p==L'[')
+                {
+                    state=STAT_SECTION;
+                    secStart=p+1;
+                }else if(*p=='#'||*p==';')
+                {
+                    state=STAT_COMMENT;
+                }else if(!iswspace(*p)){
+                    state=STAT_KEY;
+                    keyStart=p;
+                }
+                break;
+            }
+            case STAT_SECTION:
+            {
+                if(*p==']')
+                {
+                    *p='\0';
+                    currentSec=new IniSection();
+                    std::wstring wsec=secStart;
+                    attrTable.insert(std::pair<std::wstring, decltype(currentSec)>(wsec, currentSec));
+                    state=STAT_NONE;
+                }
+                break;
+            }
+            case STAT_COMMENT:
+            {
+                if(*p=='\n')
+                {
+                    state=STAT_NONE;
+                    break;
+                }
+                break;
+            }
+            case STAT_KEY:
+            {
+                if(*p==separator||*p=='\t')
+                {
+                    *p='\0';
+                    state=STAT_VALUE;
+                    valueStart=p+1;
+                }
+                break;
+            }
+            case STAT_VALUE:
+            {
+                if(*p=='\n'||*p=='\r')
+                {
+                    *p='\0';
+                    std::wstring ke=keyStart;
+                    std::wstring va=valueStart;
+                    Parameters pam(ke,va,std::wstring(),0);
+                    currentSec->items.push_back(pam);
+                    state=STAT_NONE;
+                }
+                break;
+            }
+            default:
+            break;
+        }
+    }
+    if(state==STAT_VALUE)
+    {
+        ////
+        std::wstring ke=keyStart;
+        std::wstring va=valueStart;
+        Parameters pam(ke,va,std::wstring(),0);
+        currentSec->items.push_back(pam);
+    }
+    return true;
+}
+
+bool InitializeStructure::FiniteStateMachineAnalysis(char *buffer,size_t size,int separator,int codepage)
+{
+    char *p=buffer;
+    char *end=buffer+size;
+    char *secStart=nullptr;
+    char *keyStart=nullptr;
+    char *valueStart=nullptr;
+    auto anonymous=new IniSection();
+    auto currentSec=anonymous;
+    setlocale( LC_ALL, "C" );
     enum _FSMState{
         STAT_NONE=0,
         STAT_SECTION,
@@ -426,9 +463,12 @@ bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size
                 if(*p==']')
                 {
                     *p='\0';
-                    currentSec=new IniSection();
-                    std::wstring sec=secStart;
-                    attrTable.insert(std::pair<std::wstring, decltype(currentSec)>(sec, currentSec));
+                    std::string ke=keyStart;
+                    std::string va=valueStart;
+                    wcharget k(ke.c_str());
+                    wcharget v(va.c_str());
+                    Parameters pam(std::wstring(k.Get()),std::wstring(v.Get()),std::wstring(),0);
+                    currentSec->items.push_back(pam);
                     state=STAT_NONE;
                 }
                 break;
@@ -457,10 +497,11 @@ bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size
                 if(*p=='\n'||*p=='\r')
                 {
                     *p='\0';
-                    std::wstring ke=keyStart;
-                    std::wstring va=valueStart;
-                    Parameters pam(szKey,szValue,std::wstring(),0);
-                    currentSec->items.push_back(pam);
+                    std::string ke=keyStart;
+                    std::string va=valueStart;
+                    wcharget k(ke.c_str());
+                    wcharget v(va.c_str());
+                    Parameters pam(std::wstring(k.Get()),std::wstring(v.Get()),std::wstring(),0);
                     state=STAT_NONE;
                 }
                 break;
@@ -472,12 +513,12 @@ bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size
     if(state==STAT_VALUE)
     {
         ////
+        std::string ke=keyStart;
+        std::string va=valueStart;
+        wcharget k(ke.c_str());
+        wcharget v(va.c_str());
+        Parameters pam(std::wstring(k.Get()),std::wstring(v.Get()),std::wstring(),0);
     }
-    return true;
-}
-
-bool InitializeStructure::FiniteStateMachineAnalysis(char *buffer,size_t size,int separator,int codepage)
-{
     return true;
 }
 
@@ -599,18 +640,18 @@ bool InitializeAttribute::Loader()
             return false;
         }
         MultiByteToWideChar(CP_UTF8, 0, const_cast<const char*>(pBuffer), dwFileSize, szFile, len);
-        bRet=iniStructure.InitializeFileAnalysisEx(szFile,len);
+        bRet=iniStructure.FiniteStateMachineAnalysis(szFile,len);
         HeapFree(GetProcessHeap(),0,szFile);
         //this UTF8 with BOM
     }else if(zm[0]==0xFE&&zm[1]==0xFF) ///0xFEFF BE
     {
         szFile=(wchar_t*)buffer+2;
         ByteSwapShortBuffer(szFile,(dwFileSize-2)/sizeof(wchar_t));
-        bRet=iniStructure.InitializeFileAnalysisEx(szFile,dwFileSize-2);
+        bRet=iniStructure.FiniteStateMachineAnalysis(szFile,dwFileSize-2);
     }else if(zm[0]==0xFF&&zm[1]==0xFE) ///0xFFFE LE
     {
         szFile=(wchar_t*)buffer+2;
-        bRet=iniStructure.InitializeFileAnalysisEx(szFile,dwFileSize-2);
+        bRet=iniStructure.FiniteStateMachineAnalysis(szFile,dwFileSize-2);
         //
     }else{
         pBuffer=static_cast<char*>(buffer);
@@ -623,7 +664,7 @@ bool InitializeAttribute::Loader()
             return false;
         }
         MultiByteToWideChar(CP_ACP, 0, const_cast<const char*>(pBuffer), dwFileSize, szFile, len);
-        bRet=iniStructure.InitializeFileAnalysisEx(szFile,len);
+        bRet=iniStructure.FiniteStateMachineAnalysis(szFile,len);
         HeapFree(GetProcessHeap(),0,szFile);
     }
     std::wcout<<L"Load Success"<<std::endl;

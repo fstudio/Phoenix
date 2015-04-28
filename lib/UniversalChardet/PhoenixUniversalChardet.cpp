@@ -1,10 +1,10 @@
 /*********************************************************************************************************
 * PhoenixUniversalChardet.cpp
 * Thanks Mozilla Foundation
-* Copyright (C) 2014 The ForceStudio All Rights Reserved.
+* @2014.08
 * Note: Phoenix Universial Chardet Library
 * E-mail:<forcemz@outlook.com>
-* @2014.08
+* Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include <string>
 #include <cstdlib>

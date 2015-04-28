@@ -84,8 +84,6 @@ public:
   bool IsChanged() { return this->isChanged; }
   ////Debug Method; sava file not used it
   std::wstring Print();
-  bool InitializeFileAnalysis(wchar_t *buffer,size_t size);
-  bool InitializeFileAnalysisEx(wchar_t *buffer,size_t size);
   bool FiniteStateMachineAnalysis(wchar_t *buffer,size_t size,int separator=SEPARATOR_EQUALS);
   bool FiniteStateMachineAnalysis(char *buffer,size_t size,int separator=SEPARATOR_EQUALS,int codepage=0);
 };
@@ -124,5 +122,7 @@ public:
   bool IsUpdated();
   bool SaveChanged();
 };
+
+typedef InitializeAttribute IniAttr;
 
 #endif
