@@ -1,0 +1,26 @@
+//+------------------------------------------------------------------------------------------------------
+// PreprocessorService.idl
+// Note: Phoenix Preprocessor
+// Date: @2015.03
+// E-mail:<forcemz@outlook.com>
+// Copyright (C) 2015 The ForceStudio All Rights Reserved.
+//+------------------------------------------------------------------------------------------------------
+cpp_quote("//+----------------------------------------------------------------------------------------------------------------------------")
+cpp_quote("//  Phoenix Preprocessor Service")
+cpp_quote("//  Note: Preprocessor Service RPC<LPC> module")
+cpp_quote("//  E-mail:<forcemz@outlook.com>")
+cpp_quote("//  Copyright (C) 2015 The ForceStudio All Rights Reserved..")
+cpp_quote("//")
+cpp_quote("//------------------------------------------------------------------------------------------------------------------------------")
+
+import "wtypesbase.idl";
+[
+uuid("E83D2CFB-46D7-419B-8F9F-316839F0BC92"),
+helpstring("Phoenix Preprocessor LPC Service"),
+version(1.0),pointer_default(unique),
+]
+
+interface PreprocessorServicePrivoderLPC
+{
+    void Shutdown();
+};
