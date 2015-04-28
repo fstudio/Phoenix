@@ -32,5 +32,7 @@
 *.pidb
 *.svclog
 *.scc
+PackageRuntime/tinyxml2.cpp
+PackageRuntime/tinyxml2.h
 
 

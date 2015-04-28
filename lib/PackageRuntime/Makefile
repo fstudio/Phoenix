@@ -20,7 +20,7 @@ TINYXMLFILE=tinyxml2.cpp tinyxml2.h
 all:$(TARGET)
 
 $(TARGET):$(COBJS) $(CXXOBJS) $(TINYXMLOBJ) $(RESOURCES)
-	$(LD) $(LDFLAGS) $(COBJS) $(CXXOBJS) $(LIBRARY) $(RESOURCES) -out:$@ 
+	$(LD) $(LDFLAGS) $(COBJS) $(CXXOBJS) $(TINYXMLOBJ) $(LIBRARY) $(RESOURCES) -out:$@ 
 	
 $(RESOURCES):PackageRuntime.rc
 	$(RC) PackageRuntime.rc
@@ -35,11 +35,11 @@ $(RESOURCES):PackageRuntime.rc
 	$(CC) $(CXXFLAGS) -c $<
 
 $(TINYXMLOBJ):$(TINYXMLFILE)
-	$(CC) $(CXXFLAGS) -c $<
+	$(CC) $(CXXFLAGS) -c tinyxml2.cpp
 	
 $(TINYXMLFILE):
-	copy ..\..\deps\tinyxml2\tinyxml2.cpp tinyxml2.cpp /Y
-	copy ..\..\deps\tinyxml2\tinyxml2.h tinyxml2.h /Y
+	@copy ..\..\deps\tinyxml2\tinyxml2.cpp tinyxml2.cpp /Y
+	@copy ..\..\deps\tinyxml2\tinyxml2.h tinyxml2.h /Y
 
 clean:
 	@-if exist *.obj del /s /q *.obj >nul 2>nul
