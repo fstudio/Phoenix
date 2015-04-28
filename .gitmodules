@@ -4,3 +4,6 @@
 [submodule "deps/tinyxml2"]
 	path = deps/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
+[submodule "deps/libsass"]
+	path = deps/libsass
+	url = https://github.com/sass/libsass.git
