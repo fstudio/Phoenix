@@ -47,3 +47,5 @@ clean:
 	@-if exist *.res del /s /q *.res >nul 2>nul
 	@-if exist *.dll  del /s /q *.dll >nul 2>nul
 	@-if exist *.exp del /s /q *.exp >nul 2>nul
+	@-if exist tinyxml2.cpp del /s /q tinyxml2.cpp >nul 2>nul
+	@-if exist tinyxml2.h del /s /q tinyxml2.h >nul 2>nul
