@@ -12,12 +12,14 @@ LIBRARY=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib
 ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib libcmt.lib winhttp.lib
 COBJS=GC.obj  UUID.obj Zip.obj PackageRuntime.obj CppRest.obj  getCommandLineOpt.obj URIPorts.obj
 CXXOBJS=JSONResolveEx.obj JSONResolve.obj RAIIBIND.obj ZipArchive.obj  XmlResolve.obj FileStream.obj \
-tinyxml2.obj Base64Encoder.obj RuntimeDebug.obj md5.obj UriParser.obj  StringBuffer.obj fstream.obj
+Base64Encoder.obj RuntimeDebug.obj md5.obj UriParser.obj  StringBuffer.obj fstream.obj
 RESOURCES=PackageRuntime.res
+TINYXMLOBJ=tinyxml2.obj
+TINYXMLFILE=tinyxml2.cpp tinyxml2.h
 
 all:$(TARGET)
 
-$(TARGET):$(COBJS) $(CXXOBJS) $(RESOURCES)
+$(TARGET):$(COBJS) $(CXXOBJS) $(TINYXMLOBJ) $(RESOURCES)
 	$(LD) $(LDFLAGS) $(COBJS) $(CXXOBJS) $(LIBRARY) $(RESOURCES) -out:$@ 
 	
 $(RESOURCES):PackageRuntime.rc
@@ -31,6 +33,13 @@ $(RESOURCES):PackageRuntime.rc
 
 {.}.cc.obj::
 	$(CC) $(CXXFLAGS) -c $<
+
+$(TINYXMLOBJ):$(TINYXMLFILE)
+	$(CC) $(CXXFLAGS) -c $<
+	
+$(TINYXMLFILE):
+	copy ..\..\deps\tinyxml2\tinyxml2.cpp tinyxml2.cpp /Y
+	copy ..\..\deps\tinyxml2\tinyxml2.h tinyxml2.h /Y
 
 clean:
 	@-if exist *.obj del /s /q *.obj >nul 2>nul
