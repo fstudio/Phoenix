@@ -6,7 +6,7 @@
 *   E-mail: <forcemz@outlook.com>
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include "XmlLiteInternal.h"
+#include "ProfileInternal.h"
 #include <Profile/ProfileManager.h>
 #include <Encoding/Encode.h>
 #include <Shlwapi.h>
@@ -57,7 +57,7 @@ private:
             } else {
               if (wcscmp(pwszLocalName, L"value") == 0) {
                 // wprintf(L"Insert %s === %s \n", pwszKey, pwszValue);
-                kv.insert(std::map<std::wstring, std::wstring>::value_type(
+                kv.insert(std::unordered_map<std::wstring, std::wstring>::value_type(
                     pwszKey, pwszValue));
               }
             }
@@ -69,7 +69,7 @@ private:
     }
     return true;
   }
-  HRESULT XmlReaderInternal(std::map<std::wstring, std::wstring> &kv) {
+  HRESULT XmlReaderInternal(std::unordered_map<std::wstring, std::wstring> &kv) {
     XmlNodeType xmlnode;
     const WCHAR *pwszPrefix;
     const WCHAR *pwszLocalName;
@@ -133,14 +133,70 @@ public:
     if (pXmlStream)
       pXmlStream->Release();
   }
-  bool Reader(std::map<std::wstring, std::wstring> &appsettingkv) {
+  bool Reader(std::unordered_map<std::wstring, std::wstring> &appsettingkv) {
     if (!PathFileExistsW(m_xmlfile.c_str())) {
       return false;
     }
 
     return (this->XmlReaderInternal(appsettingkv) == S_OK);
   }
-  bool Writer(std::map<std::wstring, std::wstring> &appsettingkv) {
+  bool Writer(std::unordered_map<std::wstring, std::wstring> &appsettingkv) {
     return true;
   }
 };
+
+
+ProfileManager::ProfileManager(std::wstring profile):configFile(profile),filetype(XML_CONFIGFILE)
+{
+  //
+}
+ProfileManager::ProfileManager():filetype(XML_CONFIGFILE)
+{
+  wchar_t szFile[4096]={0};
+  GetModuleFileNameW(szFile,4096);
+  this->configFile=szFile;
+  this->configFile+=L".config";
+}
+
+ProfileManager::~ProfileManager()
+{
+///
+}
+bool ProfileManager::BeginParse()
+{
+  switch(filetype)
+  {
+    case XML_CONFIGFILE:
+    break;
+    case INI_CONFIGFILE:
+    break;
+    case JSON_CONFIGFILE:
+    break;
+  }
+  return true;
+}
+
+bool ProfileManager::ChooseProfileType(int type)
+{
+  this->filetype=type;
+  return true;
+}
+
+int ProfileManager::get(const wchar_t *key,int de)
+{
+  return 0;
+}
+std::wstring ProfileManager::get(const wchar_t *key,const wchar_t *value)
+{
+  return 0;
+}
+
+bool ProfileManager::set(const wchar_t *key,int value)
+{
+  return true;
+}
+
+bool ProfileManager::set(const wchar_t *key,const wchar_t *value)
+{
+  return true;
+}

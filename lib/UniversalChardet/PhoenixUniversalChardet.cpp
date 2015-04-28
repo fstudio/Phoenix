@@ -155,7 +155,7 @@ static bool WideStringToString(const std::wstring &wstr,std::string &str)
 }
 /////Other System Done
 #endif
-//FIXME : This can check UTF-16 LE /BE or UTF-8 ,but ANSI-Based CodePages to be identified 
+//FIXME : This can check UTF-16 LE /BE or UTF-8 ,but ANSI-Based CodePages to be identified
 class PhoenixUniversalDetector : public nsUniversalDetector
 {
 protected:

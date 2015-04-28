@@ -6,6 +6,7 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_JSONRESOLVE_H
 #define PHOENIX_JSONRESOLVE_H
+#include <rapidjson/rapidjson.h>
 
 class JSONResolve{
 public:

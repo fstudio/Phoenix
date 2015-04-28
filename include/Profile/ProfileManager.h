@@ -19,16 +19,28 @@
 #endif
 
 namespace Force {
-class XMLAnalyzer;
 class ProfileStructure;
 class ProfileManager {
+public:
+  enum PROFILE_TYPE{
+    XML_CONFIGFILE=0,
+    INI_CONFIGFILE,
+    JSON_CONFIGFILE
+  };
 private:
-  XMLAnalyzer *xmlAnalyzer;
-  ProfileStructure profileStructure;
+  std::unordered_map<std::wstring,std::wstring> kv;
+  int filetype;
+  std::wstring configFile;
 public:
   ProfileManager(std::wstring profile);
   ProfileManager();
   ~ProfileManager();
+  bool BeginParse();
+  bool ChooseProfileType(int type=XML_CONFIGFILE);
+  int get(const wchar_t *key,int de);
+  std::wstring get(const wchar_t *key,const wchar_t *value);
+  bool set(const wchar_t *key,int value);
+  bool set(const wchar_t *key,const wchar_t *value);
 };
 
 typedef ProfileManager ConfiguretionManager;
