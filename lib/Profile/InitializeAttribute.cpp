@@ -13,101 +13,7 @@
 #define LINE_MAX_SIZE  8196
 #define MAX_FILE_VIRTUALMEMSIZE 0x100000000
 #define MAX_FILE_NOVIRTUALMEMSIZE 0x10000000
-/*
-typedef struct _INIFILE_CACHE {
-    struct _INIFILE_CACHE *Next;
-    ULONG EnvironmentUpdateCount;
-    UNICODE_STRING NtFileName;
-    PINIFILE_MAPPING_FILENAME FileMapping;
-    HANDLE FileHandle;
-    BOOLEAN WriteAccess;
-    BOOLEAN UnicodeFile;
-    BOOLEAN LockedFile;
-    ULONG EndOfFile;
-    PVOID BaseAddress;
-    ULONG CommitSize;
-    ULONG RegionSize;
-    ULONG UpdateOffset;
-    ULONG UpdateEndOffset;
-    ULONG DirectoryInformationLength;
-    FILE_BASIC_INFORMATION BasicInformation;
-    FILE_STANDARD_INFORMATION StandardInformation;
-} INIFILE_CACHE, *PINIFILE_CACHE;
 
-typedef enum _INIFILE_OPERATION {
-    FlushProfiles,
-    ReadKeyValue,
-    WriteKeyValue,
-    DeleteKey,
-    ReadKeyNames,
-    ReadSectionNames,
-    ReadSection,
-    WriteSection,
-    DeleteSection,
-    RefreshIniFileMapping
-} INIFILE_OPERATION;
-
-typedef struct _INIFILE_PARAMETERS {
-    INIFILE_OPERATION Operation;
-    BOOLEAN WriteOperation;
-    BOOLEAN Unicode;
-    BOOLEAN ValueBufferAllocated;
-    PINIFILE_MAPPING_FILENAME IniFileNameMapping;
-    PINIFILE_CACHE IniFile;
-    UNICODE_STRING BaseFileName;
-    UNICODE_STRING FileName;
-    UNICODE_STRING NtFileName;
-    ANSI_STRING ApplicationName;
-    ANSI_STRING VariableName;
-    UNICODE_STRING ApplicationNameU;
-    UNICODE_STRING VariableNameU;
-    BOOLEAN MultiValueStrings;
-    union {
-        //
-        // This structure filled in for write operations
-        //
-        struct {
-            LPSTR ValueBuffer;
-            ULONG ValueLength;
-            PWSTR ValueBufferU;
-            ULONG ValueLengthU;
-        };
-        //
-        // This structure filled in for read operations
-        //
-        struct {
-            ULONG ResultChars;
-            ULONG ResultMaxChars;
-            LPSTR ResultBuffer;
-            PWSTR ResultBufferU;
-        };
-    };
-
-
-    //
-    // Remaining fields only valid when parsing an on disk .INI file mapped into
-    // memory.
-    //
-
-    PVOID TextCurrent;
-    PVOID TextStart;
-    PVOID TextEnd;
-
-    ANSI_STRING SectionName;
-    ANSI_STRING KeywordName;
-    ANSI_STRING KeywordValue;
-    PANSI_STRING AnsiSectionName;
-    PANSI_STRING AnsiKeywordName;
-    PANSI_STRING AnsiKeywordValue;
-    UNICODE_STRING SectionNameU;
-    UNICODE_STRING KeywordNameU;
-    UNICODE_STRING KeywordValueU;
-    PUNICODE_STRING UnicodeSectionName;
-    PUNICODE_STRING UnicodeKeywordName;
-    PUNICODE_STRING UnicodeKeywordValue;
-} INIFILE_PARAMETERS, *PINIFILE_PARAMETERS;
-
-*/
 class wcharget{
 private:
     wchar_t *wstr;
@@ -171,8 +77,20 @@ struct MoveLine{
 };
 ///Portability At ABI Boundaries (Modern C++)
 //Boundaries
-
-
+static  int isspace(int c)
+{
+    return c==' '||(unsigned)c-'\t'<5;
+}
+static int iswspace(wint_t wc)
+{
+    static const wchar_t spaces[] = {
+        ' ', '\t', '\n', '\r', 11, 12,  0x0085,
+        0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005,
+        0x2006, 0x2008, 0x2009, 0x200a,
+        0x2028, 0x2029, 0x205f, 0x3000, 0
+    };
+    return wc && wcschr(spaces, wc);
+}
 static uint16_t ByteSwap(uint16_t i)
 {
     uint16_t j;
@@ -321,10 +239,6 @@ std::wstring InitializeStructure::Print() {
       }
     }
     return wstream.str();
-}
-static inline int isSpace(wchar_t c)
-{
-    return isspace(c)||c==0x1A;
 }
 
 bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size,int separator)
