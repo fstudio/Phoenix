@@ -1,0 +1,2 @@
+#getopt 
+support UTF16
