@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <sass2scss.h>
 #include <sass_context.h>
-
+#include <gflags/gflags.h>
 
 int main(int argc,char **argv)
 {

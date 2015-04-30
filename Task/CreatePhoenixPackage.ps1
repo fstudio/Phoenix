@@ -1,1 +1,4 @@
 ###Create Package.
+
+$MODULENAME="CreatePhoenixPackage"
+	
