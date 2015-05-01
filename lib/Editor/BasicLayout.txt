@@ -1,0 +1,12 @@
+Editor
+Sidebar
+Statusbar
+Viewbar
+
+
+Side by Side Editing
+Explorer
+Save/AutoSave
+Search
+Command Palette
+File Navigation

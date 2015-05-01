@@ -44,7 +44,9 @@ int WINAPI UIChannelProviders(bool isNew)
     return 0;
 }
 
-
+///<summary>
+// int WINAPI TaskChannelProviders
+///</summary>
 int WINAPI TaskChannelProviders()
 {
     return 0;
@@ -75,44 +77,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     std::vector<std::wstring> vfile;
     typedef Force::CommandLineArguments argT;
     Force::CommandLineArguments Args;
-    /// AddCallback
-    /// GetUnusedArguments
-    /// GetRemainingArguments
-    /// DeleteRemainingArguments
-    ///  arg.AddBooleanArgument("--set-bool-arg1", &bool_arg1, "Test AddBooleanArgument 1");
-    /*
-    static void* random_ptr = reinterpret_cast<void*>(0x123);
-    static int argument(const char* arg, const char* value, void* call_data)
-    {
-    kwsys_ios::cout << "Got argument: \"" << arg << "\" value: \"" << (value?value:"(null)") << "\"" << kwsys_ios::endl;
-    if ( call_data != random_ptr )
-    {
-    kwsys_ios::cerr << "Problem processing call_data" << kwsys_ios::endl;
-    return 0;
-    }
-   return 1;
-   }
 
-   static int unknown_argument(const char* argument, void* call_data)
-   {
-    kwsys_ios::cout << "Got unknown argument: \"" << argument << "\"" << kwsys_ios::endl;
-    if ( call_data != random_ptr )
-    {
-    kwsys_ios::cerr << "Problem processing call_data" << kwsys_ios::endl;
-    return 0;
-    }
-    return 1;
-    }
-    ------------------------------------------------------------------------------------------------------------------------------------------------------------
-      arg.AddCallback("-A", argT::NO_ARGUMENT, argument, random_ptr, "Some option -A. This option has a multiline comment. It should demonstrate how the code splits lines.");
-      arg.AddCallback("-B", argT::SPACE_ARGUMENT, argument, random_ptr, "Option -B takes argument with space");
-      arg.AddCallback("-C", argT::EQUAL_ARGUMENT, argument, random_ptr, "Option -C takes argument after =");
-      arg.AddCallback("-D", argT::CONCAT_ARGUMENT, argument, random_ptr, "This option takes concatinated argument");
-      arg.AddCallback("--long1", argT::NO_ARGUMENT, argument, random_ptr, "-A");
-      arg.AddCallback("--long2", argT::SPACE_ARGUMENT, argument, random_ptr, "-B");
-      arg.AddCallback("--long3", argT::EQUAL_ARGUMENT, argument, random_ptr, "Same as -C but a bit different");
-      arg.AddCallback("--long4", argT::CONCAT_ARGUMENT, argument, random_ptr, "-C");
-    */
 
     Args.Initialize(Argc,Argv);
     Args.AddArgument(L"--help", argT::NO_ARGUMENT, &help,

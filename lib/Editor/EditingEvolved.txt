@@ -1,0 +1,16 @@
+
+Bracket matching
+Selection & Multi-cursor
+IntelliSense
+Parameter Hints
+Snippets
+Go to definition
+Goto Symbol
+Open symbol by name
+Gutter indicators
+Peek
+Hover
+Reference information
+Rename symbol
+Code action
+Errors & Warnings
