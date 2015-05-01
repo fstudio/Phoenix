@@ -1,19 +1,8 @@
 /*********************************************************************************************************
-* sass.cc
-* Note: Phoenix Preprocessor Sass compiler
-* Date: @2015.04
+* ContainerEvolved.cc
+* Note: Phoenix Container Evolved
+* Date: @2015.03
+* Author: Force Charlie
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#include <cstdio>
-#include <cstdlib>
-#include <sass2scss.h>
-#include <sass_context.h>
-#include <gflags/gflags.h>
-
-int main(int argc,char **argv)
-{
-    ::google::ParseCommandLineFlags(&argc,&argv,true);
-    return 0;
-}
-

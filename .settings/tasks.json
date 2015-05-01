@@ -12,7 +12,7 @@
 	"version": "0.1.0",
 	
 	// The command is tsc.
-	"command": "nmake",
+	"command": "make",
 
 	// Show the output window only if unrecognized errors occur. 
 	"showOutput": "silent",

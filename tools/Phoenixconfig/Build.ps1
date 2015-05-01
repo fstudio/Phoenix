@@ -1,4 +1,0 @@
-<##
-##>
-
-$TARGET="PhoeinxConfig.exe"

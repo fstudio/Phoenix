@@ -1,19 +1,17 @@
 /*********************************************************************************************************
-* sass.cc
-* Note: Phoenix Preprocessor Sass compiler
-* Date: @2015.04
+* TasksParser.cpp
+* Note: Phoenix Editor  TasksParser
+* Data: 2015.05.01
 * E-mail:<forcemz@outlook.com>
+* Author: Force  Charlie
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#include <cstdio>
-#include <cstdlib>
-#include <sass2scss.h>
-#include <sass_context.h>
-#include <gflags/gflags.h>
+#include <rapidjson/rapidjson.h>
+#include <string>
 
-int main(int argc,char **argv)
-{
-    ::google::ParseCommandLineFlags(&argc,&argv,true);
-    return 0;
-}
-
+////task file $workspaceRoot/tasks.json
+class TasksExecution{
+private:
+    std::string cmd;
+    std::string args;
+};
