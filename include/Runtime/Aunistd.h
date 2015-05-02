@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime Advanced unistd.h
+*   Phoenix Package Runtime Advanced unistd.h
 *   Note: Some API
 *   Date: 2015.02.11
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

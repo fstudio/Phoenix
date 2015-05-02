@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Encoding Convert
+*   Phoenix Encoding Convert
 *   Note: Encode.h
 *   Date: 2015.01.17
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

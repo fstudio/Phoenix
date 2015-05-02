@@ -4,7 +4,7 @@
 *   Note: Phoenix Universial Chardet Library
 *   Author: Force.Charlie
 *   E-mail: <forcemz@outlook.com>
-*   Copyright (C) 2014 The ForceStudio All Rights Reserved.
+*   Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #ifndef PHOENIX_UNIVERSALCHARDET_H
 #define PHOENIX_UNIVERSALCHARDET_H

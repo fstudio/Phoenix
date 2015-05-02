@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Plugin Runtime
+*   Phoenix Plugin Runtime
 *   Note: Zip
 *   Date: 2015.01.15
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Profile  Features
+*   Phoenix Profile  Features
 *   Note: ProfileInternal.h
 *   Data: 2015.01.17
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

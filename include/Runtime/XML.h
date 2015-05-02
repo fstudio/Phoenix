@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime
+*   Phoenix Package Runtime
 *   Note: Xml Parser
 *   Date: 2015.01.13
 *   Author: Force.Charlie

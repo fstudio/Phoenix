@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix JSON Feature
+*   Phoenix JSON Feature
 *   Note: JSON
 *   Date: 2015.01.18
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

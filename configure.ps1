@@ -47,9 +47,9 @@ IF($args.Count -ge 1)
 <#
 
 Import-Module BitsTransfer
-$url = 'http://dldir1.qq.com/qqfile/qq/QQ5.3/10702/QQ5.3.exe'
-Start-BitsTransfer $url D:\QQ5.3.exe
-Invoke-Item D:\QQ5.3.exe
+$url = 'url'
+Start-BitsTransfer $url "zz""
+Invoke-Item "zz"
 
 #>
 

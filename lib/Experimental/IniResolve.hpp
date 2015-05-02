@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Ini  Features
+*   Phoenix Ini  Features
 *   Note: IniResolve.hpp
 *   Date: 2015.01.22
 *   Author: Force.Charlie

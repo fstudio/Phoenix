@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Profile  Features
+*   Phoenix Profile  Features
 *   Note: ProfileManager.cpp
 *   Date: 2015.01.17
 *   Author: Force.Charlie

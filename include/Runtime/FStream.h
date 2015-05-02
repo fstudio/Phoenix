@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime
+*   Phoenix Package Runtime
 *   Note: File Stream
 *   Date: 2015.04.05
 *   Author: Force.Charlie

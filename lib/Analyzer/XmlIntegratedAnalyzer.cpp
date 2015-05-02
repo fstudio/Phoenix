@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix IntegrateAnalyzer  Features
+*   Phoenix IntegrateAnalyzer  Features
 *   Note: XmlIntegrateAnalyzer.cpp
 *   Date: 2015.01.21
 *   Author: Force.Charlie

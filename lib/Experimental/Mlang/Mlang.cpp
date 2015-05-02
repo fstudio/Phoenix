@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Encoding Deter Base IMutiLanguage
+*   Phoenix Encoding Deter Base IMutiLanguage
 *   Note: Mlang.cpp
 *   Date: 2015.01.16
 *   Author: Force.Charlie

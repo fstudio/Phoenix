@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Encoding Deter Base IMutiLanguage
+*   Phoenix Encoding Deter Base IMutiLanguage
 *   Note: Mlang.h
 *   Date: 2015.01.16
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

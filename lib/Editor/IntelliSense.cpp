@@ -6,3 +6,9 @@
 * Author: Force Charlie
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
+
+class IntelliSense{
+private:
+};
+
+

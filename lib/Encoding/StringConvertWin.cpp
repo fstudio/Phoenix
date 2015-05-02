@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Encoding Convert Win
+*   Phoenix Encoding Convert Win
 *   Note: StringConvertWin.cpp
 *   Date: 2015.01.17
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

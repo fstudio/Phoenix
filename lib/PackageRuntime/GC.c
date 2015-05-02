@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix Package Runtime
+*   Phoenix Package Runtime
 *   Note: GC.c This File is GC Feature
 *   Date: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.

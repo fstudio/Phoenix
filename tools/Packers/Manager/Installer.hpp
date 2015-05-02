@@ -11,6 +11,8 @@
 
 class Installer{
 private:
+    Installer();
+public:
     bool Do();
 };
 

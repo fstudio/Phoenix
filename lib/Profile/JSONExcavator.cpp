@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-*   Phoneix JSON Excavator
+*   Phoenix JSON Excavator
 *   Note: JSONExcavator.cpp
 *   Date: 2015.04.28
 *   Author: Force.Charlie
