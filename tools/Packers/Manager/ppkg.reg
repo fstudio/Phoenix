@@ -1,0 +1,14 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\.ppkg]
+@="CompressedFolder"
+"DontCompressInPackage"=""
+"PerceivedType"="compressed"
+"Content Type"="application/x-zip-compressed"
+
+
+[HKEY_CLASSES_ROOT\.ppkg\OpenWithProgids]
+"CompressedFolder"=""
+
+[HKEY_CLASSES_ROOT\.ppkg\PersistentHandler]
+@="{3B224B11-9363-407e-850F-C9E1FFACD8FB}"
