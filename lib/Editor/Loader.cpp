@@ -9,3 +9,22 @@
 #include <Editor/Loader.hpp>
 
 
+bool EditorLoader::Close()
+{
+    if(isModify)
+    {
+        ////
+    }
+    return true;
+}
+
+
+bool EditorLoader::Open()
+{
+    return true;
+}
+
+bool EditorLoader::Save(const wchar_t *other)
+{
+    return true;
+}
