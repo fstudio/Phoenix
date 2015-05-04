@@ -11,7 +11,7 @@ APPNAME=Phoenix.exe
 #TOOLS PARAM
 CXXFLAGS=-nologo  -DUNICODE -D_UNICODE -TP  -W4 -EHsc -Zc:forScope -Zc:wchar_t -MT
 LDFLAGS=-NOLOGO -OPT:REF
-INCDIR=-I../include -I../wtl/Include
+INCDIR=-I../include -I../deps/wtl/Include
 LIBPATHDIR=../lib/LibraryCache
 #Library
 LIBRARYS=Shlwapi.lib kernel32.lib user32.lib Taskschd.lib comsupp.lib credui.lib Advapi32.lib Uxtheme.lib  Gdi32.lib\

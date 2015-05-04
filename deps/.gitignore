@@ -33,5 +33,6 @@
 *.svclog
 *.scc
 universalchardet/.svn/*
+wtl/.svn/*
 
 
