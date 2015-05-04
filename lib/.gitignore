@@ -34,5 +34,5 @@
 *.scc
 PackageRuntime/tinyxml2.cpp
 PackageRuntime/tinyxml2.h
-Support/svn/*
+Support/.svn/*
 
