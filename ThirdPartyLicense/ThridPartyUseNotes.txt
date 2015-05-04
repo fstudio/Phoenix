@@ -4,6 +4,7 @@ SQLite
 jsonxx
 rapidjson
 libclang
+llvm libsupport and ADT
 zlib
 log4z
 tinyxml2
