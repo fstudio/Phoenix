@@ -8,6 +8,26 @@
 **********************************************************************************************************/
 #include <Editor/Loader.hpp>
 
+/// IOExperimental
+/// Load Big big file,
+///
+class IOExperimental{
+public:
+    IOExperimental()
+    {
+        /////
+    }
+};
+
+EditorLoader::EditorLoader(const std::wstring &filePath):mfile(filePath)
+{
+    ///
+}
+
+EditorLoader::EditorLoader(const wchar_t *filePath):mfile(filePath)
+{
+    ///
+}
 
 bool EditorLoader::Close()
 {
@@ -21,6 +41,7 @@ bool EditorLoader::Close()
 
 bool EditorLoader::Open()
 {
+    ///GetFileAttribute
     return true;
 }
 
