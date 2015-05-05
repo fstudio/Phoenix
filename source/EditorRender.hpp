@@ -7,10 +7,13 @@
 **********************************************************************************************************/
 #ifndef EDITOR_RENDER_HPP
 #define EDITOR_RENDER_HPP
-
+#include <cstdio>
+#include <cstdlib>
 #define EDITOR_RENDER_CLASSW L"Phoenix.UI.Editor.Render"
 
 class EditorRender{
+private:
+    wchar_t *beginAddress;
 public:
     EditorRender();
 };
