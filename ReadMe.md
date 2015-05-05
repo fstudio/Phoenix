@@ -1,4 +1,6 @@
 #Phoenix Editor
+
+[![Join the chat at https://gitter.im/fstudio/Phoenix](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fstudio/Phoenix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 next ....
 
 ###Modern UI
