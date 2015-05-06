@@ -13,7 +13,40 @@ int FindPackageMagic(const wchar_t *file)
     return 0;
 }
 
+class ConsoleAttachEx{
+private:
+  bool isOpen;
+public:
+  ConsoleAttachEx()
+  {
+    if(AttachConsole(ATTACH_PARENT_PROCESS))
+    {
+      freopen("CONIN$" , "r+t" , stdin);
+      freopen("CONOUT$" , "w+t" , stdout);
+      freopen("CONOUT$", "w", stderr);
+      isOpen=true;
+    }else{
+      isOpen=false;
+    }
+  }
+  ~ConsoleAttachEx()
+  {
+    if(isOpen)
+    {
+      fclose(stdout);
+      fclose(stdin);
+      fclose(stderr);
+      FreeConsole();
+    }
+  }
+};
 
+bool SendMessageEnter()
+{
+    return true;
+}
+
+//////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
     return 0;

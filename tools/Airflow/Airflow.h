@@ -10,15 +10,34 @@
 #define AIRFLOW_H
 #include <string>
 
+
+#define UI_MODE_GUI  1
+#define UI_MODE_CUI   2
+
+#define CMD_NORMAL_WORKFLOW 0
+#define CMD_PRINT_USAGE   1
+#define CMD_PRINT_VERSION 2
+#define CMD_WORKFLOW_DEBUG 3
+
 struct AirflowStructure{
-    int mode;/// msi or msu or cab
+    int uiMode;/// msi or msu or cab
+    int cmdMode;///Run some Task
     std::wstring rawfile;
     std::wstring outdir;
 };
 
+struct AirflowTaskData{
+    bool isForce;
+    bool sendRate;
+    std::wstring rawfile;
+    std::wstring outdir;
+};
 
+int AirflowUIChannel(AirflowStructure &cArgs);
+DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst);
+DWORD WINAPI AirflowZendMethod(LPVOID lParam);
 ///Asynchronous report Message Id
-extern int WM_ASYN_REPORT_MSG;
+extern UINT WM_ASYN_REPORT_MSG;
 
 
 #endif
