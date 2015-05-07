@@ -8,6 +8,7 @@
 **********************************************************************************************************/
 #ifndef AIRFLOW_H
 #define AIRFLOW_H
+#include <Windows.h>
 #include <string>
 
 
@@ -29,6 +30,8 @@ struct AirflowStructure{
 struct AirflowTaskData{
     bool isForce;
     bool sendRate;
+    UINT uMsgid;
+    HWND hWnd;
     std::wstring rawfile;
     std::wstring outdir;
 };

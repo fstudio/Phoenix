@@ -6,7 +6,7 @@
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#include <Windows.h>
+#include "Airflow.h"
 
 
 /**
@@ -15,6 +15,7 @@
 **/
 bool  ArgumentsGet(AirflowStructure &cArgs)
 {
+    cArgs.uiMode=UI_MODE_GUI;
     return true;
 }
 
@@ -29,7 +30,7 @@ int WINAPI wWinMain(HINSTANCE ,
         return 1;
     if(cArgs.uiMode==UI_MODE_GUI) ///if run as gui
     {
-        ret=UIChannelProviders(cArgs);
+        ret=AirflowUIChannel(cArgs);
     }else if(cArgs.uiMode==UI_MODE_CUI) /////if run as CUI
     {
         auto dwRet=AirflowZendMethodNonUI(cArgs);

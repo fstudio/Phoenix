@@ -6,7 +6,9 @@
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-#include <Windows.h>
+#include "Airflow.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int FindPackageMagic(const wchar_t *file)
 {
@@ -55,5 +57,8 @@ DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 /////This is Call New Thread
 DWORD WINAPI AirflowZendMethod(LPVOID lParam)
 {
+    if(!lParam)
+        return 1;
+    auto data=static_cast<AirflowTaskData *>(lParam);
     return 0;
 }
