@@ -21,7 +21,7 @@
 #define IDC_AIRFLOW_TITLE                       1000
 #define IDC_EDIT_FILEURL                       1001
 #define IDC_BUTTON_OPENFILE             1002
-#define IDC_EDIT_FLODER           1003
+#define IDC_EDIT_FOLDER           1003
 #define IDC_BUTTON_OPENDIR       1004
 #define IDC_BUTTON_ENTER      1005
 #define IDC_BUTTON_CANCLE         1006
