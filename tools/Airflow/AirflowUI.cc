@@ -47,13 +47,23 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             {
                 std::wstring file;
                 auto ret=AirflowFileOpenWindow(hWnd,file,L"Open Installer and Update Package");
-                {
-                    if(ret){
-                        HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
-                        SetWindowTextW(hOEdit,file.c_str());
-                    }
+                if(ret){
+                    HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
+                    SetWindowTextW(hOEdit,file.c_str());
+                    ////toCheck file type
                 }
             }break;
+            case IDC_BUTTON_OPENDIR:
+            {
+                std::wstring folder;
+                auto ret=AirflowFolderOpenWindow(hWnd,folder,L"Open Installer and Update Package");
+                if(ret){
+                    HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FOLDER);
+                    SetWindowTextW(hOEdit,folder.c_str());
+                    ////toCheck file type
+                }
+            }
+            break;
             default:
             break;
         }

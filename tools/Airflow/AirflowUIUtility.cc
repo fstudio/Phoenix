@@ -96,6 +96,35 @@ bool AirflowFolderOpenWindow(
     std::wstring &folder,
     const wchar_t *pszWindowTitle)
 {
-    return true;
+    IFileDialog *pfd;
+    HRESULT hr=S_OK;
+    bool bRet=false;
+    if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pfd))))
+    {
+        DWORD dwOptions;
+        if (SUCCEEDED(pfd->GetOptions(&dwOptions)))
+        {
+            pfd->SetOptions(dwOptions | FOS_PICKFOLDERS);
+        }
+        pfd->SetTitle(pszWindowTitle?pszWindowTitle:L"Open Folder");
+        if (SUCCEEDED(pfd->Show(hParent)))
+        {
+            IShellItem *psi;
+            if (SUCCEEDED(pfd->GetResult(&psi)))
+            {
+                PWSTR pwsz = NULL;
+                hr = psi->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
+                if(SUCCEEDED(hr))
+                {
+                    folder=pwsz;
+                    bRet=true;
+                    CoTaskMemFree(pwsz);
+                }
+                psi->Release();
+            }
+        }
+        pfd->Release();
+    }
+    return bRet;
 }
 
