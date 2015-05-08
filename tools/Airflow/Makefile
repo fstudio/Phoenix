@@ -5,8 +5,8 @@ LINK=link
 RC=rc
 LDFLAGS=/NOLOGO -OPT:REF
 
-LIBRARY=Shlwapi.lib kernel32.lib user32.lib  Advapi32.lib Ole32.lib Shell32.lib  Comctl32.lib
-OBJECTS=Airflow.obj AirflowZend.obj Expand.obj FlowUI.obj Msi.obj
+LIBRARY=Shlwapi.lib kernel32.lib user32.lib  Advapi32.lib Ole32.lib Shell32.lib  Comctl32.lib 
+OBJECTS=Airflow.obj  AirflowUIUtility.obj AirflowZend.obj Expand.obj AirflowUI.obj Msi.obj 
 AIRFLOW=Airflow.exe
 RESOURCE=Airflow.res
 

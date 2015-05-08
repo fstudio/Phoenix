@@ -66,7 +66,7 @@ bool FileOpenWindowProvider(
 
     // Set the dialog's caption text and the available file types.
     // NOTE: Error handling omitted here for clarity.
-    if(vSuffix){
+    if(!vSuffix){
         hr = pDlg->SetFileTypes(3,filterSpec);
     }else{
         hr = pDlg->SetFileTypes(vSuffix->size(),getFilterSpecPointer(*vSuffix));
@@ -114,7 +114,7 @@ bool FileSaveWindowProvider(
     // Set the dialog's caption text, file types, Save button label,
     // default file name, and default extension.
     // NOTE: Error handling omitted here for clarity.
-    if(vSuffix){
+    if(!vSuffix){
         hr = pDlg->SetFileTypes(3,filterSpec);
     }else{
         hr = pDlg->SetFileTypes(vSuffix->size(),getFilterSpecPointer(*vSuffix));

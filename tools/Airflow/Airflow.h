@@ -39,6 +39,16 @@ struct AirflowTaskData{
 int AirflowUIChannel(AirflowStructure &cArgs);
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst);
 DWORD WINAPI AirflowZendMethod(LPVOID lParam);
+bool AirflowFileOpenWindow(
+    HWND hParent,
+    std::wstring &filename,
+    const wchar_t *pszWindowTitle=nullptr);
+
+bool AirflowFolderOpenWindow(
+    HWND hParent,
+    std::wstring &folder,
+    const wchar_t *pszWindowTitle=nullptr);
+
 ///Asynchronous report Message Id
 extern UINT WM_ASYN_REPORT_MSG;
 

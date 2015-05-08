@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-* FlowUI.cc
+* Airflow.cc
 * Note: Phoenix Airflow tools
 * Date: @2015.05
 * Author: Force Charlie
@@ -42,6 +42,21 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
         }
         break;
         case WM_COMMAND:
+        switch (LOWORD(wParam)){
+            case IDC_BUTTON_OPENFILE:
+            {
+                std::wstring file;
+                auto ret=AirflowFileOpenWindow(hWnd,file,L"Open Installer and Update Package");
+                {
+                    if(ret){
+                        HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
+                        SetWindowTextW(hOEdit,file.c_str());
+                    }
+                }
+            }break;
+            default:
+            break;
+        }
         break;
         case WM_NOTIFY:
         break;
@@ -84,8 +99,9 @@ int AirflowUIChannel(AirflowStructure &cArgs)
         if (PropertySheet(&psh) == -1){
             // an error occurred, call GetLastError() to retrieve it here.
             auto LastError=GetLastError();
-            std::wstring s=std::to_wstring(LastError);
-            MessageBoxW(nullptr,L"S",s.c_str(),MB_OK);
+            std::wstring failedError=L"GetLastError code: ";
+            failedError=failedError+std::to_wstring(LastError);
+            MessageBoxW(nullptr,failedError.c_str(),L"CreatePropertySheetPage Failed",MB_OK);
         }
     }else{
         DestroyPropertySheetPage(rhpsp[0]);
