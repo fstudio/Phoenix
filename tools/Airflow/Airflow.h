@@ -60,7 +60,7 @@ bool AirflowFolderOpenWindow(
     const wchar_t *pszWindowTitle=nullptr);
 
 ///Asynchronous report Message Id
-extern UINT WM_ASYN_REPORT_MSG;
+extern UINT WM_ASYNCHRONOUS_NOTIFY_MSG;
 
 
 #endif

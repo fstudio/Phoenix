@@ -26,7 +26,7 @@ typedef struct
     BOOL fIsButtonClicked; //The state of the first interior page's group box
     //other shared data added here
 } SHAREDWIZDATA;
-
+const UINT WM_ASYNCHRONOUS_NOTIFY_MSG=RegisterWindowMessageW(L"AIRFLOW_WM_ASYNCHRONOUS_NOTIFY_MESSAGE");
 
 INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
@@ -72,6 +72,8 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             case IDC_BUTTON_ENTER:
             {
                 ////
+                //When Begin Parser
+                EnableWindow(GetDlgItem(IDC_BUTTON_ENTER),FALSE);
             }
             break;
             case IDC_BUTTON_CANCEL:
@@ -80,6 +82,12 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             }break;
             default:
             break;
+        }
+        break;
+        case WM_ASYNCHRONOUS_NOTIFY_MSG:
+        {
+            ///En
+            EnableWindow(GetDlgItem(IDC_BUTTON_ENTER),TRUE);
         }
         break;
         case WM_NOTIFY:
