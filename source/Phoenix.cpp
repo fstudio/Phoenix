@@ -13,6 +13,7 @@
 #include <wchar.h>
 #include <string>
 #include <map>
+#include <Shobjidl.h>
 #include <vector>
 #include "UIWindow.h"
 #include "Header.hpp"
@@ -38,6 +39,7 @@ int WINAPI UIChannelProviders(bool isNew)
             return 1;
         }
     }
+	SetCurrentProcessExplicitAppUserModelID(PHOENX_EDITOR_APPID);
     UIWindow  windowUI;
     windowUI.Runable();
     //while()

@@ -10,12 +10,18 @@
 
 
 /**
-*  CUI: airflow -console -file C:\\User\\hello\atshow.msi -u D:\\temp\\atshow
-*
+*  CUI: airflow -console -File C:\\User\\hello\atshow.msi -u D:\\temp\\atshow
+*  -File -Dir
 **/
 bool  ArgumentsGet(AirflowStructure &cArgs)
 {
+    int ac;
+    LPWSTR *w_av = CommandLineToArgvW(GetCommandLineW(), &ac);
+    for(int i=0;i<ac;i++)
+    {
+    }
     cArgs.uiMode=UI_MODE_GUI;
+    LocalFree(w_av);
     return true;
 }
 
@@ -24,6 +30,8 @@ int WINAPI wWinMain(HINSTANCE ,
     LPWSTR cmdArgs,
     int nCmdShow)
 {
+    UNREFERENCED_PARAMETER(cmdArgs);
+    UNREFERENCED_PARAMETER(nCmdShow);
     AirflowStructure cArgs;
     int ret=0;
     if(!ArgumentsGet(cArgs))

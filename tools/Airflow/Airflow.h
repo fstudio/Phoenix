@@ -20,6 +20,16 @@
 #define CMD_PRINT_VERSION 2
 #define CMD_WORKFLOW_DEBUG 3
 
+#define PACKAGE_MAGIC_UNKNOWN 0
+#define PM_MICROSOFT_INSTALLER_DB  1
+#define PM_MICROSOFT_CAB_LZ 2
+#define PM_MICROSOFT_CAB_MSZIP 3
+#define PM_MICROSOFT_CAB_NTCAB 4
+#define PM_INSTALLSHIELD_CAB 5
+
+
+
+
 struct AirflowStructure{
     int uiMode;/// msi or msu or cab
     int cmdMode;///Run some Task

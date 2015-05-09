@@ -24,7 +24,7 @@
 #define IDC_EDIT_FOLDER           1003
 #define IDC_BUTTON_OPENDIR       1004
 #define IDC_BUTTON_ENTER      1005
-#define IDC_BUTTON_CANCLE         1006
+#define IDC_BUTTON_CANCEL         1006
 
 
 // Next default values for new objects

@@ -24,6 +24,6 @@ struct LauncherHostTarget{
 #define LAUNCHER_HOST_VBS 7 ///vbscript
 #define LAUNCHER_HOST_WJS 8 ///This JavaScript or wjs run with WScript.exe
 #define LAUNCHER_HOST_JAVASCRIPT 9 ///run with node.exe
-
+////https://msdn.microsoft.com/en-us/windows/desktop/xawadt95.aspx
 
 #endif

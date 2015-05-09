@@ -27,9 +27,9 @@ typedef COMDLG_FILTERSPEC FilterSpec;
 
 const FilterSpec filterSpec[] =
 {
-    { L"Microsoft Installer Package (*.msi;*.msp)", L"*.msi;*.msp" },
-    { L"Microsoft Standalone Update Package (*.msu)", L"*.msu" },
-    { L"Microsoft Windows installation archive format(*.cab)",L"*.cab"},
+    { L"Windows Installer Package (*.msi;*.msp)", L"*.msi;*.msp" },
+    { L"Windows Standalone Update Package (*.msu)", L"*.msu" },
+    { L"Windows installation archive format(*.cab)",L"*.cab"},
     { L"All Files (*.*)", L"*.*" }
 };
 

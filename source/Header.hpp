@@ -17,6 +17,8 @@
 #define MAX_UNC_PATH (32*1024-1)
 #endif
 
+#define PHOENX_EDITOR_APPID L"Phoenix.Editor.AppID.v1"
+
 bool CreateMutexProviders(const wchar_t *mn=nullptr);
 
 class ForceHANDLE{

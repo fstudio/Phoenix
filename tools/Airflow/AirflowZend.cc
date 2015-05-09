@@ -9,7 +9,7 @@
 #include "Airflow.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <iostream>
 /**
 MSI:
 1.D0-CF-11-E0-A1-B1-1A-E1-00-00
@@ -35,14 +35,19 @@ CAB:
 msi and msp format Consistent
 msu and cab format Consistent
 
+Notice: this cab is NTCAB not other cab format
+
+
 */
-#define MAGIC_SIZE 8
-const unsigned char MIS_MAGIC[]={0xD0,0xCF,0x11,0xE0,0xA1,0xB1,0x1A,0xE1};
-const unsigned char CAB_MAGIC[]={0x4D,0x53,0x43,0x46,0x00,0x00,0x00,0x00};
 
 
 int FindPackageMagic(const wchar_t *file)
 {
+    static const BYTE MSI_MAGIC[]={0xD0,0xCF,0x11,0xE0,0xA1,0xB1,0x1A,0xE1};
+    static const BYTE LZ_MAGIC[] = { 0x53, 0x5a, 0x44, 0x44, 0x88, 0xf0, 0x27, 0x33 };
+    static const BYTE MSZIP_MAGIC[] = { 0x4b, 0x57, 0x41, 0x4a };
+    static const BYTE NTCAB_MAGIC[] = { 0x4d, 0x53, 0x43, 0x46 };
+    static const BYTE InstallShieldCAB[]={'I','S','c'};
     char buffer[20]={0};
     FILE *fp=nullptr;
     if(_wfopen_s(&fp,file,L"rb")!=0)
@@ -53,17 +58,24 @@ int FindPackageMagic(const wchar_t *file)
         return -2;
     }
     fclose(fp);
-    const unsigned char *p=reinterpret_cast<const unsigned char*>(buffer);
-    if(memcmp(p,MIS_MAGIC,8)==0)
+    const BYTE *p=reinterpret_cast<const BYTE*>(buffer);
+    if(memcmp(p,MSI_MAGIC,8)==0)
     {
-
-    }else if(memcmp(p,CAB_MAGIC,8)==0)
+        return PM_MICROSOFT_INSTALLER_DB;
+    }else if(memcmp(p,LZ_MAGIC,8)==0)
     {
-
-    }else{
-        /// Unknown File format
+        return PM_MICROSOFT_CAB_LZ;
+    }else if(memcmp(p,MSZIP_MAGIC,4)==0)
+    {
+        return PM_MICROSOFT_CAB_MSZIP;
+    }else if(memcmp(p,NTCAB_MAGIC,4)==0)
+    {
+        return PM_MICROSOFT_CAB_NTCAB;
     }
-    return 0;
+    else if(memcmp(p,InstallShieldCAB,3)==0){
+        return PM_INSTALLSHIELD_CAB;
+    }
+    return PACKAGE_MAGIC_UNKNOWN;
 }
 
 class ConsoleAttachEx{
@@ -102,6 +114,11 @@ bool SendMessageEnter()
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
+    if(airflowst.cmdMode==CMD_PRINT_VERSION)
+    {
+        std::cout<<"Airflow 1.0.0.1"<<std::endl;
+        return 0;
+    }
     return 0;
 }
 

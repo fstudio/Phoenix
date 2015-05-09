@@ -39,6 +39,11 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             PROPSHEETPAGE *psp = (PROPSHEETPAGE *)lParam;
             pdata = (SHAREDWIZDATA *)(psp->lParam);
             SetWindowLongPtr(hWnd, GWLP_USERDATA, (DWORD_PTR)pdata);
+            ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
+            ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+            ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);
+            PropSheet_ShowWizButtons(hWnd,0,
+                PSWIZB_BACK | PSWIZB_NEXT | PSWIZB_FINISH|PSWIZB_CANCEL);
         }
         break;
         case WM_COMMAND:
@@ -64,13 +69,20 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                 }
             }
             break;
+            case IDC_BUTTON_ENTER:
+            {
+                ////
+            }
+            break;
+            case IDC_BUTTON_CANCEL:
+            {
+                ////SendMessage(hWnd,WM_CLOSE,0,1);
+            }break;
             default:
             break;
         }
         break;
         case WM_NOTIFY:
-        break;
-        case WM_CLOSE:
         break;
         default:
         break;
@@ -102,7 +114,7 @@ int AirflowUIChannel(AirflowStructure &cArgs)
         psh.hwndParent      = NULL;
         psh.phpage          = rhpsp;
         psh.dwFlags         = PSH_AEROWIZARD | PSH_USEICONID;
-        psh.pszCaption      = L"Airflow -Unpack Windows Installer and Update File";
+        psh.pszCaption      = L"Airflow -Recover Windows Installer and Update File";
         psh.pszIcon         = MAKEINTRESOURCE(IDI_WIZICON);
         psh.nStartPage      = 0;
         psh.nPages          = 1;
