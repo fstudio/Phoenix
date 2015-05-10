@@ -19,6 +19,13 @@
 #define _UNICODE
 #endif
 
+static const wchar_t * stdioimage()
+{
+    static WCHAR szTemp[MAX_PATH]={0};
+    GetTempPathW(MAX_PATH,szTemp);
+    wcscat_s(szTemp,MAX_PATH,L"Airflow.Standrand.IO.API.v1.log");
+    return szTemp;
+}
 
 class RedirectStdIO{
 private:
@@ -27,11 +34,8 @@ public:
     RedirectStdIO()
     {
         FILE *stream;
-        WCHAR szTemp[MAX_PATH]={0};
-        GetTempPathW(MAX_PATH,szTemp);
-        wcscat_s(szTemp,MAX_PATH,L"Airflow.Standrand.IO.API.v1.log");
-        auto err=_wfreopen_s(&stream,szTemp,L"w+t", stdout);
-        err=_wfreopen_s(&stream,szTemp,L"w",stderr);
+        auto err=_wfreopen_s(&stream,stdioimage(),L"w+t", stdout);
+        err=_wfreopen_s(&stream,stdioimage(),L"w",stderr);
         if(err==0)
             isOpen=true;
     }
@@ -121,15 +125,25 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                         MessageBoxW(hWnd,L"CreateThread Failed",L"Error",MB_OK);
                     }else{
                         EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),FALSE);
+                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),FALSE);
+                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),FALSE);
+                        EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),FALSE);
+                        EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),FALSE);
                     }
                 }else{
                     //MessageBoxW(hWnd,)
+                    //ShellExecuteW(hWnd,L"open",stdioimage(),NULL,NULL,SW_SHOW);
                 }
             }
             break;
             case IDC_BUTTON_CANCEL:
             {
                 ////SendMessage(hWnd,WM_CLOSE,0,1);
+                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),TRUE);
+                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),TRUE);
+                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
+                EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
+                EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
             }break;
             default:
             break;
@@ -139,6 +153,10 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
         {
             ///En
             EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),TRUE);
+            EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),TRUE);
+            EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
+            EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
+            EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
         }
         break;
         case WM_NOTIFY:

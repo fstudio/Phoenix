@@ -133,6 +133,10 @@ bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecov
     if(GetCurrentDirectory(4096,szbuffer)==0)
         return false;
     if((err=_waccess_s(const_cast<const wchar_t *>(szPackagePath),04))!=0){
+        if(err!=ENOENT){
+            std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
+            return false;
+        }
         if(StringFind(const_cast<const wchar_t*>(szPackagePath)))
         {
             std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
@@ -168,6 +172,8 @@ bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecov
     str+=szRecover;
     if((err=_waccess_s(str.c_str(),04))!=0)
     {
+        if(err!=ENOENT)
+            return false;
         if(CreateDirectory(str.c_str(),NULL)){
             wcscpy_s(szRecover,resize,str.c_str());
             return true;
