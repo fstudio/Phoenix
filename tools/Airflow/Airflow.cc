@@ -7,7 +7,7 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 #include "Airflow.h"
-
+#include <Processthreadsapi.h>
 
 /**
 *  CUI: airflow -console -File C:\\User\\hello\atshow.msi -u D:\\temp\\atshow
@@ -19,6 +19,7 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
     cArgs.uiMode=UI_MODE_GUI;
     cArgs.cmdMode=CMD_NORMAL_WORKFLOW;
     bool Failed=false;
+    bool bNext=false;
     int index=0;
     LPWSTR *Argv = CommandLineToArgvW(GetCommandLineW(), &Argc);
     for(int i=0;i<Argc;i++)
@@ -43,12 +44,14 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
                     if(i<Argc-1)
                     {
                         cArgs.rawfile=Argv[i+1];
+                        bNext=true;
                     }
                 }else if(_wcsicmp(&Argv[i][1],L"out")==0){
                     index=-1;
                     if(i<Argc-1)
                     {
                         cArgs.outdir=Argv[i+1];
+                        bNext=true;
                     }
                 }else{
                     Failed=true;
@@ -57,25 +60,22 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
             break;
             default:
             {
-                if(Argc==1)break;
-                if(Argc>1&&index>0)
+                if(i>=1&&!bNext&&index>=0)
                 {
-                    if(Argc<=3){
-                        switch(index)
-                        {
-                            case 0:
-                            cArgs.rawfile=Argv[i];
-                            index++;
-                            break;
-                            case 1:
-                            cArgs.outdir=Argv[i];
-                            index++;
-                            break;
-                            default:
-                            break;
-                        }
-                    }else{
+                    switch(index)
+                    {
+                        case 0:
+                        cArgs.rawfile=Argv[i];
+                        index++;
+                        break;
+                        case 1:
+                        cArgs.outdir=Argv[i];
+                        index++;
+                        break;
+                        default:
                         cArgs.filelsit.push_back(Argv[i]);
+                        index++;
+                        break;
                     }
                 }
             }
@@ -99,6 +99,7 @@ int WINAPI wWinMain(HINSTANCE ,
         return 1;
     if(cArgs.uiMode==UI_MODE_GUI) ///if run as gui
     {
+        ///GetStartupInfoW
         ret=AirflowUIChannel(cArgs);
     }else if(cArgs.uiMode==UI_MODE_CUI) /////if run as CUI
     {

@@ -86,12 +86,13 @@ private:
     bool isOpen;
 public:
     ConsoleAttachEx(){
-        if(AttachConsole(ATTACH_PARENT_PROCESS))
+        //AttachConsole(ATTACH_PARENT_PROCESS)
+        if(AllocConsole())
         {
-            FILE *stream;
-            auto err=freopen_s(&stream,"CONIN$" , "r+t" , stdin);
-            err=freopen_s(&stream,"CONOUT$" , "w+t" , stdout);
-            err=freopen_s(&stream,"CONOUT$", "w", stderr);
+            FILE *in, *out ,*err;
+            auto er=freopen_s(&in,"CONIN$" , "r+t" , stdin);
+            er=freopen_s(&out,"CONOUT$" , "w+t" , stdout);
+            er=freopen_s(&err,"CONOUT$", "w", stderr);
             isOpen=true;
         }else{
             isOpen=false;
@@ -102,6 +103,7 @@ public:
         if(isOpen)
         {
             printf("Plase Input Enter...\n");
+            system("pause");
             fflush(stdout);
             fclose(stdout);
             fclose(stdin);
@@ -111,37 +113,37 @@ public:
     }
 };
 
-bool SendMessageEnter()
+bool CheckPackageAndLayout(const wchar_t *szPackagePath,const wchar_t *szRecover)
 {
     return true;
 }
-
 
 
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
     ConsoleAttachEx con;
-    std::cout<<"\nAirflow Recover Windows Installer and Update Package File"<<std::endl;
     if(airflowst.cmdMode==CMD_PRINT_VERSION)
     {
-        std::cout<<"Airflow 1.0.0.1"<<std::endl;
+        std::cout<<"Airflow Recover Windows Installer and Update Package File"<<std::endl;
+        std::wcout<<AIRFLOW_VERSION_MARK<<std::endl;
         return 0;
     }else if(airflowst.cmdMode==CMD_PRINT_USAGE)
     {
+        std::wcout<<AIRFLOW_USAGE_STRING<<std::endl;
         return 0;
     }
     if(airflowst.rawfile.empty())
     {
         std::wcout<<L"Please Input Your Package File: ";
         std::wcin>>airflowst.rawfile;
-        std::cout<<std::endl;
+        //std::cout<<std::endl;
     }
     if(airflowst.outdir.empty())
     {
         std::wcout<<L"Please Input Your Recover Folder: ";
         std::wcin>>airflowst.outdir;
-        std::cout<<std::endl;
+        //std::cout<<std::endl;
     }
     return 0;
 }
@@ -152,7 +154,8 @@ DWORD WINAPI AirflowZendMethod(LPVOID lParam)
     if(!lParam)
         return 1;
     auto data=static_cast<AirflowTaskData *>(lParam);
-
+    ///MessageBoxW(data->hWnd,L"AirflowZendMethod",data->rawfile.c_str(),MB_OK);
     SendMessage(data->hWnd,data->uMsgid,0,0);
+    delete data;
     return 0;
 }

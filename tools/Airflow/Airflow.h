@@ -27,6 +27,27 @@
 #define PM_MICROSOFT_CAB_NTCAB 4
 #define PM_INSTALLSHIELD_CAB 5
 
+#define AIRFLOW_VERSION_MARK L"Airflow-1.0.0.1"
+
+#define AIRFLOW_USAGE_STRING L"Airflow Recover Windows Installer and Update Package\n\
+Usage: Airflow [options]\n\
+    -console\tRun Airflow with Console Mode\n\
+    -help\t\tPrint Help and Exit(cui mode)\n\
+    -version\tPrint Airflow version and exit(cui mode)\n\
+    -debug\t\tRun Airflow with Debug Mode\n\
+    -File\t\tSet Open Installer or Update Package name\n\
+    -Out\t\tSet Extract Folder\n"
+
+#define AIRFLOW_USAGE_STRING_GUI L"Airflow Recover Windows Installer and Update Package\n\
+Usage: Airflow [options]\n\
+    -console\tRun Airflow with Console Mode\n\
+    -help\t\tPrint Help and Exit(cui mode)\n\
+    -version\tPrint Airflow version and exit(cui mode)\n\
+    -debug\tRun Airflow with Debug Mode\n\
+    -File\t\tSet Open Installer or Update Package name\n\
+    -Out\t\tSet Extract Folder\n"
+
+
 enum FileTPE{
     FILETPE_UNKNOWN=0,///PM_INSTALLSHIELD_CAB
     FILETPE_MSINSTALLDB=1,//PM_MICROSOFT_INSTALLER_DB
@@ -69,7 +90,7 @@ bool AirflowFolderOpenWindow(
 #define WM_ASYNCHRONOUS_NOTIFY_MSG WM_APP+1
 
 UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath);
-
+bool CheckPackageAndLayout(const wchar_t *szPackagePath,const wchar_t *szRecover);
 
 #endif
 

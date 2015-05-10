@@ -46,29 +46,33 @@ public:
 
 
 #define MAXPAGES 5
-typedef struct
-{
-    BOOL fIsBoxChecked; //The state of the first interior page's check box
-    BOOL fIsButtonClicked; //The state of the first interior page's group box
-    //other shared data added here
-} SHAREDWIZDATA;
 
 INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
     UNREFERENCED_PARAMETER(wParam);
-    SHAREDWIZDATA *pdata = (SHAREDWIZDATA *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    AirflowStructure *pdata = (AirflowStructure *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    WCHAR szPackagePath[4096]={0};
+    WCHAR szRecover[4096]={0};
     switch(uMsg)
     {
         case WM_INITDIALOG:
         {
             PROPSHEETPAGE *psp = (PROPSHEETPAGE *)lParam;
-            pdata = (SHAREDWIZDATA *)(psp->lParam);
+            pdata = (AirflowStructure *)(psp->lParam);
             SetWindowLongPtr(hWnd, GWLP_USERDATA, (DWORD_PTR)pdata);
             ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
             ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
             ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);
             PropSheet_ShowWizButtons(hWnd,0,
                 PSWIZB_BACK | PSWIZB_NEXT | PSWIZB_FINISH|PSWIZB_CANCEL);
+            if(!pdata->rawfile.empty())
+            {
+                SetWindowTextW(GetDlgItem(hWnd,IDC_EDIT_FILEURL),pdata->rawfile.c_str());
+            }
+            if(!pdata->outdir.empty())
+            {
+                 SetWindowTextW(GetDlgItem(hWnd,IDC_EDIT_FOLDER),pdata->outdir.c_str());
+            }
         }
         break;
         case WM_COMMAND:
@@ -99,7 +103,28 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             {
                 ////
                 //When Begin Parser
-                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),FALSE);
+                GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FILEURL),szPackagePath,4096);
+                GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FOLDER),szRecover,4096);
+                if(CheckPackageAndLayout(szPackagePath,szRecover))
+                {
+                    AirflowTaskData *data=new AirflowTaskData();
+                    data->isForce=false;
+                    data->sendRate=true;
+                    data->uMsgid=WM_ASYNCHRONOUS_NOTIFY_MSG;
+                    data->hWnd=hWnd;
+                    data->rawfile=szPackagePath;
+                    data->outdir=szRecover;
+                    DWORD tId;
+                    HANDLE hThread=CreateThread(NULL, 0, AirflowZendMethod, data, 0, &tId);
+                    if(!hThread)
+                    {
+                        MessageBoxW(hWnd,L"CreateThread Failed",L"Error",MB_OK);
+                    }else{
+                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),FALSE);
+                    }
+                }else{
+                    //MessageBoxW(hWnd,)
+                }
             }
             break;
             case IDC_BUTTON_CANCEL:
@@ -127,15 +152,22 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
 
 int AirflowUIChannel(AirflowStructure &cArgs)
 {
+    if(cArgs.cmdMode==CMD_PRINT_VERSION)
+    {
+        ///
+        MessageBoxW(nullptr,AIRFLOW_VERSION_MARK,L"Airflow version box",MB_OK|MB_ICONINFORMATION);
+    }else if(cArgs.cmdMode==CMD_PRINT_USAGE)
+    {
+        MessageBoxW(nullptr,AIRFLOW_USAGE_STRING_GUI,L"Airflow usage:",MB_OK|MB_ICONINFORMATION);
+    }
     RedirectStdIO redirectIo;
     PROPSHEETPAGEW   psp;
     HPROPSHEETPAGE  rhpsp[MAXPAGES];
-    SHAREDWIZDATA   wizdata;
     ZeroMemory(&psp,sizeof(psp));
     ZeroMemory(&rhpsp, sizeof(HPROPSHEETPAGE)*MAXPAGES);
     psp.dwSize=sizeof(psp);
     psp.dwFlags=PSP_DEFAULT | PSP_USEHEADERTITLE | PSP_USEHEADERSUBTITLE;
-    psp.lParam=(LPARAM) &wizdata;;
+    psp.lParam=(LPARAM) &cArgs;;
     psp.hInstance=GetModuleHandle(nullptr);
     psp.pszHeaderTitle=L"Select Your Install or Update Package";
     psp.pszTemplate=MAKEINTRESOURCE(IDD_AIRFLOW_FIRST);
