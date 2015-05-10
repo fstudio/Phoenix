@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <wchar.h>
+#include <errno.h>
 /**
 MSI:
 1.D0-CF-11-E0-A1-B1-1A-E1-00-00
@@ -112,9 +114,70 @@ public:
         }
     }
 };
-
-bool CheckPackageAndLayout(const wchar_t *szPackagePath,const wchar_t *szRecover)
+bool StringFind(const wchar_t *str)
 {
+    auto p=str;
+    while(*p)
+    {
+        if(*p=='\\'||*p=='/')
+            return false;
+        p++;
+    }
+    return true;
+}
+bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize)
+{
+    errno_t  err;
+    wchar_t szbuffer[4096]={0};
+    std::wstring str;
+    if(GetCurrentDirectory(4096,szbuffer)==0)
+        return false;
+    if((err=_waccess_s(const_cast<const wchar_t *>(szPackagePath),04))!=0){
+        if(StringFind(const_cast<const wchar_t*>(szPackagePath)))
+        {
+            std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
+            return false;
+        }
+        str=szbuffer;
+        str+=L"\\";
+        str+=szPackagePath;
+        if((err=_waccess_s(str.c_str(),04))!=0)
+        {
+            std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
+            return false;
+        }else{
+            wcscpy_s(szPackagePath,pksize,str.c_str());
+            return true;
+        }
+    }
+    if(_waccess(const_cast<const wchar_t *>(szRecover),04)==0)
+        return true;
+    if(!StringFind(const_cast<const wchar_t *>(szRecover)))
+    {
+        if(CreateDirectory(const_cast<const wchar_t *>(szRecover),NULL)){
+            wcscpy_s(szRecover,resize,str.c_str());
+            return true;
+        }
+        else{
+            std::wcout<<L"CreateDirectory Failed: "<<szRecover<<L"\nError Code:"<<GetLastError()<<std::endl;
+            return false;
+        }
+    }
+    str=szbuffer;
+    str+=L"\\";
+    str+=szRecover;
+    if((err=_waccess_s(str.c_str(),04))!=0)
+    {
+        if(CreateDirectory(str.c_str(),NULL)){
+            wcscpy_s(szRecover,resize,str.c_str());
+            return true;
+        }
+        else{
+            std::wcout<<L"CreateDirectory Failed: "<<str.c_str()<<L"\nError Code:"<<GetLastError()<<std::endl;
+            return false;
+        }
+    }
+    wcscpy_s(szRecover,resize,str.c_str());
     return true;
 }
 
