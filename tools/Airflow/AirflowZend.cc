@@ -83,30 +83,32 @@ int FindPackageMagic(const wchar_t *file)
 
 class ConsoleAttachEx{
 private:
-  bool isOpen;
+    bool isOpen;
 public:
-  ConsoleAttachEx()
-  {
-    if(AttachConsole(ATTACH_PARENT_PROCESS))
-    {
-      freopen("CONIN$" , "r+t" , stdin);
-      freopen("CONOUT$" , "w+t" , stdout);
-      freopen("CONOUT$", "w", stderr);
-      isOpen=true;
-    }else{
-      isOpen=false;
+    ConsoleAttachEx(){
+        if(AttachConsole(ATTACH_PARENT_PROCESS))
+        {
+            FILE *stream;
+            auto err=freopen_s(&stream,"CONIN$" , "r+t" , stdin);
+            err=freopen_s(&stream,"CONOUT$" , "w+t" , stdout);
+            err=freopen_s(&stream,"CONOUT$", "w", stderr);
+            isOpen=true;
+        }else{
+            isOpen=false;
+        }
     }
-  }
-  ~ConsoleAttachEx()
-  {
-    if(isOpen)
+    ~ConsoleAttachEx()
     {
-      fclose(stdout);
-      fclose(stdin);
-      fclose(stderr);
-      FreeConsole();
+        if(isOpen)
+        {
+            printf("Plase Input Enter...\n");
+            fflush(stdout);
+            fclose(stdout);
+            fclose(stdin);
+            fclose(stderr);
+            FreeConsole();
+        }
     }
-  }
 };
 
 bool SendMessageEnter()
@@ -114,14 +116,32 @@ bool SendMessageEnter()
     return true;
 }
 
+
+
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
     ConsoleAttachEx con;
+    std::cout<<"\nAirflow Recover Windows Installer and Update Package File"<<std::endl;
     if(airflowst.cmdMode==CMD_PRINT_VERSION)
     {
         std::cout<<"Airflow 1.0.0.1"<<std::endl;
         return 0;
+    }else if(airflowst.cmdMode==CMD_PRINT_USAGE)
+    {
+        return 0;
+    }
+    if(airflowst.rawfile.empty())
+    {
+        std::wcout<<L"Please Input Your Package File: ";
+        std::wcin>>airflowst.rawfile;
+        std::cout<<std::endl;
+    }
+    if(airflowst.outdir.empty())
+    {
+        std::wcout<<L"Please Input Your Recover Folder: ";
+        std::wcin>>airflowst.outdir;
+        std::cout<<std::endl;
     }
     return 0;
 }
@@ -132,5 +152,7 @@ DWORD WINAPI AirflowZendMethod(LPVOID lParam)
     if(!lParam)
         return 1;
     auto data=static_cast<AirflowTaskData *>(lParam);
+
+    SendMessage(data->hWnd,data->uMsgid,0,0);
     return 0;
 }

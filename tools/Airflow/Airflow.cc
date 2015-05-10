@@ -57,9 +57,10 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
             break;
             default:
             {
+                if(Argc==1)break;
                 if(Argc>1&&index>0)
                 {
-                    if(Argc==3){
+                    if(Argc<=3){
                         switch(index)
                         {
                             case 0:

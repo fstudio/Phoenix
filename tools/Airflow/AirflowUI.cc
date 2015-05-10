@@ -9,6 +9,7 @@
 #include "Airflow.h"
 #include "resource.h"
 #include <Prsht.h>
+#include <iostream>
 
 #ifndef UNICODE
 #define UNICODE
@@ -17,6 +18,31 @@
 #ifndef _UNICODE
 #define _UNICODE
 #endif
+
+
+class RedirectStdIO{
+private:
+    bool isOpen;
+public:
+    RedirectStdIO()
+    {
+        FILE *stream;
+        WCHAR szTemp[MAX_PATH]={0};
+        GetTempPathW(MAX_PATH,szTemp);
+        wcscat_s(szTemp,MAX_PATH,L"Airflow.Standrand.IO.API.v1.log");
+        auto err=_wfreopen_s(&stream,szTemp,L"w+t", stdout);
+        err=_wfreopen_s(&stream,szTemp,L"w",stderr);
+        if(err==0)
+            isOpen=true;
+    }
+    ~RedirectStdIO()
+    {
+        ////
+        fflush(stdout);
+        fclose(stdout);
+        fclose(stderr);
+    }
+};
 
 
 #define MAXPAGES 5
@@ -55,6 +81,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                     HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
                     SetWindowTextW(hOEdit,file.c_str());
                     ////toCheck file type
+                    std::wcout<<file<<std::endl;
                 }
             }break;
             case IDC_BUTTON_OPENDIR:
@@ -100,6 +127,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
 
 int AirflowUIChannel(AirflowStructure &cArgs)
 {
+    RedirectStdIO redirectIo;
     PROPSHEETPAGEW   psp;
     HPROPSHEETPAGE  rhpsp[MAXPAGES];
     SHAREDWIZDATA   wizdata;
