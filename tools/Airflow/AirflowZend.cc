@@ -48,31 +48,34 @@ int FindPackageMagic(const wchar_t *file)
     static const BYTE MSZIP_MAGIC[] = { 0x4b, 0x57, 0x41, 0x4a };
     static const BYTE NTCAB_MAGIC[] = { 0x4d, 0x53, 0x43, 0x46 };
     static const BYTE InstallShieldCAB[]={'I','S','c'};
-    char buffer[20]={0};
-    FILE *fp=nullptr;
-    if(_wfopen_s(&fp,file,L"rb")!=0)
-        return -1;
-    if(fread_s(buffer,20,1,20,fp)<0)
+    BYTE buffer[8]={0};
+    DWORD size;
+    HANDLE hFile=CreateFileW(file,GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+    if(hFile==INVALID_HANDLE_VALUE)
     {
-        fclose(fp);
+        wprintf(L"cannot open file %ls\n",file);
+        return -1;
+    }
+    if (!ReadFile( hFile, buffer, sizeof(buffer), &size, NULL ))
+    {
+        CloseHandle(hFile);
         return -2;
     }
-    fclose(fp);
-    const BYTE *p=reinterpret_cast<const BYTE*>(buffer);
-    if(memcmp(p,MSI_MAGIC,8)==0)
+    CloseHandle(hFile);
+    if(memcmp(buffer,MSI_MAGIC,sizeof(MSI_MAGIC))==0)
     {
         return PM_MICROSOFT_INSTALLER_DB;
-    }else if(memcmp(p,LZ_MAGIC,8)==0)
+    }else if(memcmp(buffer,LZ_MAGIC,sizeof(LZ_MAGIC))==0)
     {
         return PM_MICROSOFT_CAB_LZ;
-    }else if(memcmp(p,MSZIP_MAGIC,4)==0)
+    }else if(memcmp(buffer,MSZIP_MAGIC,sizeof(MSZIP_MAGIC))==0)
     {
         return PM_MICROSOFT_CAB_MSZIP;
-    }else if(memcmp(p,NTCAB_MAGIC,4)==0)
+    }else if(memcmp(buffer,NTCAB_MAGIC,sizeof(NTCAB_MAGIC))==0)
     {
         return PM_MICROSOFT_CAB_NTCAB;
     }
-    else if(memcmp(p,InstallShieldCAB,3)==0){
+    else if(memcmp(buffer,InstallShieldCAB,sizeof(InstallShieldCAB))==0){
         return PM_INSTALLSHIELD_CAB;
     }
     return PACKAGE_MAGIC_UNKNOWN;
@@ -114,6 +117,7 @@ bool SendMessageEnter()
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
+    ConsoleAttachEx con;
     if(airflowst.cmdMode==CMD_PRINT_VERSION)
     {
         std::cout<<"Airflow 1.0.0.1"<<std::endl;

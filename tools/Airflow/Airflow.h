@@ -10,7 +10,7 @@
 #define AIRFLOW_H
 #include <Windows.h>
 #include <string>
-
+#include <vector>
 
 #define UI_MODE_GUI  1
 #define UI_MODE_CUI   2
@@ -27,7 +27,12 @@
 #define PM_MICROSOFT_CAB_NTCAB 4
 #define PM_INSTALLSHIELD_CAB 5
 
-
+enum FileTPE{
+    FILETPE_UNKNOWN=0,///PM_INSTALLSHIELD_CAB
+    FILETPE_MSINSTALLDB=1,//PM_MICROSOFT_INSTALLER_DB
+    FILETPE_MSZIPCAB=2,//PM_MICROSOFT_CAB_MSZIP PM_MICROSOFT_CAB_NTCAB
+    FILETPE_WINLZA=3//PM_MICROSOFT_CAB_LZ
+};
 
 
 struct AirflowStructure{
@@ -35,6 +40,7 @@ struct AirflowStructure{
     int cmdMode;///Run some Task
     std::wstring rawfile;
     std::wstring outdir;
+    std::vector<std::wstring> filelsit;
 };
 
 struct AirflowTaskData{
@@ -59,8 +65,10 @@ bool AirflowFolderOpenWindow(
     std::wstring &folder,
     const wchar_t *pszWindowTitle=nullptr);
 
-///Asynchronous report Message Id
-extern UINT WM_ASYNCHRONOUS_NOTIFY_MSG;
+///Asynchronous Notify Message Id
+#define WM_ASYNCHRONOUS_NOTIFY_MSG WM_APP+1
+
+UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath);
 
 
 #endif

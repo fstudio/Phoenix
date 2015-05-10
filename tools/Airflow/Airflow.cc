@@ -15,13 +15,73 @@
 **/
 bool  ArgumentsGet(AirflowStructure &cArgs)
 {
-    int ac;
-    LPWSTR *w_av = CommandLineToArgvW(GetCommandLineW(), &ac);
-    for(int i=0;i<ac;i++)
-    {
-    }
+    int Argc;
     cArgs.uiMode=UI_MODE_GUI;
-    LocalFree(w_av);
+    cArgs.cmdMode=CMD_NORMAL_WORKFLOW;
+    bool Failed=false;
+    int index=0;
+    LPWSTR *Argv = CommandLineToArgvW(GetCommandLineW(), &Argc);
+    for(int i=0;i<Argc;i++)
+    {
+        switch(Argv[i][0])
+        {
+            case '/':
+            case '-':
+            {
+                if(wcslen(Argv[1])<2) break;
+                if(_wcsicmp(&Argv[i][1],L"console")==0)
+                {
+                    cArgs.uiMode=UI_MODE_CUI;
+                }else if(_wcsicmp(&Argv[i][1],L"help")==0){
+                    cArgs.cmdMode=CMD_PRINT_USAGE;
+                }else if(_wcsicmp(&Argv[i][1],L"version")==0){
+                    cArgs.cmdMode=CMD_PRINT_VERSION;
+                }else if(_wcsicmp(&Argv[i][1],L"debug")==0){
+                    cArgs.cmdMode=CMD_WORKFLOW_DEBUG;
+                }else if(_wcsicmp(&Argv[i][1],L"file")==0){
+                    index=-1;
+                    if(i<Argc-1)
+                    {
+                        cArgs.rawfile=Argv[i+1];
+                    }
+                }else if(_wcsicmp(&Argv[i][1],L"out")==0){
+                    index=-1;
+                    if(i<Argc-1)
+                    {
+                        cArgs.outdir=Argv[i+1];
+                    }
+                }else{
+                    Failed=true;
+                }
+            }
+            break;
+            default:
+            {
+                if(Argc>1&&index>0)
+                {
+                    if(Argc==3){
+                        switch(index)
+                        {
+                            case 0:
+                            cArgs.rawfile=Argv[i];
+                            index++;
+                            break;
+                            case 1:
+                            cArgs.outdir=Argv[i];
+                            index++;
+                            break;
+                            default:
+                            break;
+                        }
+                    }else{
+                        cArgs.filelsit.push_back(Argv[i]);
+                    }
+                }
+            }
+            break;
+        }
+    }
+    LocalFree(Argv);
     return true;
 }
 
