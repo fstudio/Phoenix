@@ -11,45 +11,31 @@
 #include <string>
 #include <vector>
 
-class Arguments{
-private:
-    std::vector<wchar_t *> argv_;
-public:
-    static Arguments Main()
-    {
-        int ac;
-        LPWSTR *w_av = CommandLineToArgvW(GetCommandLineW(), &ac);
-        std::vector<std::wstring> av1(ac);
-        std::vector<wchar_t const *> av2(ac);
-        for (int i = 0; i < ac; i++) {
-            av1[i]=w_av[i];
-            av2[i] = av1[i].c_str();
-        }
-        LocalFree(w_av);
-        return Arguments(ac,&av2[0]);
-    }
-    Arguments(int Argc,wchar_t const * const* Argv)
-    {
-        this->argv_.resize(Argc+1);
-        for(int i=0;i<Argc;i++)
-        {
-            this->argv_[i]=_wcsdup(Argv[i]);
-        }
-        this->argv_[Argc]=0;
-    }
-    ~Arguments()
-    {
-        for(size_t i=0;i<this->argv_.size();i++){
-            free(argv_[i]);
-        }
-    }
-    int argc()const
-    {
-        return static_cast<int>(this->argv_.size() - 1);
-    }
-    wchar_t const* const* argv()const{
-        return &this->argv_[0];
-    }
+
+enum OptionLevel{
+    OptionLevel_Normal=0x0000,
+    OptionLevel_Help=0x0002,
+    OptionLevel_Usage=0x0004,
+    OptionLevel_Reset=0x0008,
+    OptionLevel_Setting=0x0010,
+    OptionLevel_Init=0x0020,
+    OptionLevel_UNKNOWN=0xF000
 };
+
+enum InstanceLevel{
+    InstanceLevel_UI=1,
+    InstanceLevel_Task=2
+};
+
+//-Profile with setting profile
+struct ArgumentsStructure{
+    int cmdMode;////CMD md is mutex.
+    int taskMode;////is
+    bool isProfile;
+    std::wstring profile;
+    std::vector<std::wstring> vfile;
+};
+bool ArgumentsFlow(ArgumentsStructure &as);
+
 
 #endif

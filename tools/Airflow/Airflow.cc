@@ -105,6 +105,7 @@ int WINAPI wWinMain(HINSTANCE ,
     {
         auto dwRet=AirflowZendMethodNonUI(cArgs);
         ret=static_cast<int>(dwRet);
+        return ret;
     }else{
         return 2;
     }

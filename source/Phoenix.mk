@@ -20,7 +20,7 @@ Ole32.lib Shell32.lib Userenv.lib Rpcrt4.lib Comctl32.lib d2d1.lib dwrite.lib Wi
 ###Build Library
 
 ##Object
-OBJECTS=UIWindow.obj CommandLineArgumentsEx.obj Direct2DResourceManager.obj EditorRender.obj \
+OBJECTS=UIWindow.obj ArgumentsFlow.obj Direct2DResourceManager.obj EditorRender.obj \
 FontAwesome.obj IFileWindowUI.obj ManagerThread.obj MessageWindow.obj Mutex.obj PhoenixDPIUtils.obj \
 PhoenixThread.obj SearchWindowSelf.obj StandarndIO.obj TaskProcess.obj Phoenix.obj
 #Resource
