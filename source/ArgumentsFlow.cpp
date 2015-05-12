@@ -10,12 +10,12 @@
 
 
 
-bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions)
+bool ArgumentsFlow(ProcessParameters &processParameters,bool isStoreUnknownOptions)
 {
     int Argc;
     bool bNext=false;
-    as.cmdMode=OptionLevel_UNKNOWN;
-    as.taskMode=InstanceLevel_UI;
+    processParameters.cmdMode=OptionLevel_UNKNOWN;
+    processParameters.taskMode=InstanceLevel_UI;
     LPWSTR *Argv = CommandLineToArgvW(GetCommandLineW(), &Argc);
     for(int i=0;i<Argc;i++)
     {
@@ -28,29 +28,29 @@ bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions)
                 if(_wcsicmp(&Argv[i][1],L"Task")==0)
                 {
                     ///cArgs.uiMode=UI_MODE_CUI;
-                    as.taskMode=InstanceLevel_Task;
+                    processParameters.taskMode=InstanceLevel_Task;
                 }else if(_wcsicmp(&Argv[i][1],L"Foreground")==0){
                     ///
-                    as.cmdMode=as.cmdMode|OptionLevel_Foreground;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Foreground;
                 }else if(_wcsicmp(&Argv[i][1],L"-help")==0){
-                    as.cmdMode=as.cmdMode|OptionLevel_Usage;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Usage;
                 }else if(_wcsicmp(&Argv[i][1],L"-version")==0){
-                    as.cmdMode=as.cmdMode|OptionLevel_Help;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Help;
                 }else if(_wcsicmp(&Argv[i][1],L"Init")==0){
-                    as.cmdMode=as.cmdMode|OptionLevel_Init;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Init;
                 }else if(_wcsicmp(&Argv[i][1],L"Reset")==0){
                     ///
-                    as.cmdMode=as.cmdMode|OptionLevel_Reset;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Reset;
                 }else if(_wcsicmp(&Argv[i][1],L"Setting")==0){
                     ///
-                    as.cmdMode=as.cmdMode|OptionLevel_Setting;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Setting;
                 }else if(_wcsicmp(&Argv[i][1],L"New")==0){
                     ///
-                    as.cmdMode=as.cmdMode|OptionLevel_New;
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_New;
                 }else if(_wcsicmp(&Argv[i][1],L"Profile")==0){
                     ///
                     //index=-1;
-                    as.isProfile=true;
+                    processParameters.isProfile=true;
                     if(i<Argc-1)
                     {
                         //cArgs.rawfile=Argv[i+1];
@@ -60,13 +60,13 @@ bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions)
                     if(i<Argc-1)
                     {
                         //cArgs.rawfile=Argv[i+1];
-                        as.vfile.push_back(Argv[i+1]);
+                        processParameters.vfile.push_back(Argv[i+1]);
                         bNext=true;
                     }
                 }else{
                     if(isStoreUnknownOptions)
                     {
-                        as.unknowns.push_back(Argv[i]);
+                        processParameters.unknowns.push_back(Argv[i]);
                     }
                 }
             }
@@ -76,7 +76,7 @@ bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions)
                 if(i>=1){
                     if(!bNext)
                     {
-                        as.vfile.push_back(Argv[i]);
+                        processParameters.vfile.push_back(Argv[i]);
                         //bNext=true;
                     }else{
                         bNext=false;

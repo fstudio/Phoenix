@@ -30,7 +30,7 @@ enum InstanceLevel{
 };
 
 //-Profile with setting profile
-struct ArgumentsStructure{
+struct ProcessParameters{
     int cmdMode;////CMD md is mutex.
     int taskMode;////is
     bool isProfile;
@@ -38,7 +38,7 @@ struct ArgumentsStructure{
     std::vector<std::wstring> vfile;
     std::vector<std::wstring> unknowns;
 };
-bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions=false);
+bool ArgumentsFlow(ProcessParameters &pparam,bool isStoreUnknownOptions=false);
 
 
 #endif
