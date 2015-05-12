@@ -14,11 +14,13 @@
 
 enum OptionLevel{
     OptionLevel_Normal=0x0000,
+    OptionLevel_Foreground=0x0001,
     OptionLevel_Help=0x0002,
     OptionLevel_Usage=0x0004,
     OptionLevel_Reset=0x0008,
     OptionLevel_Setting=0x0010,
     OptionLevel_Init=0x0020,
+    OptionLevel_New=0x0040,
     OptionLevel_UNKNOWN=0xF000
 };
 
@@ -34,8 +36,9 @@ struct ArgumentsStructure{
     bool isProfile;
     std::wstring profile;
     std::vector<std::wstring> vfile;
+    std::vector<std::wstring> unknowns;
 };
-bool ArgumentsFlow(ArgumentsStructure &as);
+bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions=false);
 
 
 #endif

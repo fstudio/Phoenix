@@ -10,10 +10,9 @@
 
 
 
-bool ArgumentsFlow(ArgumentsStructure &as)
+bool ArgumentsFlow(ArgumentsStructure &as,bool isStoreUnknownOptions)
 {
     int Argc;
-    bool Failed=false;
     bool bNext=false;
     as.cmdMode=OptionLevel_UNKNOWN;
     as.taskMode=InstanceLevel_UI;
@@ -30,6 +29,9 @@ bool ArgumentsFlow(ArgumentsStructure &as)
                 {
                     ///cArgs.uiMode=UI_MODE_CUI;
                     as.taskMode=InstanceLevel_Task;
+                }else if(_wcsicmp(&Argv[i][1],L"Foreground")==0){
+                    ///
+                    as.cmdMode=as.cmdMode|OptionLevel_Foreground;
                 }else if(_wcsicmp(&Argv[i][1],L"-help")==0){
                     as.cmdMode=as.cmdMode|OptionLevel_Usage;
                 }else if(_wcsicmp(&Argv[i][1],L"-version")==0){
@@ -42,6 +44,9 @@ bool ArgumentsFlow(ArgumentsStructure &as)
                 }else if(_wcsicmp(&Argv[i][1],L"Setting")==0){
                     ///
                     as.cmdMode=as.cmdMode|OptionLevel_Setting;
+                }else if(_wcsicmp(&Argv[i][1],L"New")==0){
+                    ///
+                    as.cmdMode=as.cmdMode|OptionLevel_New;
                 }else if(_wcsicmp(&Argv[i][1],L"Profile")==0){
                     ///
                     //index=-1;
@@ -59,7 +64,10 @@ bool ArgumentsFlow(ArgumentsStructure &as)
                         bNext=true;
                     }
                 }else{
-                    Failed=true;
+                    if(isStoreUnknownOptions)
+                    {
+                        as.unknowns.push_back(Argv[i]);
+                    }
                 }
             }
             break;
