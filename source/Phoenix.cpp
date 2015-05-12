@@ -24,9 +24,9 @@
 static std::map<int,HINSTANCE> ChildProcessMap;
 
 
-int WINAPI UIChannelProviders(ArgumentsStructure &processParameters)
+int WINAPI UIChannelProviders(ProcessParameters &processParameters)
 {
-    if(!processParameters.cmdMode&OptionLevel_New)
+    if(!(processParameters.cmdMode&OptionLevel_New))
     {
         if(!CreateMutexProviders())
         {
@@ -63,7 +63,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     {
         return 1;
     }
-    if(processParameters.taskMode=InstanceLevel_Task)
+    if(processParameters.taskMode==InstanceLevel_Task)
         return TaskChannelProviders();
     return UIChannelProviders(processParameters);
 }
