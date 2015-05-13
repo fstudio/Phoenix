@@ -14,10 +14,10 @@ bool ArgumentsFlow(ProcessParameters &processParameters,bool isStoreUnknownOptio
 {
     int Argc;
     bool bNext=false;
-    processParameters.cmdMode=OptionLevel_UNKNOWN;
+    processParameters.cmdMode=OptionLevel_Normal;
     processParameters.taskMode=InstanceLevel_UI;
     LPWSTR *Argv = CommandLineToArgvW(GetCommandLineW(), &Argc);
-    for(int i=0;i<Argc;i++)
+    for(int i=1;i<Argc;i++)
     {
         switch(Argv[i][0])
         {
@@ -64,6 +64,7 @@ bool ArgumentsFlow(ProcessParameters &processParameters,bool isStoreUnknownOptio
                         bNext=true;
                     }
                 }else{
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_UNKNOWN;
                     if(isStoreUnknownOptions)
                     {
                         processParameters.unknowns.push_back(Argv[i]);
@@ -73,15 +74,12 @@ bool ArgumentsFlow(ProcessParameters &processParameters,bool isStoreUnknownOptio
             break;
             default:
             {
-                if(i>=1){
-                    if(!bNext)
-                    {
-                        processParameters.vfile.push_back(Argv[i]);
-                        //bNext=true;
+                if(!bNext){
+                    processParameters.vfile.push_back(Argv[i]);
+                    //bNext=true;
                     }else{
-                        bNext=false;
+                    bNext=false;
                     }
-                }
             }
             break;
         }
