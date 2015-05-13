@@ -22,7 +22,7 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
     bool bNext=false;
     int index=0;
     LPWSTR *Argv = CommandLineToArgvW(GetCommandLineW(), &Argc);
-    for(int i=0;i<Argc;i++)
+    for(auto i=1;i<Argc;i++)
     {
         switch(Argv[i][0])
         {
@@ -60,7 +60,7 @@ bool  ArgumentsGet(AirflowStructure &cArgs)
             break;
             default:
             {
-                if(i>=1&&!bNext&&index>=0)
+                if(!bNext&&index>=0)
                 {
                     switch(index)
                     {
