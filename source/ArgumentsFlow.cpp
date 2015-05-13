@@ -32,10 +32,10 @@ bool ArgumentsFlow(ProcessParameters &processParameters,bool isStoreUnknownOptio
                 }else if(_wcsicmp(&Argv[i][1],L"Foreground")==0){
                     ///
                     processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Foreground;
+                }else if(_wcsicmp(&Argv[i][1],L"-version")==0){
+                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Version;
                 }else if(_wcsicmp(&Argv[i][1],L"-help")==0){
                     processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Usage;
-                }else if(_wcsicmp(&Argv[i][1],L"-version")==0){
-                    processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Help;
                 }else if(_wcsicmp(&Argv[i][1],L"Init")==0){
                     processParameters.cmdMode=processParameters.cmdMode|OptionLevel_Init;
                 }else if(_wcsicmp(&Argv[i][1],L"Reset")==0){
