@@ -15,7 +15,7 @@
 enum OptionLevel{
     OptionLevel_Normal=0x0000,
     OptionLevel_Foreground=0x0001,
-    OptionLevel_Help=0x0002,
+    OptionLevel_Version=0x0002,
     OptionLevel_Usage=0x0004,
     OptionLevel_Reset=0x0008,
     OptionLevel_Setting=0x0010,
