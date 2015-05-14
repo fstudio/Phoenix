@@ -79,74 +79,72 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             }
         }
         break;
-        case WM_COMMAND:
-        switch (LOWORD(wParam)){
-            case IDC_BUTTON_OPENFILE:
-            {
-                std::wstring file;
-                auto ret=AirflowFileOpenWindow(hWnd,file,L"Open Installer and Update Package");
-                if(ret){
-                    HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
-                    SetWindowTextW(hOEdit,file.c_str());
-                    ////toCheck file type
-                    std::wcout<<file<<std::endl;
-                }
-            }break;
-            case IDC_BUTTON_OPENDIR:
-            {
-                std::wstring folder;
-                auto ret=AirflowFolderOpenWindow(hWnd,folder,L"Open Installer and Update Package");
-                if(ret){
-                    HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FOLDER);
-                    SetWindowTextW(hOEdit,folder.c_str());
-                    ////toCheck file type
-                }
-            }
-            break;
-            case IDC_BUTTON_ENTER:
-            {
-                ////
-                //When Begin Parser
-                GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FILEURL),szPackagePath,4096);
-                GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FOLDER),szRecover,4096);
-                if(CheckPackageAndLayout(szPackagePath,4096,szRecover,4096))
+        case WM_COMMAND:{
+            switch (LOWORD(wParam)){
+                case IDC_BUTTON_OPENFILE:
                 {
-                    AirflowTaskData *data=new AirflowTaskData();
-                    data->isForce=false;
-                    data->sendRate=true;
-                    data->uMsgid=WM_ASYNCHRONOUS_NOTIFY_MSG;
-                    data->hWnd=hWnd;
-                    data->rawfile=szPackagePath;
-                    data->outdir=szRecover;
-                    DWORD tId;
-                    HANDLE hThread=CreateThread(NULL, 0, AirflowZendMethod, data, 0, &tId);
-                    if(!hThread)
-                    {
-                        MessageBoxW(hWnd,L"CreateThread Failed",L"Error",MB_OK);
-                    }else{
-                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),FALSE);
-                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),FALSE);
-                        EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),FALSE);
-                        EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),FALSE);
-                        EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),FALSE);
+                    std::wstring file;
+                    auto ret=AirflowFileOpenWindow(hWnd,file,L"Open Installer and Update Package");
+                    if(ret){
+                        HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FILEURL);
+                        SetWindowTextW(hOEdit,file.c_str());
+                        ////toCheck file type
+                        std::wcout<<file<<std::endl;
                     }
-                }else{
+                }
+                break;
+                case IDC_BUTTON_OPENDIR:
+                {
+                    std::wstring folder;
+                    auto ret=AirflowFolderOpenWindow(hWnd,folder,L"Open Installer and Update Package");
+                    if(ret){
+                        HWND hOEdit=GetDlgItem(hWnd,IDC_EDIT_FOLDER);
+                        SetWindowTextW(hOEdit,folder.c_str());
+                        ////toCheck file type
+                    }
+                }
+                break;
+                case IDC_BUTTON_ENTER:
+                {
+                    GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FILEURL),szPackagePath,4096);
+                    GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FOLDER),szRecover,4096);
+                    if(CheckPackageAndLayout(szPackagePath,4096,szRecover,4096)){
+                        AirflowTaskData *data=new AirflowTaskData();
+                        data->isForce=false;
+                        data->sendRate=true;
+                        data->uMsgid=WM_ASYNCHRONOUS_NOTIFY_MSG;
+                        data->hWnd=hWnd;
+                        data->rawfile=szPackagePath;
+                        data->outdir=szRecover;
+                        DWORD tId;
+                        HANDLE hThread=CreateThread(NULL, 0, AirflowZendMethod, data, 0, &tId);
+                        if(!hThread){
+                            MessageBoxW(hWnd,L"CreateThread Failed",L"Error",MB_OK);
+                        }else{
+                            EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),FALSE);
+                            EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),FALSE);
+                            EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),FALSE);
+                            EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),FALSE);
+                            EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),FALSE);
+                        }
+                    }else{
                     //MessageBoxW(hWnd,)
                     //ShellExecuteW(hWnd,L"open",stdioimage(),NULL,NULL,SW_SHOW);
+                    }
                 }
+                break;
+                case IDC_BUTTON_CANCEL:
+                {
+                    EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),TRUE);
+                    EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),TRUE);
+                    EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
+                    EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
+                    EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
+                }
+                break;
+                default:
+                break;
             }
-            break;
-            case IDC_BUTTON_CANCEL:
-            {
-                ////SendMessage(hWnd,WM_CLOSE,0,1);
-                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_ENTER),TRUE);
-                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENDIR),TRUE);
-                EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
-                EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
-                EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
-            }break;
-            default:
-            break;
         }
         break;
         case WM_ASYNCHRONOUS_NOTIFY_MSG:

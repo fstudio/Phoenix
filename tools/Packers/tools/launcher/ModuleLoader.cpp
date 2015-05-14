@@ -130,7 +130,7 @@ LPSTR* WINAPI CommandLineToArgvA(LPCSTR lpCmdline, int* numargs)
             }
             if (len < deslen) break;
             deslen*=2;
-            size = sizeof(LPSTR)*2 + deslen*sizeof(WCHAR);
+            size = sizeof(LPSTR)*2 + deslen*sizeof(CHAR);
             LocalFree( argv );
         }
         argv[0]=(LPSTR)(argv+2);
@@ -212,7 +212,7 @@ LPSTR* WINAPI CommandLineToArgvA(LPCSTR lpCmdline, int* numargs)
      * with it. This way the caller can make a single LocalFree() call to free
      * both, as per MSDN.
      */
-    argv=LocalAlloc(LMEM_FIXED, (argc+1)*sizeof(LPSTR)+(strlen(lpCmdline)+1)*sizeof(WCHAR));
+    argv=LocalAlloc(LMEM_FIXED, (argc+1)*sizeof(LPSTR)+(strlen(lpCmdline)+1)*sizeof(CHAR));
     if (!argv)
         return NULL;
     cmdline=(LPSTR)(argv+argc+1);
