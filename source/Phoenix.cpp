@@ -42,6 +42,7 @@ int WINAPI UIChannelProviders(ProcessParameters &processParameters)
 
 ///<summary>
 // int WINAPI TaskChannelProviders
+// TaskProcess Parser New Style CommandLine
 ///</summary>
 int WINAPI TaskChannelProviders()
 {
@@ -65,6 +66,15 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance,
     }
     if(processParameters.taskMode==InstanceLevel_Task)
         return TaskChannelProviders();
+    if((processParameters.cmdMode&OptionLevel_Version)){
+        ///Do Print Phoenix version
+    }
+    if((processParameters.cmdMode&OptionLevel_Usage)){
+        //
+    }
+    if((processParameters.cmdMode&OptionLevel_Init)){
+        //
+    }
     return UIChannelProviders(processParameters);
 }
 
