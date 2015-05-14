@@ -11,6 +11,12 @@
 #include <Msi.h>
 #include <Msiquery.h>
 
+/*
+* UINT WINAPI RecoverInstallerPackage(const wchar_t *,const wchar_t*);
+* Success return zero, other return error code.
+*/
+
+
 UINT WINAPI RecoverInstallerPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath)
 {
     //MsiConfigureProductExW

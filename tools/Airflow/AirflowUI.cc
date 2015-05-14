@@ -196,7 +196,7 @@ int AirflowUIChannel(AirflowStructure &cArgs)
         psh.hInstance       = GetModuleHandle(nullptr);
         psh.hwndParent      = NULL;
         psh.phpage          = rhpsp;
-        psh.dwFlags         = PSH_AEROWIZARD | PSH_USEICONID;
+        psh.dwFlags         = PSH_AEROWIZARD ;
         psh.pszCaption      = L"Airflow -Recover Windows Installer and Update File";
         psh.pszIcon         = MAKEINTRESOURCE(IDI_WIZICON);
         psh.nStartPage      = 0;

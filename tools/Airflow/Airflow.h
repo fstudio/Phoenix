@@ -27,6 +27,8 @@
 #define PM_MICROSOFT_CAB_NTCAB 4
 #define PM_INSTALLSHIELD_CAB 5
 
+#define MAX_PATH_WITH_UNC 32767 //32*1024 -1
+
 #define AIRFLOW_VERSION_MARK L"Airflow-1.0.0.1"
 
 #define AIRFLOW_USAGE_STRING L"Airflow Recover Windows Installer and Update Package\n\

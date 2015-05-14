@@ -114,7 +114,7 @@ public:
         }
     }
 };
-bool StringFind(const wchar_t *str)
+bool StringFindSlash(const wchar_t *str)
 {
     auto p=str;
     while(*p)
@@ -137,7 +137,7 @@ bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecov
             std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
             return false;
         }
-        if(StringFind(const_cast<const wchar_t*>(szPackagePath)))
+        if(StringFindSlash(const_cast<const wchar_t*>(szPackagePath)))
         {
             std::wcout<<L"Check File Access Failed: "<<szPackagePath<<L"\nError Code:"<<err<<std::endl;
             return false;
@@ -156,7 +156,7 @@ bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecov
     }
     if(_waccess(const_cast<const wchar_t *>(szRecover),04)==0)
         return true;
-    if(!StringFind(const_cast<const wchar_t *>(szRecover)))
+    if(!StringFindSlash(const_cast<const wchar_t *>(szRecover)))
     {
         if(CreateDirectory(const_cast<const wchar_t *>(szRecover),NULL)){
             wcscpy_s(szRecover,resize,str.c_str());
@@ -187,6 +187,44 @@ bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecov
     return true;
 }
 
+bool DoCheckerPackagePath(std::wstring &strPack,std::wstring &strDir)
+{
+    if(strPack.empty()||strDir.empty())
+        return false;
+    wchar_t szBuffer[4096]={0};
+    std::wstring temp;
+    if(GetCurrentDirectory(4096,szBuffer)==0)//why return false ,such as
+        return false;
+    if(_waccess_s(strPack.c_str(),04)!=0){
+        if(StringFindSlash(strPack.c_str())){
+            temp=std::wstring(szBuffer)+L"/"+strPack;
+            if(_waccess_s(temp.c_str(),04)!=0)
+            {
+                return false;
+            }
+            strPack=temp;
+        }else{
+            return false;
+        }
+    }
+    if(_waccess_s(strDir.c_str(),04)!=0){
+        if(StringFindSlash(strDir.c_str())){
+            temp=std::wstring(szBuffer)+L"/"+strDir;
+            if(_waccess_s(temp.c_str(),04)!=0){
+                if(CreateDirectory(temp.c_str(),NULL)){
+                    //wcscpy_s(szRecover,resize,str.c_str());
+                    strDir=temp;
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            strDir=temp;
+        }
+    }
+    return true;
+}
+
 
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
@@ -213,6 +251,10 @@ DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
         std::wcout<<L"Please Input Your Recover Folder: ";
         std::wcin>>airflowst.outdir;
         //std::cout<<std::endl;
+    }
+    if(!DoCheckerPackagePath(airflowst.rawfile,airflowst.outdir)){
+        std::wcout<<L"Do Check Raw Package and out Dir Failed."<<std::endl;
+        return 2;
     }
     return 0;
 }
