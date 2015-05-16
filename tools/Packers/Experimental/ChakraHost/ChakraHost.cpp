@@ -139,7 +139,7 @@ wstring LoadScript(wstring fileName)
 // Callback to echo something to the command-line.
 //
 
-JsValueRef CALLBACK Echo(_In_ JsValueRef callee, _In_ bool isConstructCall, _In_ JsValueRef *arguments, _In_ unsigned short argumentCount)
+JsValueRef CALLBACK Echo(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
 	for (unsigned int index = 1; index < argumentCount; index++)
 	{
@@ -228,7 +228,7 @@ error:
 // Callback to load a script and run it.
 //
 
-JsValueRef CALLBACK RunScript(_In_ JsValueRef callee, _In_ bool isConstructCall, _In_ JsValueRef *arguments, _In_ unsigned short argumentCount)
+JsValueRef CALLBACK RunScript(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
 	JsValueRef result = JS_INVALID_REFERENCE;
 
@@ -270,7 +270,7 @@ JsValueRef CALLBACK RunScript(_In_ JsValueRef callee, _In_ bool isConstructCall,
 // Helper to define a host callback method on the global host object.
 //
 
-JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackName, JsNativeFunction callback)
+JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackName, JsNativeFunction callback, void *callbackState)
 {
 	//
 	// Get property ID.
@@ -284,7 +284,7 @@ JsErrorCode DefineHostCallback(JsValueRef globalObject, const wchar_t *callbackN
 	//
 
 	JsValueRef function;
-	IfFailRet(JsCreateFunction(callback, &function));
+	IfFailRet(JsCreateFunction(callback, callbackState, &function));
 
 	//
 	// Set the property
@@ -345,8 +345,8 @@ JsErrorCode CreateHostContext(JsRuntimeHandle runtime, int argc, wchar_t *argv [
 	// Now create the host callbacks that we're going to expose to the script.
 	//
 
-	IfFailRet(DefineHostCallback(hostObject, L"echo", Echo));
-	IfFailRet(DefineHostCallback(hostObject, L"runScript", RunScript));
+	IfFailRet(DefineHostCallback(hostObject, L"echo", Echo, nullptr));
+    IfFailRet(DefineHostCallback(hostObject, L"runScript", RunScript, nullptr));
 
 	//
 	// Create an array for arguments.

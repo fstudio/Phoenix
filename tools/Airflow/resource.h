@@ -26,6 +26,7 @@
 #define IDC_BUTTON_ENTER      1005
 #define IDC_BUTTON_CANCEL         1006
 
+#define IDC_PROCESS_RATE       2001
 
 // Next default values for new objects
 // 

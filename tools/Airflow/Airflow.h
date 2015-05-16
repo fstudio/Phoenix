@@ -71,6 +71,7 @@ struct AirflowTaskData{
     bool sendRate;
     UINT uMsgid;
     HWND hWnd;
+    int mRate;
     std::wstring rawfile;
     std::wstring outdir;
 };

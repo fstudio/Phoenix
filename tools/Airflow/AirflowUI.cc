@@ -9,6 +9,7 @@
 #include "Airflow.h"
 #include "resource.h"
 #include <Prsht.h>
+#include <CommCtrl.h>
 #include <iostream>
 
 #ifndef UNICODE
@@ -106,6 +107,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                 break;
                 case IDC_BUTTON_ENTER:
                 {
+                    SendDlgItemMessage(hWnd,IDC_PROCESS_RATE,PBM_SETPOS ,50,0L);
                     GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FILEURL),szPackagePath,4096);
                     GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FOLDER),szRecover,4096);
                     if(CheckPackageAndLayout(szPackagePath,4096,szRecover,4096)){
@@ -114,6 +116,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                         data->sendRate=true;
                         data->uMsgid=WM_ASYNCHRONOUS_NOTIFY_MSG;
                         data->hWnd=hWnd;
+                        data->mRate=IDC_PROCESS_RATE;
                         data->rawfile=szPackagePath;
                         data->outdir=szRecover;
                         DWORD tId;
@@ -140,6 +143,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                     EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
                     EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
                     EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
+                    SendDlgItemMessage(hWnd,IDC_PROCESS_RATE,PBM_SETPOS ,0,0L);
                 }
                 break;
                 default:
