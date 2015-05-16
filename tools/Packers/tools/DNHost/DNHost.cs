@@ -1,13 +1,15 @@
 //
 //
 //
+using System;
 using System.IO;
 using System.Diagnostics;
 
 
 namespace DNHost{
-	public class Launcher{
+	 class Launcher{
 		static int Main(string[] args){
+			
 			return 0;
 		}
 	}
