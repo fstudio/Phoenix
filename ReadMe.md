@@ -5,9 +5,10 @@
 next ....
 
 ###Modern UI
-Design:
-![Image](design/PhoenixUI.png)
+Design:       
+![Image](design/PhoenixUI.png)   
 
+Simple style CodeWriter style interface: 
 ![Image](design/likecodewriter.png)
 next ....
 
