@@ -7,3 +7,6 @@
 [submodule "deps/libsass"]
 	path = deps/libsass
 	url = https://github.com/sass/libsass.git
+[submodule "deps/cpptoml"]
+	path = deps/cpptoml
+	url = https://github.com/skystrife/cpptoml.git
