@@ -1,5 +1,5 @@
 /*********************************************************************************************************
-* JavaScriptRuntimeHosting.cc
+* JavaScriptRuntimeHost.cc
 * Note: Phoenix Container Runtime for JavaScript
 * Date: @2015.05
 * Author: Force Charlie

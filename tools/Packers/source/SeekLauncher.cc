@@ -7,7 +7,8 @@
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
 const LauncherHostTarget launcherTable[]={
-    {0,0,0}
+    {0,0,0},
+    {LAUNCHER_HOST_JAVASCRIPT,L"RunScript",L"-JavaScript"} ///Chakra Host Module
 };
 
 const int sizeOfTable=sizeof(launcherTable)/sizeof(LauncherHostTarget);
