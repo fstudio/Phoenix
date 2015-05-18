@@ -17,12 +17,12 @@
 #include <netdb.h>
 #else
 #define WIN32_NO_STATUS
+#include <winsock2.h>
 #include <stdarg.h>
 #include <windef.h>
 #include <winbase.h>
 #include <wingdi.h>
-#define _INC_WINDOWS
-#include <winsock.h>
+
 #endif
 
 #include <io.h>
