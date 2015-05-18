@@ -2,7 +2,7 @@
 TARGET=whois.exe
 CC=cl
 LINK=link
-CFLAGS=-nologo -TC -W3  -Zc:forScope  -MT -DNODEBUG 
+CXXFLAGS=-nologo -TP -W3  -Zc:forScope  -MT -DNODEBUG -EHsc -O2
 LDFLAGS=/NOLOGO -OPT:REF
 
 LIBRARY=ws2_32.lib  kernel32.lib
@@ -15,8 +15,8 @@ all:$(TARGET)
 $(TARGET):$(OBJECTS) $(RCFILE)
 	$(LINK) $(LDFLAGS) -OUT:$@ $** $(LIBRARY)
 	
-{.}.c.obj::
-	$(CC) $(CFLAGS) -c $<
+{.}.cpp.obj::
+	$(CC) $(CXXFLAGS) -c $<
 
 $(RCFILE):whois.rc
 	rc whois.rc
