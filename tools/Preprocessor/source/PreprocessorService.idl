@@ -22,5 +22,6 @@ version(1.0),pointer_default(unique),
 
 interface PreprocessorServicePrivoderLPC
 {
+    void Preprocessor([in,unique] LPCWSTR pszFile,[in,unique] LPCWSTR pszOut,[in] unsigned type);
     void Shutdown();
 };
