@@ -12,18 +12,27 @@
 
 class MBGet{
 private:
-    char *p;
+    char *pElementText;
 public:
-    MBGet(const wchar_t *str){}
+    MBGet(const wchar_t *str){
+        if(!str){
+            pElementText=nullptr;
+        }
+         int iTextLen;
+         iTextLen =WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, NULL, 0, NULL, NULL);
+         pElementText = new char[iTextLen + 1];
+         memset((void *)pElementText, 0, sizeof(char) * (iTextLen + 1));
+         ::WideCharToMultiByte(CP_ACP, 0, str, -1, pElementText, iTextLen,NULL, NULL);
+    }
     ~MBGet(){
-        if(p)
+        if(pElementText)
         {
-            free(p);
+            delete[] pElementText;
         }
     }
-    const char* get(){return this->p;}
+    const char* get(){return this->pElementText;}
 };
-
+////Run Python Function
 int RunPythonFunction(const wchar_t *filePath,const wchar_t *fun)
 {
     Py_Initialize();
@@ -37,5 +46,9 @@ int RunPythonFunction(const wchar_t *filePath,const wchar_t *fun)
     pFunc=PyObject_GetAttrString(pModule,funA.get());
     PyEval_CallObject(pFunc,nullptr);
     Py_Finalize();
+    return 0;
+}
+
+int RunPythonFile(const wchar_t *file,const wchar_t *szArg){
     return 0;
 }
