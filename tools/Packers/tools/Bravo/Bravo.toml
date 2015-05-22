@@ -1,0 +1,9 @@
+title = "Bravo Setting 1.0"
+
+[Environment]
+INCLUDE = "../include"
+LIB="../lib"
+
+[Runtime]
+Self="Bravo.exe"
+Path="."

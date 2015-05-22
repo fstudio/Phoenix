@@ -143,6 +143,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                     EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
                     EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
                     EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
+                    ///Kill Thread and Delete Resource
                     SendDlgItemMessage(hWnd,IDC_PROCESS_RATE,PBM_SETPOS ,0,0L);
                 }
                 break;

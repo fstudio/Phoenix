@@ -256,6 +256,7 @@ DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
         std::wcout<<L"Do Check Raw Package and out Dir Failed."<<std::endl;
         return 2;
     }
+    auto type=FindPackageMagic(airflowst.rawfile.c_str());
     return 0;
 }
 
@@ -266,6 +267,11 @@ DWORD WINAPI AirflowZendMethod(LPVOID lParam)
         return 1;
     auto data=static_cast<AirflowTaskData *>(lParam);
     ///MessageBoxW(data->hWnd,L"AirflowZendMethod",data->rawfile.c_str(),MB_OK);
+    auto type=FindPackageMagic(data->rawfile.c_str());
+    switch(type){
+        default:
+        break;
+    }
     SendMessage(data->hWnd,data->uMsgid,0,0);
     delete data;
     return 0;

@@ -6,6 +6,7 @@
 **********************************************************************************************************/
 #include <string>
 #include <map>
+#include "cpptoml.h"
 
 int ParserPropertyFormString(std::string text,std::map<std::string,std::string> &tb)
 {
