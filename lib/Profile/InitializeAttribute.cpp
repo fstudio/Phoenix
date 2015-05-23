@@ -250,7 +250,7 @@ bool InitializeStructure::FiniteStateMachineAnalysis(wchar_t *buffer,size_t size
     wchar_t *valueStart=nullptr;
     auto anonymous=new IniSection();
     auto currentSec=anonymous;
-    setlocale( LC_ALL, "C" );
+    setlocale(LC_ALL, NULL);
     enum _FSMState{
         STAT_NONE=0,
         STAT_SECTION,
@@ -345,7 +345,6 @@ bool InitializeStructure::FiniteStateMachineAnalysis(char *buffer,size_t size,in
     char *valueStart=nullptr;
     auto anonymous=new IniSection();
     auto currentSec=anonymous;
-    setlocale( LC_ALL, "C" );
     enum _FSMState{
         STAT_NONE=0,
         STAT_SECTION,
@@ -531,7 +530,7 @@ bool InitializeAttribute::Loader()
     }
     auto dwFileSize=static_cast<DWORD>(mSize);
     ///Because rea
-    buffer= HeapAlloc(GetProcessHeap(), 0 , dwFileSize); ///Big Memory.
+    buffer= HeapAlloc(GetProcessHeap(), 0 , dwFileSize+1); ///Big Memory.
     if(!buffer) ////HeapAlloc Failed
         return false;
     if(!ReadFile(hFile,buffer,dwFileSize,&dwFileSize,NULL))
@@ -542,11 +541,13 @@ bool InitializeAttribute::Loader()
         return false;
     }
     auto zm=static_cast<unsigned char*>(buffer);
+    zm[dwFileSize]='\0';
     if(dwFileSize>=3&&zm[0]==0xEF&&zm[1]==0xBB&&zm[2]==0xBF)
     {
         pBuffer=(char *)buffer+3;
         auto len=MultiByteToWideChar(CP_UTF8,0,const_cast<const char*>(pBuffer),dwFileSize,NULL,0);
-        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t));
+        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t)+1);
+        szFile[len]='\0';
         if(!szFile)
         {
             HeapFree(GetProcessHeap(),0,buffer);
@@ -565,12 +566,14 @@ bool InitializeAttribute::Loader()
     }else if(zm[0]==0xFF&&zm[1]==0xFE) ///0xFFFE LE
     {
         szFile=(wchar_t*)buffer+2;
+        //MessageBoxW(nullptr,szFile,L"Buffer",MB_OK);
         bRet=iniStructure.FiniteStateMachineAnalysis(szFile,dwFileSize-2);
         //
     }else{
         pBuffer=static_cast<char*>(buffer);
         auto len=MultiByteToWideChar(CP_ACP,0,const_cast<const char*>(pBuffer),dwFileSize,NULL,0);
-        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t));
+        szFile=(wchar_t*)HeapAlloc(GetProcessHeap(),0,len*sizeof(wchar_t)+1);
+        szFile[len]='\0';
         if(!szFile)
         {
             HeapFree(GetProcessHeap(),0,buffer);
@@ -581,7 +584,6 @@ bool InitializeAttribute::Loader()
         bRet=iniStructure.FiniteStateMachineAnalysis(szFile,len);
         HeapFree(GetProcessHeap(),0,szFile);
     }
-    std::wcout<<L"Load Success"<<std::endl;
     CloseHandle(hFile);
     HeapFree(GetProcessHeap(),0,buffer);
     return bRet;

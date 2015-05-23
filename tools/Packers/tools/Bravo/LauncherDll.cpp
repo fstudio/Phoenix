@@ -1,6 +1,6 @@
 /*********************************************************************************************************
-*   Phoneix Plugin Simple Launcher Host
-*   Note: ModuleLoader.cpp
+*   Phoneix Native Module Launcher Host
+*   Note: LauncherDll.cpp
 *   Date: 2015.01.13
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
@@ -97,7 +97,7 @@ typedef int(* PackageInitialize)(int Argc,char **Argv);
     }
 
 */
-
+////Note: Argv[0] is this Package Name
 LPSTR* WINAPI CommandLineToArgvA(LPCSTR lpCmdline, int* numargs)
 {
     DWORD argc;
