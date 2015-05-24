@@ -32,5 +32,10 @@
 *.pidb
 *.svclog
 *.scc
+UWA/.vs/*
+UWA/ipch/*
+UWA/Debug/*
+UWA/Release/*
+
 
 

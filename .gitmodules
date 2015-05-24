@@ -10,3 +10,6 @@
 [submodule "deps/cpptoml"]
 	path = deps/cpptoml
 	url = https://github.com/skystrife/cpptoml.git
+[submodule "deps/snappy"]
+	path = deps/snappy
+	url = https://github.com/fstudio/snappy.git

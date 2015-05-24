@@ -15,10 +15,10 @@
 #include <map>
 #include <Shobjidl.h>
 #include <vector>
-#include "UIWindow.h"
 #include "Header.hpp"
 #include "Arguments.hpp"
-#include "TaskProcess.hpp"
+#include "Senses/View/UIWindow.h"
+#include "Insider/TaskProcess.hpp"
 #include <iostream>
 //class UIWindow;
 static std::map<int,HINSTANCE> ChildProcessMap;
