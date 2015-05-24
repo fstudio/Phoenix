@@ -9,7 +9,7 @@
 #define EDITOR_RENDER_HPP
 #include <cstdio>
 #include <cstdlib>
-#define EDITOR_RENDER_CLASSW L"Phoenix.UI.Editor.Render"
+#define EDITOR_RENDER_CLASSW L"Phoenix.Senses.UI.Editor.Render"
 
 class EditorRender{
 private:

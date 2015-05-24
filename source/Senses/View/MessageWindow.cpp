@@ -11,32 +11,53 @@
 #include <comdef.h>
 #include <taskschd.h>
 
+class SensesIcon{
+private:
+    HICON hIcon;
+public:
+    SensesIcon():hIcon(nullptr){
+        ////
+    }
+    ~SensesIcon(){
+        if(hIcon){
+            if(!DestroyIcon(hIcon)){
+                fprintf(stderr,"SensesIcon DestroyIcon Failed: %d\n",GetLastError());
+            }
+        }
+    }
+    HICON get(){
+        return this->hIcon;
+    }
+    SensesIcon& operator =(HICON rhs){
+        this->hIcon=static_cast<HICON>(rhs);
+        return *this;
+    }
+};
 
-
-static HICON gMwIcon=nullptr;
+static SensesIcon gsicon;
 static bool runOnce=false;
 
 static HICON TryGetApplicationIcon()
 {
-    if (gMwIcon || runOnce)
-        return gMwIcon;
+    if (gsicon.get() || runOnce)
+        return gsicon.get();
     //SHGetFileInfo get Application ICON
     SHFILEINFO shfi;
     HICON hIcon;
-    wchar_t szApp[32678] = { 0 };
-    GetModuleFileNameW(nullptr, szApp, 32678);
-    hIcon = (HICON) SHGetFileInfoW(
+    wchar_t szApp[MAX_PATH] = { 0 };
+    GetModuleFileNameW(nullptr, szApp, MAX_PATH);
+    auto Ret=SHGetFileInfoW(
         szApp,
         0,
         &shfi,
         sizeof(SHFILEINFO),
-        SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_ICON);
-    if (hIcon)
+        SHGFI_SYSICONINDEX | SHGFI_LARGEICON  | SHGFI_ICON);
+    if (Ret)
     {
-        gMwIcon = hIcon;
+        gsicon=shfi.hIcon;
     }
     runOnce = true;
-    return gMwIcon;
+    return gsicon.get();
 }
 HRESULT CALLBACK
 TaskWindowCallBackProc(
