@@ -13,3 +13,6 @@
 [submodule "deps/snappy"]
 	path = deps/snappy
 	url = https://github.com/fstudio/snappy.git
+[submodule "tools/nmake"]
+	path = tools/nmake
+	url = https://github.com/fstudio/nmake.git
