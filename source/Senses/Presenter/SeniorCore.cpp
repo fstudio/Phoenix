@@ -1,18 +1,36 @@
 /*********************************************************************************************************
-* SearchWindowSelf.cpp
-* Note: Phoenix Search Window Self
+* SeniorCore.cpp
+* Note: Phoenix Senior Core
 * Date: @2015.03
 * E-mail:<forcemz@outlook.com>
 * Copyright (C) 2015 The ForceStudio All Rights Reserved.
 **********************************************************************************************************/
-
 #include <Windows.h>
-#include "UIWindow.h"
+#include "Senses/Presenter/UIWindow.h"
 #include <string>
+
+
+int WINAPI SwitchSeniorCorePermissions(HWND hSelf)
+{
+    return 0;
+}
+
+int WINAPI LoseSeniorCorePermissions()
+{
+    return 0;
+}
+
+HRESULT WINAPI TryGetSeniorCorePermissions(HWND hDisplaySelf)
+{
+    if(hDisplaySelf==GetSelfClassActiveWindowHwnd()){
+        ///Bind to Senior
+    }
+    return 0;
+}
 
 HWND WINAPI GetSelfClassActiveWindowHwnd()
 {
-    HWND hWnd=FindWindowW(nullptr,UIWINDOWCLASS);
+    HWND hWnd=FindWindowW(nullptr,UIWINDOWCLASS);//ZOrder
     /*
     Checker Mutex
     */

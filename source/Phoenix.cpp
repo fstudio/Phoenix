@@ -23,7 +23,6 @@
 //class UIWindow;
 static std::map<int,HINSTANCE> ChildProcessMap;
 
-
 int WINAPI UIChannelProviders(ProcessParameters &processParameters)
 {
     if(!(processParameters.cmdMode&OptionLevel_New))
