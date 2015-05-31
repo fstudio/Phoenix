@@ -31,8 +31,8 @@ all:$(APPNAME)
 $(APPNAME):Phoenix.res $(OBJECTS)
 	$(LD) $(LDFLAGS) -OUT:$@ $**  $(LIBRARYS) -LIBPATH:$(LIBPATHDIR)
 
-Phoenix.res:
-	$(RC) Phoenix.rc
+.rc.res:
+	$(RC) $(RFLAGS) /r $<
 
 {.}.cpp.obj::
 	$(CC) $(INCDIR) $(CXXFLAGS) -c $<

@@ -21,9 +21,10 @@ all:$(TARGET)
 
 $(TARGET):$(COBJS) $(CXXOBJS) $(TINYXMLOBJ) $(RESOURCES)
 	$(LD) $(LDFLAGS) $(COBJS) $(CXXOBJS) $(TINYXMLOBJ) $(LIBRARY) $(RESOURCES) -out:$@ 
+
 	
-$(RESOURCES):PackageRuntime.rc
-	$(RC) PackageRuntime.rc
+.rc.res:
+	$(RC) $(RFLAGS) /r $<
 	
 {.}.c.obj::
 	$(CC) $(CFLAGS) -c $<
