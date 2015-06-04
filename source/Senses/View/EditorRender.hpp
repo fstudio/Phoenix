@@ -9,7 +9,10 @@
 #define EDITOR_RENDER_HPP
 #include <cstdio>
 #include <cstdlib>
-#define EDITOR_RENDER_CLASSW L"Phoenix.Senses.UI.Editor.Render"
+#include <Windows.h>
+#ifndef _SENSES_VIEW_WINDOWINC_
+#include "WindowInc.h"
+#endif
 
 class EditorRender{
 private:
@@ -17,5 +20,7 @@ private:
 public:
     EditorRender();
 };
+
+
 
 #endif

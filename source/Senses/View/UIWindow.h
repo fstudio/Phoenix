@@ -7,29 +7,12 @@
 **********************************************************************************************************/
 #ifndef PHOENIX_UI_H
 #define PHOENIX_UI_H
-
-#define UIWINDOWCLASS L"Phoenix.UI.Window.Render.v1"
-#include <atlbase.h>
-#include <atlwin.h>
-#include <atlcoll.h>
-#include <atlstr.h>
-#include <atlsimpstr.h>
-#include <ShlObj.h>
-#include <d2d1.h>
+#ifndef _SENSES_VIEW_WINDOWINC_
+#include "WindowInc.h"
+#endif
 #include <string>
 #include <vector>
-#include "Resource.h"
 
-#ifndef COMMAND_ID_HANDLER_SYSCMD
-#define COMMAND_ID_HANDLER_SYSCMD(id, func) \
-    if(uMsg == WM_SYSCOMMAND && id == LOWORD(wParam)) \
-        { \
-        bHandled = TRUE; \
-        lResult = func(HIWORD(wParam), LOWORD(wParam), (HWND)lParam, bHandled); \
-        if(bHandled) \
-            return TRUE; \
-        }
-#endif
 
 /*
 CalculatePopupWindowPosition

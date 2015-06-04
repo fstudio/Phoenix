@@ -8,7 +8,7 @@
 #include "EditorRender.hpp"
 
 
-EditorRender::EditorRender()
+EditorRender::EditorRender():beginAddress(nullptr)
 {
     ///
 }
