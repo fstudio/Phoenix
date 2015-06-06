@@ -7,7 +7,7 @@
 **********************************************************************************************************/
 #ifndef _SENSES_VIEW_WINDOWINC_
 #define _SENSES_VIEW_WINDOWINC_
-
+#include <Windows.h>
 #include <atlbase.h>
 #include <atlwin.h>
 #include <atlcoll.h>
@@ -18,8 +18,26 @@
 
 #include <Resource.h> ///add resource
 
-#define UIWINDOWCLASS L"Phoenix.UI.Window.Render.v1"
-#define EDITOR_RENDER_CLASSW L"Phoenix.Senses.UI.Editor.Render"
+#define UIWINDOWCLASS L"Phoenix.UI.Core.Window.Render.v1"
+#define EDITOR_RENDER_CLASSW L"Phoenix.Senses.InputSink.Render"
+
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++  Note , Windows Modern (Windows Runtime base Modern App)
++  based on the traditional model Win32
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+#define FRAMEWINDOW_STYLE  WS_CAPTION|WS_POPUP|WS_MINIMIZE|WS_CLIPSIBLINGS|WS_SYSMENU|\
+WS_THICKFRAME|WS_MINIMIZEBOX|WS_MAXIMIZEBOX
+
+#define FRAMEWINDOWEX_STYLE WS_EX_LEFT|WS_EX_LTRREADING|WS_EX_RIGHTSCROLLBAR|\
+WS_EX_WINDOWEDGE|WS_EX_NOREDIRECTIONBITMAP
+
+
+#define INPUTSINK_STYLE WS_CHILDWINDOW|WS_VISIBLE
+#define INPUTSINKEX_STYPE WS_EX_LEFT|WS_EX_LTRREADING|WS_EX_RIGHTSCROLLBAR|WS_EX_LAYERED|\
+WS_EX_NOREDIRECTIONBITMAP
+
+
 
 #ifndef COMMAND_ID_HANDLER_SYSCMD
 #define COMMAND_ID_HANDLER_SYSCMD(id, func) \
