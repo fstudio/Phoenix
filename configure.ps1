@@ -13,7 +13,7 @@ $PBRevision=115
 $PhoenixBuildSystemVersion = "${PBVMAX}.${PBVMIN}.${PBVPATCH}.${PBVBUILD}"
 $Host.UI.RawUI.WindowTitle ="Phoenix Configure TaskScheduler |PowerShell"
 
-Function USAGE
+Function Get-Usage
 {
     Write-Host "OVERVIEW: Phoeinx Configure Script Assistant"
     Write-Host "USAGE: configure.ps1 [options] <input> `n"
@@ -22,28 +22,13 @@ Function USAGE
     Write-Host "`t--prefix=folder"
 }
 
-Function PrintVersion
+Function Print-Version
 {
    Write-Host "Phoeinx Configure Script Assistant"
    Write-Host "Phoenix Build System version: ${PhoenixBuildSystemVersion}  (${PBRevision}.Revision)"
    Write-Host "Copyright © 2015 The Force Studio .All Rights Reserved."
 }
 
-IF($args.Count -ge 1)
-{
-   IF([System.String]::Compare($args[0],"--help",$true) -eq 0)
-   {
-    USAGE
-    $Enkey=[System.Console]::ReadKey()
-    Exit
-
-   }ELSEIF([System.String]::Compare($args[0],"--version",$true) -eq 0)
-   {
-   PrintVersion
-   $Enkey=[System.Console]::ReadKey()
-   Exit
-   }
-}
 <#
 
 Import-Module BitsTransfer

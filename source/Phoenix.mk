@@ -37,5 +37,8 @@ $(APPNAME):Phoenix.res $(OBJECTS)
 {.}.cpp.obj::
 	$(CC) $(INCDIR) $(CXXFLAGS) -c $<
 
+{.}.cpp.obj::
+	$(CC) $(INCDIR) $(CXXFLAGS) -c $<
+	
 clean:
 	-del *.obj *.res *.exe
