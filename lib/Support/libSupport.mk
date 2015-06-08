@@ -5,7 +5,8 @@ CC=cl
 AR=lib
 
 INCDIR= -I../../include
-CXXFLAGS=-TP -c  -EHsc  -W3  -Zc:forScope -Zc:wchar_t -D_CRT_SECURE_NO_DEPRECATE -O2 -MT $(INCDIR)
+CXXFLAGS=-TP -c  -EHsc  -W3  -Zc:forScope -Zc:wchar_t -D_CRT_SECURE_NO_DEPRECATE \
+-D_CRT_NONSTDC_NO_DEPRECATE -O2 -MT $(INCDIR)
 CFLAGS=-TC -c -O2 -W3  -Zc:wchar_t -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE -MT $(INCDIR)
 
 CXXOBJS=  APFloat.obj\

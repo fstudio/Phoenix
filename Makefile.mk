@@ -11,7 +11,7 @@ AS=ml
 !END
 INCLUDE=./wtl/include
 
-Phoenix:
+all:
 	$(CXX) -I$(INCLUDE) 
 	cd lib &&nmake -f build.mk
 	cd source&&nmake -f Phoenix.mk
