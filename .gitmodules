@@ -16,3 +16,6 @@
 [submodule "tools/nmake"]
 	path = tools/nmake
 	url = https://github.com/fstudio/nmake.git
+[submodule "deps/cmark"]
+	path = deps/cmark
+	url = https://github.com/jgm/cmark.git
