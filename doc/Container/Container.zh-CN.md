@@ -380,7 +380,7 @@ cleanup:
 ```
 
 ###3.使用AppContainer运行程序
-自Windows 8起，微软推出了Windows Store,而Store应用程序运行在容器之中，权限被降低，同是微软也为传统的Desktop应用程序提供了一系列的API来创建一个AppContainer，并且使进程在AppContainer中启动。比如使用CreateAppContainerProfile创建一个容器SID，使用DeleteAppContainerProfile查找一个已知容器名的SID，删除一个容器DeleteAppContainerProfile配置文件。GetAppContainerFolderPath 获得容器目录。
+自Windows 8起，微软推出了Windows Store,而Store应用程序运行在容器之中，权限被降低，同时微软也为传统的Desktop应用程序提供了一系列的API来创建一个AppContainer，并且使进程在AppContainer中启动。比如使用CreateAppContainerProfile创建一个容器SID，使用DeleteAppContainerProfile查找一个已知容器名的SID，删除一个容器DeleteAppContainerProfile配置文件。GetAppContainerFolderPath 获得容器目录。
 
 ```C++
 #include <vector>
