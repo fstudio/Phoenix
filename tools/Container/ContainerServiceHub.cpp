@@ -18,7 +18,7 @@ std::unordered_map<unsigned,std::wstring> taskMap;
 CRITICAL_SECTION g_cs;
 
 static volatile LONG g_keepAlive=1;
-static volatile unsigned clientNum=0;
+static volatile LONG clientNum=0;
 
 
 bool InterlockedExchangeAddEx(bool model)

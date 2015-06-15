@@ -301,44 +301,20 @@ int wmain(int argc,wchar_t *argv[])
 如果你的Shell没有被异常终止，也就是Explorer作为桌面启动的实例以标准权限运行着。依然可以降权，不过这种程序的权限完整性并不能达到理想。与低完整性权限类似，都是要获取已有的Token，然后使用此Token启动新的进程，不过前者是基于用户的Token,而后者是基于进程的Token。
 
 ```C++
-HRESULT WINAPI
-CreateProcessWithShellToken(LPCWSTR exePath, _In_ LPCWSTR cmdArgs,
-                            _In_ LPCWSTR workDirectory, _In_ STARTUPINFOW &si,
-                            _Inout_ PROCESS_INFORMATION &pi) {
+HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCWSTR workDirectory)
+{
+  STARTUPINFOW si;
+  PROCESS_INFORMATION pi;
+  SecureZeroMemory(&si, sizeof(si));
+  SecureZeroMemory(&pi, sizeof(pi));
+  si.cb = sizeof(si);
   HANDLE hShellProcess = nullptr, hShellProcessToken = nullptr,
-         hPrimaryToken = nullptr;
+  hPrimaryToken = nullptr;
   HWND hwnd = nullptr;
   DWORD dwPID = 0;
   HRESULT hr = S_OK;
   BOOL ret = TRUE;
   DWORD dwLastErr;
-
-  // Enable SeIncreaseQuotaPrivilege in this process.  (This won't work if
-  // current process is not elevated.)
-  HANDLE hProcessToken = nullptr;
-  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES,
-                        &hProcessToken)) {
-    return HRESULT(1);
-  } else {
-    TOKEN_PRIVILEGES tkp;
-    tkp.PrivilegeCount = 1;
-    LookupPrivilegeValueW(nullptr, SE_INCREASE_QUOTA_NAME,
-                          &tkp.Privileges[0].Luid);
-    tkp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
-    AdjustTokenPrivileges(hProcessToken, FALSE, &tkp, 0, nullptr, nullptr);
-    dwLastErr = GetLastError();
-    CloseHandle(hProcessToken);
-    if (ERROR_SUCCESS != dwLastErr) {
-      return HRESULT(2);
-    }
-  }
-
-  // Get an HWND representing the desktop shell.
-  // CAVEATS:  This will fail if the shell is not running (crashed or
-  // terminated), or the default shell has been
-  // replaced with a custom shell.  This also won't return what you probably
-  // want if Explorer has been terminated and
-  // restarted elevated.
   hwnd = GetShellWindow();
   if (nullptr == hwnd) {
     return HRESULT(3);

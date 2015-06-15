@@ -177,7 +177,7 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCW
   SecureZeroMemory(&pi, sizeof(pi));
   si.cb = sizeof(si);
   HANDLE hShellProcess = nullptr, hShellProcessToken = nullptr,
-         hPrimaryToken = nullptr;
+  hPrimaryToken = nullptr;
   HWND hwnd = nullptr;
   DWORD dwPID = 0;
   HRESULT hr = S_OK;
@@ -186,7 +186,7 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCW
 
   // Enable SeIncreaseQuotaPrivilege in this process.  (This won't work if
   // current process is not elevated.)
-  HANDLE hProcessToken = nullptr;
+  /*HANDLE hProcessToken = nullptr;
   if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES,
                         &hProcessToken)) {
     return HRESULT(1);
@@ -202,7 +202,7 @@ HRESULT WINAPI ProcessLauncherExplorerLevel(LPCWSTR exePath,LPCWSTR cmdArgs,LPCW
     if (ERROR_SUCCESS != dwLastErr) {
       return HRESULT(2);
     }
-  }
+  }*/
 
   // Get an HWND representing the desktop shell.
   // CAVEATS:  This will fail if the shell is not running (crashed or
