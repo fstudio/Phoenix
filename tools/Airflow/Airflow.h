@@ -92,8 +92,18 @@ bool AirflowFolderOpenWindow(
 ///Asynchronous Notify Message Id
 #define WM_ASYNCHRONOUS_NOTIFY_MSG WM_APP+1
 
-UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath);
+UINT WINAPI RecoverMicrosoftStandaloneUpdatePackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath);
+UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
+UINT WINAPI RecoverInstallerPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
+UINT WINAPI RecoverInstallerPackageWithDB(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
 bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize);
+
+typedef UINT(WINAPI* RecoverFunction)(const wchar_t*,const wchar_t*);
+
+typedef struct RecoverRoute{
+    int reId;
+    RecoverFunction action;
+}RecoverRoute;
 
 #endif
 

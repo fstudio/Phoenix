@@ -11,6 +11,20 @@
 #include <lzexpand.h>
 #include <SetupAPI.h>
 
+
+/*
+
+WINSETUPAPI
+DWORD
+WINAPI
+SetupDecompressOrCopyFileW(
+    _In_ PCWSTR SourceFileName,
+    _In_ PCWSTR TargetFileName,
+    _In_opt_ PUINT CompressionType
+    );
+
+*/
+
 static UINT CALLBACK RecoverCallBack( PVOID context, UINT notification, UINT_PTR param1, UINT_PTR param2 )
 {
     FILE_IN_CABINET_INFO_W *info = reinterpret_cast<FILE_IN_CABINET_INFO_W *>(param1);
@@ -29,8 +43,8 @@ static UINT CALLBACK RecoverCallBack( PVOID context, UINT notification, UINT_PTR
 }
 
 
-UINT WINAPI RecoverMicrosoftStandaloneUpdatePackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath)
-{
+UINT WINAPI RecoverMicrosoftStandaloneUpdatePackage(const wchar_t *szPackagePath,
+    const wchar_t *szRecoverPath){
     if(_wcsicmp(szPackagePath,szRecoverPath)==0)
     {
         wprintf(L"Cannot extract file to itself!\nPackage: %ls \nRecover: %ls\n",szPackagePath,szRecoverPath);
@@ -39,7 +53,24 @@ UINT WINAPI RecoverMicrosoftStandaloneUpdatePackage(const wchar_t *szPackagePath
     return 0;
 }
 
-UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,wchar_t *szRecoverPath)
+class GetTmpChar{
+private:
+    wchar_t *buffer;
+public:
+    GetTmpChar(const wchar_t *str):buffer(nullptr)
+    {
+        buffer=_wcsdup(str);
+    }
+    ~GetTmpChar(){
+        if(buffer)
+            free(buffer);
+    }
+    wchar_t *Get(){
+        return buffer;
+    }
+};
+
+UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath)
 {
     if(_wcsicmp(szPackagePath,szRecoverPath)==0)
     {
@@ -57,7 +88,8 @@ UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,wchar_t *szRecoverPat
     {
         case FILE_COMPRESSION_MSZIP:
         {
-            if(!SetupIterateCabinetW(szPackagePath,0,RecoverCallBack,szRecoverPath))
+            GetTmpChar tmpchar(szRecoverPath);
+            if(!SetupIterateCabinetW(szPackagePath,0,RecoverCallBack,tmpchar.Get()))
             {
                 wprintf(L"cabinet extration failed: %ls\n",szPackagePath);
                 return 1;

@@ -225,6 +225,37 @@ bool DoCheckerPackagePath(std::wstring &strPack,std::wstring &strDir)
     return true;
 }
 
+/*
+#define FILE_COMPRESSION_NONE       0
+#define FILE_COMPRESSION_WINLZA     1
+#define FILE_COMPRESSION_MSZIP      2
+#define FILE_COMPRESSION_NTCAB      3
+*/
+
+static RecoverRoute routeList[]={
+    { PACKAGE_MAGIC_UNKNOWN,nullptr },
+    { PM_MICROSOFT_INSTALLER_DB,RecoverInstallerPackage},
+    { PM_MICROSOFT_CAB_LZ,RecoverCABPackage},
+    { PM_MICROSOFT_CAB_MSZIP,RecoverCABPackage},
+    { PM_MICROSOFT_CAB_NTCAB,RecoverCABPackage},
+    { PM_INSTALLSHIELD_CAB,nullptr},
+};
+
+UINT WINAPI RecoverActionExectue(int magic,const wchar_t *rawin,const wchar_t *reout)
+{
+    for(auto &i:routeList)
+    {
+        if(i.reId==magic)
+        {
+            if(i.action!=nullptr){
+                return i.action(rawin,reout);
+            }else{
+                return 1;
+            }
+        }
+    }
+    return 1;
+}
 
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)

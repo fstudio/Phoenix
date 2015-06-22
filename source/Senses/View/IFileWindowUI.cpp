@@ -30,7 +30,7 @@ const FilterSpec filterSpec[] =
 void ReportErrorMessage(LPCWSTR pszFunction,HRESULT hr)
 {
     const wchar_t *extMessage= _T("For more information about this tool, ")
-        _T("Visit: <a href=\"https://github.com/forcegroup\">Force\xAEStudio</a>");
+        _T("Visit: <a href=\"https://github.com/fstudio\">Force\xAEStudio</a>");
     wchar_t szBuffer[65535]={0};
     if(SUCCEEDED(StringCchPrintf(szBuffer,ARRAYSIZE(szBuffer),L"Call: %s Failed w/hr 0x%08lx ,Please Checker Error Code!",pszFunction,hr)))
     {
