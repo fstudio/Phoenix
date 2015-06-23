@@ -12,13 +12,6 @@
 #include <CommCtrl.h>
 #include <iostream>
 
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-#ifndef _UNICODE
-#define _UNICODE
-#endif
 
 static const wchar_t * stdioimage()
 {

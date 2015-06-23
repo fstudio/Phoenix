@@ -32,16 +32,13 @@
 *.pidb
 *.svclog
 *.scc
-UWA/.vs/*
-UWA/ipch/*
-UWA/Debug/*
-UWA/Release/*
-UWA/x64/*
-UWA/ARM/*
-UWA/ImmersiveEditor/Debug/*
-UWA/ImmersiveEditor/Release/*
-UWA/ImmersiveEditor/x64/*
-UWA/ImmersiveEditor/ARM/*
+*.suo
+.vs
+ipch
+Debug
+Release
+x64
+ARM
 UWA/ImmersiveEditor/Generated Files/*
 
 
