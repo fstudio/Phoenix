@@ -89,36 +89,34 @@ private:
 public:
     ConsoleInitializeEx(){
     }
-	bool Init(){
-		//if (AttachConsole(ATTACH_PARENT_PROCESS)){
-		BOOL bRet = TRUE;
-		if (AttachConsole(ATTACH_PARENT_PROCESS)!=TRUE){
-			bRet = AllocConsole();
-		}
-		if (bRet){
-			FILE *in, *out, *err;
-			auto er = freopen_s(&in, "CONIN$", "r+t", stdin);
-			er = freopen_s(&out, "CONOUT$", "w+t", stdout);
-			er = freopen_s(&err, "CONOUT$", "w", stderr);
-			//SetConsoleOutputCP(CP_ACP);
-			auto lcid = GetSystemDefaultLCID();
-			wchar_t szBuf[80] = { 0 };
-			LCIDToLocaleName(lcid, szBuf, LOCALE_NAME_MAX_LENGTH, LOCALE_ALLOW_NEUTRAL_NAMES);
-			_wsetlocale(LC_ALL, szBuf);
-			//setlocale(LC_ALL, "zh-CN");
-			isOpen = true;
-		}
-		else{
-			isOpen = false;
-		}
-		return isOpen;
-	}
+    bool Init(){
+        BOOL bRet = TRUE;
+        if (AttachConsole(ATTACH_PARENT_PROCESS)!=TRUE){
+            bRet = AllocConsole();
+        }
+        if (bRet){
+            FILE *in, *out, *err;
+            auto er = freopen_s(&in, "CONIN$", "r+t", stdin);
+            er = freopen_s(&out, "CONOUT$", "w+t", stdout);
+            er = freopen_s(&err, "CONOUT$", "w", stderr);
+            //SetConsoleOutputCP(CP_ACP);
+            auto lcid = GetSystemDefaultLCID();
+            wchar_t szBuf[80] = { 0 };
+            LCIDToLocaleName(lcid, szBuf, LOCALE_NAME_MAX_LENGTH, LOCALE_ALLOW_NEUTRAL_NAMES);
+            _wsetlocale(LC_ALL, szBuf);
+            //setlocale(LC_ALL, "zh-CN");
+            isOpen = true;
+        }else{
+            isOpen = false;
+        }
+        return isOpen;
+    }
     ~ConsoleInitializeEx()
     {
         if(isOpen)
         {
             printf("Plase Input Enter...\n");
-            system("pause");
+			getchar();
             fflush(stdout);
             fclose(stdout);
             fclose(stdin);
@@ -308,7 +306,7 @@ DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
         return 2;
     }
     auto type=FindPackageMagic(airflowst.rawfile.c_str());
-	RecoverActionExectue(type, airflowst.rawfile.c_str(), airflowst.outdir.c_str());
+    RecoverActionExectue(type, airflowst.rawfile.c_str(), airflowst.outdir.c_str());
     return 0;
 }
 
@@ -320,8 +318,8 @@ DWORD WINAPI AirflowZendMethod(LPVOID lParam)
     auto data=static_cast<AirflowTaskData *>(lParam);
     ///MessageBoxW(data->hWnd,L"AirflowZendMethod",data->rawfile.c_str(),MB_OK);
     auto type=FindPackageMagic(data->rawfile.c_str());
-	RecoverActionExectue(type, data->rawfile.c_str(), data->outdir.c_str());
-    SendMessage(data->hWnd,data->uMsgid,0,0);
+    RecoverActionExectue(type, data->rawfile.c_str(), data->outdir.c_str());
+    SendMessageW(data->hWnd,data->uMsgid,0,0);
     delete data;
     return 0;
 }
