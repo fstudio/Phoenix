@@ -83,24 +83,37 @@ int FindPackageMagic(const wchar_t *file)
     return PACKAGE_MAGIC_UNKNOWN;
 }
 
-class ConsoleAttachEx{
+class ConsoleInitializeEx{
 private:
     bool isOpen;
 public:
-    ConsoleAttachEx(){
-        //AttachConsole(ATTACH_PARENT_PROCESS)
-        if(AllocConsole())
-        {
-            FILE *in, *out ,*err;
-            auto er=freopen_s(&in,"CONIN$" , "r+t" , stdin);
-            er=freopen_s(&out,"CONOUT$" , "w+t" , stdout);
-            er=freopen_s(&err,"CONOUT$", "w", stderr);
-            isOpen=true;
-        }else{
-            isOpen=false;
-        }
+    ConsoleInitializeEx(){
     }
-    ~ConsoleAttachEx()
+	bool Init(){
+		//if (AttachConsole(ATTACH_PARENT_PROCESS)){
+		BOOL bRet = TRUE;
+		if (AttachConsole(ATTACH_PARENT_PROCESS)!=TRUE){
+			bRet = AllocConsole();
+		}
+		if (bRet){
+			FILE *in, *out, *err;
+			auto er = freopen_s(&in, "CONIN$", "r+t", stdin);
+			er = freopen_s(&out, "CONOUT$", "w+t", stdout);
+			er = freopen_s(&err, "CONOUT$", "w", stderr);
+			//SetConsoleOutputCP(CP_ACP);
+			auto lcid = GetSystemDefaultLCID();
+			wchar_t szBuf[80] = { 0 };
+			LCIDToLocaleName(lcid, szBuf, LOCALE_NAME_MAX_LENGTH, LOCALE_ALLOW_NEUTRAL_NAMES);
+			_wsetlocale(LC_ALL, szBuf);
+			//setlocale(LC_ALL, "zh-CN");
+			isOpen = true;
+		}
+		else{
+			isOpen = false;
+		}
+		return isOpen;
+	}
+    ~ConsoleInitializeEx()
     {
         if(isOpen)
         {
@@ -126,8 +139,9 @@ bool StringFindSlash(const wchar_t *str)
     return true;
 }
 
-//GetFullPathNameW Fixme
-bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize)
+
+
+bool WINAPI CheckPackageAfterLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize)
 {
     errno_t  err;
     wchar_t szbuffer[4096]={0};
@@ -262,7 +276,9 @@ UINT WINAPI RecoverActionExectue(int magic,const wchar_t *rawin,const wchar_t *r
 //////when Airflow no UI,this call will run as
 DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
 {
-    ConsoleAttachEx con;
+    ConsoleInitializeEx con;
+	if (!con.Init())
+		return 2;///Console Initialize failed
     if(airflowst.cmdMode==CMD_PRINT_VERSION)
     {
         std::cout<<"Airflow Recover Windows Installer and Update Package File"<<std::endl;
@@ -270,6 +286,8 @@ DWORD WINAPI AirflowZendMethodNonUI(AirflowStructure &airflowst)
         return 0;
     }else if(airflowst.cmdMode==CMD_PRINT_USAGE)
     {
+		//wprintf(AIRFLOW_USAGE_STRING);
+		//WriteConsoleOutputW()
         std::wcout<<AIRFLOW_USAGE_STRING<<std::endl;
         return 0;
     }

@@ -103,7 +103,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
                     SendDlgItemMessage(hWnd,IDC_PROCESS_RATE,PBM_SETPOS ,50,0L);
                     GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FILEURL),szPackagePath,4096);
                     GetWindowText(GetDlgItem(hWnd,IDC_EDIT_FOLDER),szRecover,4096);
-                    if(CheckPackageAndLayout(szPackagePath,4096,szRecover,4096)){
+                    if(CheckPackageAfterLayout(szPackagePath,4096,szRecover,4096)){
                         AirflowTaskData *data=new AirflowTaskData();
                         data->isForce=false;
                         data->sendRate=true;

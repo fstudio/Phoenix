@@ -96,7 +96,7 @@ UINT WINAPI RecoverMicrosoftStandaloneUpdatePackage(const wchar_t *szPackagePath
 UINT WINAPI RecoverCABPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
 UINT WINAPI RecoverInstallerPackage(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
 UINT WINAPI RecoverInstallerPackageWithDB(const wchar_t *szPackagePath,const wchar_t *szRecoverPath);
-bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize);
+bool WINAPI CheckPackageAfterLayout(wchar_t *szPackagePath, size_t pksize, wchar_t *szRecover, size_t resize);
 
 typedef UINT(WINAPI* RecoverFunction)(const wchar_t*,const wchar_t*);
 
@@ -104,6 +104,10 @@ typedef struct RecoverRoute{
     int reId;
     RecoverFunction action;
 }RecoverRoute;
+
+
+
+
 
 #endif
 
