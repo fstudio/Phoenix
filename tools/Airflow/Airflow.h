@@ -34,11 +34,11 @@
 #define AIRFLOW_USAGE_STRING L"Airflow Recover Windows Installer and Update Package\n\
 Usage: Airflow [options]\n\
     -console\tRun Airflow with Console Mode\n\
-    -help\t\tPrint Help and Exit(cui mode)\n\
+    -help\tPrint Help and Exit(cui mode)\n\
     -version\tPrint Airflow version and exit(cui mode)\n\
-    -debug\t\tRun Airflow with Debug Mode\n\
-    -File\t\tSet Open Installer or Update Package name\n\
-    -Out\t\tSet Extract Folder\n"
+    -debug\tRun Airflow with Debug Mode\n\
+    -File\tSet Open Installer or Update Package name\n\
+    -Out\tSet Extract Folder\n"
 
 #define AIRFLOW_USAGE_STRING_GUI L"Airflow Recover Windows Installer and Update Package\n\
 Usage: Airflow [options]\n\

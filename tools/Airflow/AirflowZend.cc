@@ -125,6 +125,8 @@ bool StringFindSlash(const wchar_t *str)
     }
     return true;
 }
+
+//GetFullPathNameW Fixme
 bool CheckPackageAndLayout(wchar_t *szPackagePath,size_t pksize,wchar_t *szRecover,size_t resize)
 {
     errno_t  err;

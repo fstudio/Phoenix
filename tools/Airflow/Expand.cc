@@ -12,18 +12,6 @@
 #include <SetupAPI.h>
 
 
-/*
-
-WINSETUPAPI
-DWORD
-WINAPI
-SetupDecompressOrCopyFileW(
-    _In_ PCWSTR SourceFileName,
-    _In_ PCWSTR TargetFileName,
-    _In_opt_ PUINT CompressionType
-    );
-
-*/
 
 static UINT CALLBACK RecoverCallBack( PVOID context, UINT notification, UINT_PTR param1, UINT_PTR param2 )
 {
