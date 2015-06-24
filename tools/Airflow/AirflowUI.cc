@@ -11,7 +11,7 @@
 #include <Prsht.h>
 #include <CommCtrl.h>
 #include <iostream>
-
+#include <Shlwapi.h>
 
 static const wchar_t * stdioimage()
 {
@@ -42,7 +42,8 @@ public:
     }
 };
 
-
+const LPCWSTR PackageSubffix[] = {L".msu", L".msi", L".cab"};
+std::vector<std::wstring> vFileList;
 #define MAXPAGES 5
 
 INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
@@ -71,6 +72,7 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             {
                  SetWindowTextW(GetDlgItem(hWnd,IDC_EDIT_FOLDER),pdata->outdir.c_str());
             }
+            DragAcceptFiles(hWnd, TRUE);
         }
         break;
         case WM_COMMAND:{
@@ -153,6 +155,28 @@ INT_PTR WINAPI WindowMessageProcess(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lPa
             EnableWindow(GetDlgItem(hWnd,IDC_BUTTON_OPENFILE),TRUE);
             EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FOLDER),TRUE);
             EnableWindow(GetDlgItem(hWnd,IDC_EDIT_FILEURL),TRUE);
+        }
+        break;
+        case WM_DROPFILES:
+        {
+            HDROP hDrop = (HDROP)wParam;
+            UINT nFileNum = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0); // 拖拽文件个数
+            WCHAR strFileName[MAX_PATH];
+            for (UINT i = 0; i < nFileNum; i++)
+            {
+                DragQueryFileW(hDrop, i, strFileName, MAX_PATH);//获得拖曳的文件名
+                if(PathFindSuffixArrayW(strFileName,PackageSubffix,ARRAYSIZE(PackageSubffix)))
+                {
+                    //MessageBoxW(hWnd,L"Have",strFileName,MB_OK);
+                    vFileList.push_back(strFileName);
+                }
+                std::cout<<vFileList.size()<<std::endl;
+                if(!vFileList.empty()){
+                    SetWindowTextW(GetDlgItem(hWnd,IDC_EDIT_FILEURL),vFileList[0].c_str());
+                }
+            }
+            DragFinish(hDrop);      //释放hDrop
+            InvalidateRect(hWnd, NULL, TRUE);
         }
         break;
         case WM_NOTIFY:
