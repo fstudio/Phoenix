@@ -9,6 +9,8 @@
 #define PATHOR 0
 #define BUILDTM 0
 
+//Negotiate Basic
+
 #define SRV_NAME_VERSION L"GitSrv/1.0 Git-HTTP-Backend"
 
 #endif
