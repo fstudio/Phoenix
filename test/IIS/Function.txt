@@ -1,0 +1,31 @@
+
+
+https://msdn.microsoft.com/en-us/library/dd692873.aspx
+HRESULT Compress(
+   IN  OUT   PVOID context,
+   IN  CONST BYTE *input_buffer,  
+   IN  LONG  input_buffer_size,
+   IN  PBYTE output_buffer,
+   IN  LONG  output_buffer_size,
+   OUT PLONG input_used  
+   OUT PLONG output_used,
+   IN  INT   compression_level
+);
+
+https://msdn.microsoft.com/en-us/library/dd692871.aspx
+
+HRESULT CreateCompression(
+   OUT  PVOID  *context,
+   IN   ULONG  reserved
+);
+
+https://msdn.microsoft.com/en-us/library/dd692869.aspx
+void DeInitCompression();
+
+https://msdn.microsoft.com/en-us/library/dd692868.aspx
+HRESULT InitCompression();
+
+https://msdn.microsoft.com/en-us/library/dd692870.aspx
+HRESULT ResetCompression(
+   IN  OUT  PVOID  context
+);

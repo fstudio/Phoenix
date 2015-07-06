@@ -1,0 +1,99 @@
+Hi i have a requirement where a cpp file should load a dll viz gzip.dll.then the cpp should call few methods in the dll.well im able to call the methods with no parameters but im unable to call the methods with parameters.if im trying to call methods with parameters i am getting memory exception in runtime.the program compiles very fine.i actually replicated the code in vb where a similair call has been made to the methods in gzip.dll for compression and decompression.but in cpp it doesnt work for calling these methods with the exact parameters.may be my code has a flaw.
+
+
+Please c the file.u can find the gzip.dll from C:\WINNT\system32\gzip.dll
+
+Help with Code Tags cplusplus Syntax (Toggle Plain Text) 
+#include <windows.h>
+#include <stdio.h>
+int main()
+{
+
+HINSTANCE hGetProcIDDLL = LoadLibrary("C:\\WINNT\\system32\\gzip.dll");
+printf("dll loaded");
+/* get pointer to the function in the dll*/
+FARPROC lpfnGetProcessID = GetProcAddress(HMODULE (hGetProcIDDLL),"Decompress"); 
+FARPROC lpfnGetProcessID1 = GetProcAddress(HMODULE (hGetProcIDDLL),"InitDecompression"); 
+FARPROC lpfnGetProcessID2 = GetProcAddress(HMODULE (hGetProcIDDLL),"CreateDecompression");
+FARPROC lpfnGetProcessID3 = GetProcAddress(HMODULE (hGetProcIDDLL),"InitCompression");
+FARPROC lpfnGetProcessID4 = GetProcAddress(HMODULE (hGetProcIDDLL),"CopyMemory");
+
+
+// Call CopyMemory(arrDestination(destbeginPos), arrSource(srcbeginPos), length)
+
+
+//	printf("Hello World long decompress!\n");
+//printf(1);
+
+typedef long (__stdcall * pICFUNC)(long, BYTE[],long,BYTE[],long,long,long);
+typedef long (__stdcall * pICFUNC1)();
+typedef long (__stdcall * pICFUNC2)(long,int);
+typedef long (__stdcall * pICFUNC3)();
+typedef long (__stdcall * pICFUNC4)(BYTE[],BYTE[],long);
+
+typedef UINT (CALLBACK* CopyMemory)(BYTE[],BYTE[],long);
+CopyMemory ptrCopyMemory;
+ptrCopyMemory = (CopyMemory)GetProcAddress(hGetProcIDDLL,"CopyMemory");
+typedef UINT (CALLBACK* InitDecompression)();
+InitDecompression ptrInitDecompression;
+ptrInitDecompression = (InitDecompression)GetProcAddress(hGetProcIDDLL,"InitDecompression");
+//ReturnVal = ptrLockWorkStation();
+ptrInitDecompression();
+printf("Hello World long decompress!\n");
+
+
+pICFUNC MyFunction;
+MyFunction = pICFUNC(lpfnGetProcessID);
+pICFUNC1 MyFunction1;
+MyFunction1 = pICFUNC1(lpfnGetProcessID1);
+pICFUNC2 MyFunction2;
+MyFunction2 = pICFUNC2(lpfnGetProcessID2);
+pICFUNC3 MyFunction3;
+MyFunction3 = pICFUNC3(lpfnGetProcessID3);
+pICFUNC4 MyFunction4;
+MyFunction4 = pICFUNC4(lpfnGetProcessID4);
+
+
+//BYTE[] a=NewByteArray(jb);
+
+unsigned long handle=0;long max=1024;long inu=0;long outu=0;int GZIP_LVL=1;
+
+
+BYTE *AB={(unsigned char *)"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"};
+//	int li= strlen( (char*)AB);
+int orglen=100;
+
+//printf("%l", li);
+
+
+BYTE *oB=new BYTE[43822];
+CopyMemory(AB,oB,234);	
+printf("function defined and parameters ready"+orglen,"%l",orglen);
+printf("function defined and parameters ready");
+/* The actual call to the function contained in the dll */
+
+handle=MyFunction1();	
+//handle=MyFunction4(AB,oB,inu);
+handle=MyFunction3();	
+printf("InitDecompression & InitCompression");
+MyFunction2(handle,GZIP_LVL);//Call CreateDecompression(handle, GZIP_LVL);
+//handle=MyFunction2(handle,GZIP_LVL);
+printf("CreateDecompression");
+
+long intMyReturnVal =0;
+do
+{//	int
+
+intMyReturnVal=MyFunction(handle, AB, orglen, oB, max, inu, outu);
+orglen = orglen - inu;
+}
+while(intMyReturnVal=0);
+
+/* Release the Dll */
+FreeLibrary(hGetProcIDDLL);
+printf("Hello World long decompress!\n");
+/* The return val from the dll */
+return intMyReturnVal; 
+}
+
+

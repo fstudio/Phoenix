@@ -72,6 +72,25 @@ BOOL WINAPI PasswordEncodingBase64(const char* name,const char* pwd,std::wstring
     return bRet;
 }
 
+
+class BBuffer{
+private:
+    BYET *Ptr;
+public:
+    BBuffer(unsigned size)
+    {
+        Ptr=malloc(sizeof(BYTE)*size);
+    }
+    ~BBuffer(){
+        if(Ptr)
+            free(Ptr);
+    }
+    BYTE* get(){
+        return this->Ptr;
+    }
+};
+
+
  /*************
 <NULL> is \x00
 00dbadb4536c655707a637aa74aef0d899ef57b28a1d HEAD<NULL>multi_ack thin-pack side-band side-band-64k ofs-delta shallow no-progress include-tag multi_ack_detailed no-done symref=HEAD:refs/heads/master agent=git/1.9.5.msysgit.1
@@ -85,43 +104,17 @@ BOOL WINAPI PasswordEncodingBase64(const char* name,const char* pwd,std::wstring
 00000009done
 
 ************************** */
-    
-bool RefsLineParse(std::wstring &line,std::wstring &id)
-{
-    wchar_t buffer[5]={0};
-    swprintf(buffer,4,L"%s",line.c_str());
-    if(line.size>44){
-        id=line.substr(4,40);   
-    }
-    return true;
-}
 
-BOOL WINAPI ResolveContent(std::wstring &raw,std::wstring &out)
+BOOL WINAPI ResolveContent(const BYTE* raw,unsigned len,BYTE *buffer,unsigned *bufferSize)
 {
-    static std::wstringstream sstr;
-    auto sz=raw.size();
-    std::wstring line;
-    std::wstring oid;
-    std::vector<std::wstring> oidv;
-    for(wchar_t &c:raw)
-    {
-        if(c=='\r')
-        {
-            if(RefsLineParse(line,oid))
-            {
-                oidv.push_back(oid);
-            }
-            line.clear();
-        }
-        line.append(c);
-    }
-    auto len=sizeof(L"multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0")/sizeof(wchar_t);
-    sstr<<L"008awant "<<<<oidv.at(0)<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0";
-    for(auto i=1;i<oidv.size();i++)
-        {
-            sstr<<L"0032want "<<oidv[i]<<L"\r\n";
-        }
-    sstr<<L"00000009done";
+    static std::stringstream sstr;
+    char buffer[1024]={0};
+    char num[10]={0};
+    mencpy(num,4,raw);
+    unsigned linelen=0;
+    sscanf(num,"%x",&linelen);
+    sstr<<"008awant "<<<<"uid1"<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0";
+    sstr<<"00000009done";
     return TRUE;
 }
 
@@ -131,7 +124,7 @@ private:
     std::wstring base64Info;
     std::wstring murl;
     bool RequestGET();
-    bool RequestPOST(URLStruct &us,std::wstring &content);
+    bool RequestPOST(URLStruct &us,BYTE* content,unsigned len);
 public:
     CloneStep(std::wstring url):murl(url){}
     CloneStep(){}
@@ -164,12 +157,13 @@ bool CloneStep::RequestGET()
     client.SetAdditionalRequestHeaders(headers);
     client.SendHttpRequest();
     std::wstring httpResponseHeader=client.GetReponseHeader();
-    std::wstring httpResponseContent=client.GetReponseContent();
+    auto raw=client.GetRawResponseContent();
+    auto size=client.GetRawResponseContentLength();
     wprintf(L"Response Header:\n%s\n",httpResponseHeader.c_str());
-    wprintf(L"\n\nResponse Body:\n%s\n",httpResponseContent);
-    std::wstring refs;
-    if(ResolveContent(httpResponseContent,refs)){
-        return this->RequestPOST(urlsu,refs);
+    BBuffer buffer(size);
+    unsigned bufferSize=0;
+    if(ResolveContent(raw,size,buffer,&bufferSize)){
+        return this->RequestPOST(buffer,bufferSize);
     }
     wprintf(L"Faied Parser Response Content");
     return false;
@@ -191,7 +185,7 @@ bool ProgressProc(double progress)
     return true;
 }
 
-bool CloneStep::RequestPOST(URLStruct &us,std::wstring &content)
+bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
 {
     /*
     Content-Type: application/x-git-upload-pack-request
@@ -207,7 +201,7 @@ bool CloneStep::RequestPOST(URLStruct &us,std::wstring &content)
     client.SetRequireValidSslCertificates(us.isSSL);
     client.SetAdditionalRequestHeaders(headers);
     client.SendHttpRequest(L"POST");
-    
+    client.SetAdditionalDataToSend(content,len);
     wstring httpResponseHeader = client.GetResponseHeader();
     wstring httpResponseContent = client.GetResponseContent();
     return true;
