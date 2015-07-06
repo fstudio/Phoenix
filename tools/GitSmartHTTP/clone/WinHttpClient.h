@@ -19,7 +19,7 @@ using namespace std;
 typedef bool (*PROGRESSPROC)(double);
 
 static const unsigned int INT_RETRYTIMES = 3;
-static wchar_t *SZ_AGENT = L"WinHttpClient";
+static wchar_t *SZ_AGENT = L"git/2.5.0.Simulator.0";
 static const int INT_BUFFERSIZE = 10240;    // Initial 10 KB temporary buffer, double if it is not enough.
 
 class WinHttpClient
