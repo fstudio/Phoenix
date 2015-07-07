@@ -167,6 +167,11 @@ public:
         murl.assign(url);
         return true;
     }
+    bool SetAuthInfo(std::wstring &binfo)
+    {
+        this->base64Info=binfo;
+        return this->base64Info.size()>10?;
+    }
     int Start();
 };
 
@@ -252,13 +257,19 @@ int CloneStep::Start()
 bool Initialize()
 {
     auto lcid=GetSystemDefaultLCID();
-    wchar_t szBuf[80]={0};
-    LCIDToLocaleName(lcid,szBuf,LOCALE_NAME_MAX_LENGTH,LOCALE_ALLOW_NEUTRAL_NAMES);
-    _wsetlocale(LC_ALL,szBuf);
+    wchar_t localeBuffer[80]={0};
+    LCIDToLocaleName(lcid,localeBuffer,LOCALE_NAME_MAX_LENGTH,LOCALE_ALLOW_NEUTRAL_NAMES);
+    _wsetlocale(LC_ALL,localeBuffer);
     return true;
 }
 
+//git-clone-stress -input repo.list -email some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
+    ///
+    Initialize();
+    bool isAuthEnable=false;
+    CloneStep cloneStep;
+
     return 0;
 }
