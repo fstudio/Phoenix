@@ -79,7 +79,7 @@ private:
 public:
     BBuffer(unsigned size)
     {
-        Ptr=malloc(sizeof(BYTE)*size);
+        Ptr=(BYTE*)malloc(sizeof(BYTE)*size);
     }
     ~BBuffer(){
         if(Ptr)
@@ -93,9 +93,14 @@ public:
 
  /*************
 <NULL> is \x00
-00dbadb4536c655707a637aa74aef0d899ef57b28a1d HEAD<NULL>multi_ack thin-pack side-band side-band-64k ofs-delta shallow no-progress include-tag multi_ack_detailed no-done symref=HEAD:refs/heads/master agent=git/1.9.5.msysgit.1
-003fadb4536c655707a637aa74aef0d899ef57b28a1d refs/heads/master
-0048adb4536c655707a637aa74aef0d899ef57b28a1d refs/remotes/origin/master
+001e# service=git-upload-pack
+000000d16b608d3d4c01a5933342823a0cdfde90f8753301 HEADmulti_ack thin-pack side-band side-band-64k ofs-delta shallow no-progress include-tag multi_ack_detailed no-done symref=HEAD:refs/heads/master agent=git/1.9.1
+00410d2661d52ca24946d3a6945424f71fd1c0f8dcb8 refs/heads/gh-pages
+003f6b608d3d4c01a5933342823a0cdfde90f8753301 refs/heads/master
+003be8ad4c2d0953b1cb3d7a01e27db7a20d51e85168 refs/tags/1.0
+003d9e0f6cc8b1ff90c12bd301bfe05b58671fb474e4 refs/tags/1.0.2
+003d6373e88d0680a7e22df40637346c55e33c467aff refs/tags/1.0.3
+003ea98d1eb56a704f29cf7f8b7a74b4a5c53371d1f8 refs/tags/v1.0.4
 0000
 
 008awant adb4536c655707a637aa74aef0d899ef57b28a1d multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0
@@ -107,14 +112,37 @@ public:
 
 BOOL WINAPI ResolveContent(const BYTE* raw,unsigned len,BYTE *buffer,unsigned *bufferSize)
 {
+    auto end=raw+len;
+    auto begin=raw;
+    BYTE line[2048]={0};
+    unsigned ll=0;
+    BYTE fline[41]={0};
     static std::stringstream sstr;
-    char buffer[1024]={0};
-    char num[10]={0};
-    mencpy(num,4,raw);
-    unsigned linelen=0;
-    sscanf(num,"%x",&linelen);
-    sstr<<"008awant "<<<<"uid1"<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0";
-    sstr<<"00000009done";
+    while(begin++<end&&ll<2047)
+    {
+        if(begin==0x0A)
+        {
+            if(ll>70&&memcmp(line,"0000",4)==0)
+            {
+                auto oid=const_cast<BYTE*>(line+8);
+                memcpy(fline,oid,40);
+                sstr<<"008awant "<<static_cast<char*>(fline)<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0\n";
+            }else if(ll>56){
+                auto oid=const_cast<BYTE*>(line+4);
+                memcpy(fline,oid,40);
+                sstr<<"0032want "<<static_cast<char*>(fline)<<"\n";
+            }else{
+                /////Not do more
+            }
+            ll=0;
+        }else{
+            line[ll]=*begin;
+            ll++;
+        }
+    }   
+    sstr<<"00000009done\n";
+    memcmp(buffer,sstr.str.c_str(),sstr.str.size());
+    *bufferSize=sstr.str.size();
     return TRUE;
 }
 
