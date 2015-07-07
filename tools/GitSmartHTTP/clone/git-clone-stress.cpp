@@ -1,13 +1,20 @@
 /*
 */
 //#include <Windows.h>
-#include <string>
+#ifndef UNICODE
+#define UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 //#include <winhttp.h>
 //Base64 Encoding
+#include "WinHttpClient.h"
 #include <wincrypt.h>
 #include <stdint.h>
+#include <sstream>
 #include <vector>
-#include "WinHttpClient.h"
+
 
 #pragma comment(lib,"crypt32.lib")
 
@@ -15,7 +22,7 @@ struct URLStruct{
     std::wstring host;
     std::wstring rawpath;
     bool isSSL;
-    uint32_t port;
+    int port;
 };
 
 #define USER_AGENT L"git/2.5.0.Simulator.0"
@@ -24,7 +31,7 @@ int DefaultPort(const wchar_t * scheme);
 bool URLParse(const wchar_t* uri,
     std::wstring& scheme,
     std::wstring& hostname,
-    int& port,
+    int &port,
     std::wstring& path);
 
 /*
@@ -75,7 +82,7 @@ BOOL WINAPI PasswordEncodingBase64(const char* name,const char* pwd,std::wstring
 
 class BBuffer{
 private:
-    BYET *Ptr;
+    BYTE *Ptr;
 public:
     BBuffer(unsigned size)
     {
@@ -120,17 +127,17 @@ BOOL WINAPI ResolveContent(const BYTE* raw,unsigned len,BYTE *buffer,unsigned *b
     static std::stringstream sstr;
     while(begin++<end&&ll<2047)
     {
-        if(begin==0x0A)
+        if(*begin==0x0A)
         {
             if(ll>70&&memcmp(line,"0000",4)==0)
             {
                 auto oid=const_cast<BYTE*>(line+8);
                 memcpy(fline,oid,40);
-                sstr<<"008awant "<<static_cast<char*>(fline)<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0\n";
+                sstr<<"008awant "<<fline<<L" multi_ack_detailed no-done side-band-64k thin-pack ofs-delta agent=git/2.5.0.Simulator.0\n";
             }else if(ll>56){
                 auto oid=const_cast<BYTE*>(line+4);
                 memcpy(fline,oid,40);
-                sstr<<"0032want "<<static_cast<char*>(fline)<<"\n";
+                sstr<<"0032want "<<fline<<"\n";
             }else{
                 /////Not do more
             }
@@ -139,10 +146,10 @@ BOOL WINAPI ResolveContent(const BYTE* raw,unsigned len,BYTE *buffer,unsigned *b
             line[ll]=*begin;
             ll++;
         }
-    }   
+    }
     sstr<<"00000009done\n";
-    memcmp(buffer,sstr.str.c_str(),sstr.str.size());
-    *bufferSize=sstr.str.size();
+    memcmp(buffer,sstr.str().c_str(),sstr.str().size());
+    *bufferSize=sstr.str().size();
     return TRUE;
 }
 
@@ -167,31 +174,31 @@ bool CloneStep::RequestGET()
 {
     ///
     ///std::wstring get_url=this->murl+L"info/refs?service=git-upload-pack";
-    URLStruct urlsu;
+    URLStruct urlAtom;
     std::wstring scheme;
-    urlsu.isSSL=false;
-    if(!URLParse(this->murl.c_str(),scheme,urlsu.host,urlsu.port,urlsu.rawpath))
+    urlAtom.isSSL=false;
+    if(!URLParse(this->murl.c_str(),scheme,urlAtom.host,urlAtom.port,urlAtom.rawpath))
     {
         wprintf(L"Failed to Parse URL: %s\n",this->murl.c_str());
         return false;
     }
-    if(scheme==L"https")
-        urlsu.isSSL==true;
+    if(scheme.compare(L"https"))
+        urlAtom.isSSL=true;
     std::wstring header=L"Accept-Encoding: gzip\r\nConnection: keep-alive\r\n";
     std::wstring requestURL=murl+L"info/refs?service=git-upload-pack";
     WinHttpClient client(requestURL);
     std::wstring headers=L"Accept: */*\r\nAccept-Encoding: gzip\r\nPragma: no-cache\r\n";
-    client.SetRequireValidSslCertificates(urlsu.isSSL);
+    client.SetRequireValidSslCertificates(urlAtom.isSSL);
     client.SetAdditionalRequestHeaders(headers);
     client.SendHttpRequest();
-    std::wstring httpResponseHeader=client.GetReponseHeader();
+    std::wstring httpResponseHeader=client.GetResponseHeader();
     auto raw=client.GetRawResponseContent();
     auto size=client.GetRawResponseContentLength();
     wprintf(L"Response Header:\n%s\n",httpResponseHeader.c_str());
     BBuffer buffer(size);
     unsigned bufferSize=0;
-    if(ResolveContent(raw,size,buffer,&bufferSize)){
-        return this->RequestPOST(buffer,bufferSize);
+    if(ResolveContent(raw,size,buffer.get(),&bufferSize)){
+        return this->RequestPOST(urlAtom,buffer.get(),bufferSize);
     }
     wprintf(L"Faied Parser Response Content");
     return false;
@@ -221,10 +228,11 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     */
     std::wstring requestURL=this->murl+L"/git-upload-pack";
     WinHttpClient client(requestURL,ProgressProc);
-    std::wstring headers=L"Accept-Encoding: gzip\r\nContent-Type: application/x-git-upload-pack-request\r\nAccept: application/x-git-upload-pack-result\r\n";
+    ////When POST not set gzip
+    std::wstring headers=L"Content-Type: application/x-git-upload-pack-request\r\nAccept: application/x-git-upload-pack-result\r\n";
     headers+=L"Content-Length: ";
     wchar_t szSize[50] = L"";
-    swprintf_s(szSize, L"%d", content.size());
+    swprintf_s(szSize, L"%d", len);
     headers += szSize;
     client.SetRequireValidSslCertificates(us.isSSL);
     client.SetAdditionalRequestHeaders(headers);
@@ -244,7 +252,7 @@ int CloneStep::Start()
 bool Initialize()
 {
     auto lcid=GetSystemDefaultLCID();
-    wchar_t szBuf[0]={0};
+    wchar_t szBuf[80]={0};
     LCIDToLocaleName(lcid,szBuf,LOCALE_NAME_MAX_LENGTH,LOCALE_ALLOW_NEUTRAL_NAMES);
     _wsetlocale(LC_ALL,szBuf);
     return true;

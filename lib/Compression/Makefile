@@ -1,7 +1,7 @@
-#ZipProviders Module
+#Compression Module
 #NMAKE Module
 
-PROJECT= ZipProviders.lib
+PROJECT= Compression.lib
 CC = cl.exe
 AR = lib.exe
 LD = link.exe

@@ -65,7 +65,7 @@ bool
 URLParse(const wchar_t* uri,
     std::wstring& scheme,
     std::wstring& hostname,
-    int& port,
+    int &port,
     std::wstring& path
     )
 {

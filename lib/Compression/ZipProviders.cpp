@@ -4,7 +4,7 @@
 *   Date: 2015.01.18
 *   Copyright (C) 2015 ForceStudio.All Rrights Reserved.
 **********************************************************************************************************/
-#include <ZipProviders/ZipProviders.h>
+#include <Compression/ZipProviders.h>
 #include "zlib.h"
 #include "zip.h"
 #include "unzip.h"
