@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <sstream>
 #include <vector>
+#include "getopt.h"
 
 
 #pragma comment(lib,"crypt32.lib")
@@ -170,7 +171,7 @@ public:
     bool SetAuthInfo(std::wstring &binfo)
     {
         this->base64Info=binfo;
-        return this->base64Info.size()>10?;
+        return this->base64Info.size()>10?true:false;
     }
     int Start();
 };
@@ -263,7 +264,7 @@ bool Initialize()
     return true;
 }
 
-//git-clone-stress -input repo.list -email some@site.com -p password
+//git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
     ///
