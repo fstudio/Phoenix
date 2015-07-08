@@ -6,6 +6,7 @@
 // License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
+#define _CRT_SECURE_NO_WARNINGS
 #include <string>
 #include <cstdlib>
 #include <cstdint>

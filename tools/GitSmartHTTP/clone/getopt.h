@@ -4,6 +4,9 @@
 #define required_argument 1
 #define OPTIONAL_ARG      2
 
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 typedef struct woptionTag
 {
@@ -30,5 +33,10 @@ int wgetopt_long (int argc, wchar_t **argv, const wchar_t *shortopts,
                    const woption * longopts, int *longind);
 int wgetopt_long_only (int argc, wchar_t **argv, const wchar_t *shortopts,
                         const woption * longopts, int *longind);
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

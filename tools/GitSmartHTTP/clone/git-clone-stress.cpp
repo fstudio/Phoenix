@@ -268,6 +268,24 @@ bool Initialize()
 int wmain(int argc,wchar_t **argv)
 {
     ///
+    int ch;
+    while((ch=wgetopt(argc,argv,L"e:i:p:"))!=-1)
+    {
+        ///
+        switch(ch){
+            case 'e':
+            wprintf(L"Email: %s\n",woptarg);
+            break;
+            case 'i':
+            wprintf(L"Input: %s\n",woptarg);
+            break;
+            case 'p':
+            wprintf(L"Password: %s\n",woptarg);
+            break;
+            default:
+            break;
+        }
+    }
     Initialize();
     bool isAuthEnable=false;
     CloneStep cloneStep;
