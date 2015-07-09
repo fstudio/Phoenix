@@ -1,9 +1,9 @@
 #Makefile This Mingw64 and Clang
-CC=clang
+CXX=clang++
 AR = ar
-CFLAGS= -std=c11 -c -O2 
+CXXFLAGS= -std=c++11 -c -O2 
 LIBRARY=libgetopt.a
-OBJECTS=getopt.o wgetopt.o
+OBJECTS=GetOptIncA.o GetOptIncW.o
 
 all:$(LIBRARY)
 
@@ -12,7 +12,7 @@ $(LIBRARY):$(OBJECTS)
 
 	
 $(OBJECTS): %.o: %.c
-	$(CC) $(CFLAGS)  $< -o $@
+	$(CXX) $(CXXFLAGS)  $< -o $@
 	
 clean:
 	-rm *.o *.a

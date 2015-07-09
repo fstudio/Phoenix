@@ -10,5 +10,5 @@
 #ifdef _MBCS
 #undef _MBCS
 #endif
-
-#include "getopt.inc"
+#include "GetOptInc.h"
+#include "GetOptInc.inc"

@@ -2,17 +2,17 @@
 
 CC=cl
 AR = lib.exe
-CFLAGS=-nologo -c -TC -W3 -O2  -Zc:forScope -Zc:wchar_t
+CXXFLAGS=-nologo -c -TP -W3 -O2  -Zc:forScope -Zc:wchar_t
 LIBRARY=getopt.lib
-OBJS=getopt.obj wgetopt.obj
+OBJS=GetOptIncA.obj GetOptIncW.obj
 
 all:$(LIBRARY)
 
 $(LIBRARY):$(OBJS)
 	$(AR) $(OBJS) -out:$@
 
-{.}.c.obj::
-	$(CC) $(CFLAGS) -c $<
+{.}.cpp.obj::
+	$(CC) $(CXXFLAGS) -c $<
 
 clean:
 	-del *.obj *.lib

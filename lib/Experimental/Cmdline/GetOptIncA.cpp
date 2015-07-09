@@ -1,8 +1,7 @@
-////getopt MultiByte
+////
 #ifdef UNICODE
-#undef UNICODE 
+#undef UNICODE
 #endif
-
 #ifdef _UNICODE
 #undef _UNICODE
 #endif
@@ -11,4 +10,6 @@
 #define _MBCS
 #endif
 
-#include "getopt.inc"
+#include "GetOptInc.h"
+#include "GetOptInc.inc"
+
