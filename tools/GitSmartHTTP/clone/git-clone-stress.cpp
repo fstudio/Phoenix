@@ -14,6 +14,9 @@
 #include <stdint.h>
 #include <sstream>
 #include <vector>
+#include <stdio.h>
+#include <wchar.h>
+#include <stdarg.h>
 #include "getopt.h"
 
 
@@ -34,6 +37,77 @@ bool URLParse(const wchar_t* uri,
     std::wstring& hostname,
     int &port,
     std::wstring& path);
+
+class BBuffer{
+private:
+    BYTE *Ptr;
+public:
+    BBuffer(unsigned size)
+    {
+        if(size<UINT32_MAX/4)///1GB small
+            Ptr=(BYTE*)malloc(sizeof(BYTE)*size);
+        else
+            Ptr=nullptr;
+    }
+    ~BBuffer(){
+        if(Ptr)
+            free(Ptr);
+    }
+    BYTE* get(){
+        return this->Ptr;
+    }
+};
+
+
+class Console{
+private:
+   HANDLE hConsole;
+public:
+   Console(){
+       hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
+   }
+   ~Console(){
+       if(hConsole)
+       {
+           CloseHandle(hConsole);
+       }
+   }
+   HANDLE get(){
+       return this->hConsole;
+   }
+}
+////When Failed Print Red word
+int PrintError(const wchar_t *format,...)
+{
+    int ret;
+    static Console hCon;
+    CONSOLE_SCREEN_BUFFER_INFO bInfo;
+    GetConsoleScreenBufferInfo(hCon.get(), &bInfo);
+    SetConsoleTextAttribute(hCon.get(),FOREGROUND_RED|FOREGROUND_INTENSITY);
+    va_list ap;
+    va_start(ap, format);
+    ret=vwprintf_s(format,ap);
+    va_end(ap);
+    SetConsoleTextAttribute(hCon.get(),bInfo.wAttributes);
+    return ret;
+}
+
+static wchar_t recordfile[4096]={0};
+
+int RecordError(const wchar_t *format,...)
+{
+    int ret;
+    FILE *fp;
+    if(_wfopen_s(&fp,recordfile,L"a+")!=0)
+       return 0;
+    va_list ap;
+    va_start(ap, format);
+    ret=vfwprintf_s(format,ap);
+    va_end(ap);
+    fclose(fp);
+    return ret;
+}
+
 
 /*
 BOOL WINAPI CryptBinaryToString(
@@ -80,23 +154,6 @@ BOOL WINAPI PasswordEncodingBase64(const char* name,const char* pwd,std::wstring
     return bRet;
 }
 
-
-class BBuffer{
-private:
-    BYTE *Ptr;
-public:
-    BBuffer(unsigned size)
-    {
-        Ptr=(BYTE*)malloc(sizeof(BYTE)*size);
-    }
-    ~BBuffer(){
-        if(Ptr)
-            free(Ptr);
-    }
-    BYTE* get(){
-        return this->Ptr;
-    }
-};
 
 
  /*************
@@ -261,23 +318,48 @@ bool Initialize()
     wchar_t localeBuffer[80]={0};
     LCIDToLocaleName(lcid,localeBuffer,LOCALE_NAME_MAX_LENGTH,LOCALE_ALLOW_NEUTRAL_NAMES);
     _wsetlocale(LC_ALL,localeBuffer);
+    GetTempPathW(MAX_PATH,recordfile);
+    wcscat_s(recordfile,MAX_PATH,L"git-clone-stress.error.log");
     return true;
 }
 
 //git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
-    ///
+    ///Initialize Environment ,support wchar_t output
+    Initialize();
     int ch;
-    while((ch=wgetopt(argc,argv,L"e:i:p:"))!=-1)
+    opterr=0;
+    const wchar_t *short_opts=L"hvi:e:l:p";
+    const woption option_long_opt[]={
+     {L"help",no_argument,NULL,'h'},
+     {L"version",no_argument,NULL,'v'},
+     {L"input",required_argument ,NULL,'i'},
+     {L"email",required_argument ,NULL,'e'},
+     {L"log",required_argument,NULL,'l'},
+     {L"password",required_argument ,NULL,'p'},
+     {0,0,0,0}   
+    };
+    while((ch=wgetopt_long(argc,argv,short_opts,option_long_opt,NULL))!=-1)
     {
         ///
         switch(ch){
+            case 'h':
+            //print usage and exit
+            break;
+            case 'v'
+            //print version
+            break;
             case 'e':
             wprintf(L"Email: %s\n",woptarg);
             break;
             case 'i':
             wprintf(L"Input: %s\n",woptarg);
+            break;
+            case 'l':
+            {
+                ///get Parent Path with log 
+            }
             break;
             case 'p':
             wprintf(L"Password: %s\n",woptarg);
@@ -286,7 +368,6 @@ int wmain(int argc,wchar_t **argv)
             break;
         }
     }
-    Initialize();
     bool isAuthEnable=false;
     CloneStep cloneStep;
 
