@@ -20,8 +20,6 @@
 #include "GetOptInc.h"
 
 
-#pragma comment(lib,"crypt32.lib")
-
 struct URLStruct{
     std::wstring host;
     std::wstring rawpath;
@@ -58,7 +56,6 @@ public:
     }
 };
 
-
 class Console{
 private:
    HANDLE hConsole;
@@ -90,6 +87,24 @@ int PrintError(const wchar_t *format,...)
     va_end(ap);
     SetConsoleTextAttribute(hCon.get(),bInfo.wAttributes);
     return ret;
+}
+
+enum PrintColor{
+    NO_COLOR=0
+};
+
+int Print(WORD color,const wchar_t *format,...){
+    int ret;
+    static Console hCon;
+    CONSOLE_SCREEN_BUFFER_INFO bInfo;
+    GetConsoleScreenBufferInfo(hCon.get(), &bInfo);
+    SetConsoleTextAttribute(hCon.get(),color);
+    va_list ap;
+    va_start(ap, format);
+    ret=vwprintf_s(format,ap);
+    va_end(ap);
+    SetConsoleTextAttribute(hCon.get(),bInfo.wAttributes);
+    return 0;
 }
 
 static wchar_t recordfile[4096]={0};
@@ -334,11 +349,12 @@ static bool SplitParentDir(const wchar_t *filePath)
     wprintf(L"Dir: %s\n",dir);
     return true;
 }
-
+// PathStripPath Get FileName
 //git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
     ///Initialize Environment ,support wchar_t output
+    //PrintError(L"Argv[0]:%s\nError Report\n",argv[0]);
     Initialize();
     int ch;
     const wchar_t *short_opts=L"hvi:e:l:p";
@@ -369,8 +385,10 @@ int wmain(int argc,wchar_t **argv)
             break;
             case 'l':
             {
-                SplitParentDir(optarg);
-                ///get Parent Path with log
+                wchar_t mLog[4096]={0};
+                wcscpy_s(mLog,optarg);
+                PathRemoveFileSpec(mLog);
+                ///Check  Folder  exists
             }
             break;
             case 'p':
