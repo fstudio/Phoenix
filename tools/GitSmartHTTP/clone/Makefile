@@ -13,8 +13,7 @@ LDFLAGS=/NOLOGO -OPT:REF
 
 LIBRARY=kernel32.lib ws2_32.lib user32.lib 
 
-COBJS=getopt.obj 
-CXXOBJS=url.obj git-clone-stress.obj
+CXXOBJS=url.obj git-clone-stress.obj GetOptInc.obj
 
 RCFILE=git-clone-stress.res
 

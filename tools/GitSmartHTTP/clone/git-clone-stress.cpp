@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <wchar.h>
 #include <stdarg.h>
-#include "getopt.h"
+#include "GetOptInc.h"
 
 
 #pragma comment(lib,"crypt32.lib")
@@ -75,7 +75,7 @@ public:
    HANDLE get(){
        return this->hConsole;
    }
-}
+};
 ////When Failed Print Red word
 int PrintError(const wchar_t *format,...)
 {
@@ -102,7 +102,7 @@ int RecordError(const wchar_t *format,...)
        return 0;
     va_list ap;
     va_start(ap, format);
-    ret=vfwprintf_s(format,ap);
+    ret=vfwprintf_s(fp,format,ap);
     va_end(ap);
     fclose(fp);
     return ret;
@@ -323,46 +323,58 @@ bool Initialize()
     return true;
 }
 
+static bool SplitParentDir(const wchar_t *filePath)
+{
+    wchar_t drive[128]={0};
+    wchar_t dir[4096]={0};
+    wchar_t filename[256]={0};
+    wchar_t ext[128]={0};
+    if(_wsplitpath_s(filePath,drive,dir,filename,ext)!=0)
+        return false;
+    wprintf(L"Dir: %s\n",dir);
+    return true;
+}
+
 //git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
     ///Initialize Environment ,support wchar_t output
     Initialize();
     int ch;
-    opterr=0;
     const wchar_t *short_opts=L"hvi:e:l:p";
-    const woption option_long_opt[]={
+    const option option_long_opt[]={
      {L"help",no_argument,NULL,'h'},
      {L"version",no_argument,NULL,'v'},
      {L"input",required_argument ,NULL,'i'},
      {L"email",required_argument ,NULL,'e'},
      {L"log",required_argument,NULL,'l'},
      {L"password",required_argument ,NULL,'p'},
-     {0,0,0,0}   
+     {0,0,0,0}
     };
-    while((ch=wgetopt_long(argc,argv,short_opts,option_long_opt,NULL))!=-1)
+    while((ch=getopt_long(argc,argv,short_opts,option_long_opt,NULL))!=-1)
     {
         ///
         switch(ch){
             case 'h':
             //print usage and exit
             break;
-            case 'v'
+            case 'v':
             //print version
             break;
             case 'e':
-            wprintf(L"Email: %s\n",woptarg);
+            wprintf(L"Email: %s\n",optarg);
             break;
             case 'i':
-            wprintf(L"Input: %s\n",woptarg);
+            wprintf(L"Input: %s\n",optarg);
             break;
             case 'l':
             {
-                ///get Parent Path with log 
+                SplitParentDir(optarg);
+                ///get Parent Path with log
             }
             break;
             case 'p':
-            wprintf(L"Password: %s\n",woptarg);
+            wprintf(L"Password: %s\n",optarg);
             break;
             default:
             break;
