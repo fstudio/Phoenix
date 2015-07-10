@@ -11,6 +11,7 @@
 //Base64 Encoding
 #include "WinHttpClient.h"
 #include <wincrypt.h>
+#include <Shlwapi.h>
 #include <stdint.h>
 #include <sstream>
 #include <vector>
@@ -36,6 +37,39 @@ bool URLParse(const wchar_t* uri,
     int &port,
     std::wstring& path);
 
+class CharGet{
+private:
+   char *cPtr;
+   static char *TranslateEncoding(const wchar_t *wstr){
+       char *pElementText;
+       int iTextLen=WideCharToMultiByte(CP_UTF8, 0, wstr.c, -1, NULL, 0, NULL, NULL);
+       pElementText=new char[iTextLen+1];
+       memset((void*)pElementText,0,sizeof(char)*(iTextLen+1));
+       auto Ret=::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, pElementText, iTextLen,NULL, NULL);
+       if(Ret=0){
+           delete[] pElementText;
+           return nullptr;
+       }
+       return pElementText;
+   }
+public:
+   CharGet(std::wstring &wstr){
+       cPtr=TranslateEncoding(wstr.c_str());
+   }
+   CharGet(const wchar_t *wstr){
+       cPtr=TranslateEncoding(wstr);
+   }
+   ~CharGet(){
+       if(cPtr){
+           delete[] cPtr;
+       }
+   }
+   char* get() const{
+       return this->cPtr;
+   }
+};
+
+
 class BBuffer{
 private:
     BYTE *Ptr;
@@ -60,7 +94,7 @@ class Console{
 private:
    HANDLE hConsole;
 public:
-   Console(){
+   Console():hConsole(nullptr){
        hConsole=GetStdHandle(STD_OUTPUT_HANDLE);
    }
    ~Console(){
@@ -150,11 +184,13 @@ Base64 dwFlags CRYPT_STRING_BASE64
 */
 
 /// Name and pwd to UTF8
-BOOL WINAPI PasswordEncodingBase64(const char* name,const char* pwd,std::wstring &outtext)
+BOOL WINAPI PasswordEncodingBase64(const wchar_t* name,const wchar_t* pwd,std::wstring &outtext)
 {
     char buffer[512]={0};
+    CharGet cname(name);
+    CharGet cpwd(pwd);
     wchar_t receivebuf[1024]={0};
-    sprintf_s(buffer,512,"%s:%s",name,pwd);
+    sprintf_s(buffer,512,"%s:%s",cname.get(),cpwd.get());
     auto size=strlen(buffer);
     DWORD  pcchString;
     auto bRet=CryptBinaryToStringW(
@@ -230,11 +266,12 @@ class CloneStep{
 private:
     /// Basic xXxxxxxxxxxxxxxxxx
     std::wstring base64Info;
+    bool enableBase64;
     std::wstring murl;
     bool RequestGET();
     bool RequestPOST(URLStruct &us,BYTE* content,unsigned len);
 public:
-    CloneStep(std::wstring url):murl(url){}
+    CloneStep(std::wstring url):murl(url),enableBase64(false){}
     CloneStep(){}
     bool SetURL(const wchar_t *url){
         murl.assign(url);
@@ -243,7 +280,8 @@ public:
     bool SetAuthInfo(std::wstring &binfo)
     {
         this->base64Info=binfo;
-        return this->base64Info.size()>10?true:false;
+        this->enableBase64=this->base64Info.size()>10?true:false
+        return this->enableBase64;
     }
     int Start();
 };
@@ -263,6 +301,9 @@ bool CloneStep::RequestGET()
     if(scheme.compare(L"https"))
         urlAtom.isSSL=true;
     std::wstring header=L"Accept-Encoding: gzip\r\nConnection: keep-alive\r\n";
+    if(this->enableBase64){
+        header+=L"Authorization: "+this->base64Info+L"\r\n";
+    }
     std::wstring requestURL=murl+L"info/refs?service=git-upload-pack";
     WinHttpClient client(requestURL);
     std::wstring headers=L"Accept: */*\r\nAccept-Encoding: gzip\r\nPragma: no-cache\r\n";
@@ -308,6 +349,9 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     WinHttpClient client(requestURL,ProgressProc);
     ////When POST not set gzip
     std::wstring headers=L"Content-Type: application/x-git-upload-pack-request\r\nAccept: application/x-git-upload-pack-result\r\n";
+    if(this->enableBase64){
+        header+=L"Authorization: "+this->base64Info+L"\r\n";
+    }
     headers+=L"Content-Length: ";
     wchar_t szSize[50] = L"";
     swprintf_s(szSize, L"%d", len);
@@ -355,6 +399,9 @@ int wmain(int argc,wchar_t **argv)
 {
     ///Initialize Environment ,support wchar_t output
     //PrintError(L"Argv[0]:%s\nError Report\n",argv[0]);
+    std::wstring email;
+    std::wstring password;
+    std::wstring base64text;
     Initialize();
     int ch;
     const wchar_t *short_opts=L"hvi:e:l:p";
@@ -378,7 +425,7 @@ int wmain(int argc,wchar_t **argv)
             //print version
             break;
             case 'e':
-            wprintf(L"Email: %s\n",optarg);
+            email=optarg
             break;
             case 'i':
             wprintf(L"Input: %s\n",optarg);
@@ -388,18 +435,32 @@ int wmain(int argc,wchar_t **argv)
                 wchar_t mLog[4096]={0};
                 wcscpy_s(mLog,optarg);
                 PathRemoveFileSpec(mLog);
+                if(!PathFileExists(mLog)){
+                    PrintError(L"Dir %s is not exists,your should changed your log file dir\n",mLog);
+                    return 1;
+                }
                 ///Check  Folder  exists
             }
             break;
             case 'p':
-            wprintf(L"Password: %s\n",optarg);
+            password=optarg;
             break;
             default:
             break;
         }
     }
-    bool isAuthEnable=false;
     CloneStep cloneStep;
+    if(!(email.empty()||password.empty()))
+    {
+        if(email.size()+password.size()<340){
+            if(PasswordEncodingBase64(email.c_str(),password.c_str(),base64text))
+            {
+                base64text=L"Basic "+base64text;
+                cloneStep.SetAuthInfo(base64text);
+            }
+        }
+    }
+    
 
     return 0;
 }
