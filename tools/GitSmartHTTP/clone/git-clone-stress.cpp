@@ -42,7 +42,7 @@ private:
    char *cPtr;
    static char *TranslateEncoding(const wchar_t *wstr){
        char *pElementText;
-       int iTextLen=WideCharToMultiByte(CP_UTF8, 0, wstr.c, -1, NULL, 0, NULL, NULL);
+       int iTextLen=WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
        pElementText=new char[iTextLen+1];
        memset((void*)pElementText,0,sizeof(char)*(iTextLen+1));
        auto Ret=::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, pElementText, iTextLen,NULL, NULL);
@@ -280,7 +280,7 @@ public:
     bool SetAuthInfo(std::wstring &binfo)
     {
         this->base64Info=binfo;
-        this->enableBase64=this->base64Info.size()>10?true:false
+        this->enableBase64=this->base64Info.size()>10?true:false;
         return this->enableBase64;
     }
     int Start();
@@ -350,7 +350,7 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     ////When POST not set gzip
     std::wstring headers=L"Content-Type: application/x-git-upload-pack-request\r\nAccept: application/x-git-upload-pack-result\r\n";
     if(this->enableBase64){
-        header+=L"Authorization: "+this->base64Info+L"\r\n";
+        headers+=L"Authorization: "+this->base64Info+L"\r\n";
     }
     headers+=L"Content-Length: ";
     wchar_t szSize[50] = L"";
@@ -382,6 +382,7 @@ bool Initialize()
     return true;
 }
 
+// PathStripPath Get FileName
 static bool SplitParentDir(const wchar_t *filePath)
 {
     wchar_t drive[128]={0};
@@ -393,7 +394,30 @@ static bool SplitParentDir(const wchar_t *filePath)
     wprintf(L"Dir: %s\n",dir);
     return true;
 }
-// PathStripPath Get FileName
+
+#define USAGE_STR "Usage: git-clone-stress [option]...\n\
+create clone task and run it.\n\
+\x20\x20-h,--help\tPrint usage and exit.\n\
+\x20\x20-v,--version\tPrint version and exit\n\
+\x20\x20-i,--input\tSet Task URL list file\n\
+\x20\x20-e,--email\tSet Authorization Email\n\
+\x20\x20-p,--password\tSet Authorization password\n\
+\x20\x20-l,-log\tSet Error report log file Path(default %%TEMP%%\\git-clone-stress.error.log)\n"
+
+static void PrintUsage()
+{
+    printf(USAGE_STR);
+}
+
+#define VERSION_STR "git-clone-stress (git clone stress utility) 1.0\n\
+Copyright (C) 2015. Force Studio.All Rights Reserved.\n\
+Write by Force Charlie\n"
+
+static void PrintVersion()
+{
+    printf(VERSION_STR);
+}
+
 //git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
@@ -420,12 +444,16 @@ int wmain(int argc,wchar_t **argv)
         switch(ch){
             case 'h':
             //print usage and exit
+            PrintUsage();
+            return 0;
             break;
             case 'v':
             //print version
+            PrintVersion();
+            return 0;
             break;
             case 'e':
-            email=optarg
+            email=optarg;
             break;
             case 'i':
             wprintf(L"Input: %s\n",optarg);
@@ -460,7 +488,5 @@ int wmain(int argc,wchar_t **argv)
             }
         }
     }
-    
-
     return 0;
 }
