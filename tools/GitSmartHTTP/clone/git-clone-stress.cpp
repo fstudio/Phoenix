@@ -283,7 +283,7 @@ public:
         this->enableBase64=this->base64Info.size()>10?true:false;
         return this->enableBase64;
     }
-    int Start();
+    int Start(unsigned times);
 };
 
 bool CloneStep::RequestGET()
@@ -365,9 +365,20 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     return true;
 }
 
-int CloneStep::Start()
+int CloneStep::Start(unsigned times)
 {
-    //
+    if(times>500&&times<10000){
+        printf("Task number is too large\nYou must run this task ? Y/N(defualt No):");
+        char ch;
+        scanf("%c",&ch);
+        if(ch!='Y'&&ch!='y'){
+            printf("Your restart git-clone-stress with -t 100 \n");
+            return 2;
+        }
+    }else if(times>10000){
+        printf("Task number is too large,we not enable it.");
+        return 1;
+    }
     return 0;
 }
 
@@ -400,6 +411,7 @@ create clone task and run it.\n\
 \x20\x20-h,--help\tPrint usage and exit.\n\
 \x20\x20-v,--version\tPrint version and exit\n\
 \x20\x20-i,--input\tSet Task URL list file\n\
+\x20\x20-t,--times\tSet Run task times,defualt once\n\
 \x20\x20-e,--email\tSet Authorization Email\n\
 \x20\x20-p,--password\tSet Authorization password\n\
 \x20\x20-l,-log\tSet Error report log file Path(default %%TEMP%%\\git-clone-stress.error.log)\n"
