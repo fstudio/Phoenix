@@ -13,11 +13,13 @@
 #include <wincrypt.h>
 #include <Shlwapi.h>
 #include <stdint.h>
-#include <sstream>
-#include <vector>
 #include <stdio.h>
 #include <wchar.h>
 #include <stdarg.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 #include "GetOptInc.h"
 
 
@@ -36,6 +38,11 @@ bool URLParse(const wchar_t* uri,
     std::wstring& hostname,
     int &port,
     std::wstring& path);
+
+uint32_t ToUInt32 (const wchar_t *s,
+    uint32_t fail_value,
+    int base,
+    bool *success_ptr);
 
 class CharGet{
 private:
@@ -128,8 +135,13 @@ int PrintError(const wchar_t *format,...)
     return ret;
 }
 
-enum PrintColor{
-    NO_COLOR=0
+enum PrintColorAttribute{
+    UNKWON_COLOR=0,
+    NORMAL_HL=FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY,
+    WARNING_HL=FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY,
+    ERROR_HL=FOREGROUND_RED|FOREGROUND_INTENSITY,
+    NOTICE_HL=FOREGROUND_BLUE|FOREGROUND_RED|FOREGROUND_INTENSITY,
+    RESET_HL=FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE
 };
 
 int Print(WORD color,const wchar_t *format,...){
@@ -195,9 +207,9 @@ BOOL WINAPI PasswordEncodingBase64(const wchar_t* name,const wchar_t* pwd,std::w
     CharGet cname(name);
     CharGet cpwd(pwd);
     wchar_t receivebuf[1024]={0};
-	if (cname.size() + cpwd.size() > 384){
-		return FALSE;
-	}
+    if (cname.size() + cpwd.size() > 384){
+        return FALSE;
+    }
     sprintf_s(buffer,512,"%s:%s",cname.get(),cpwd.get());
     auto size=strlen(buffer);
     DWORD  pcchString;
@@ -285,13 +297,17 @@ public:
         murl.assign(url);
         return true;
     }
+    bool SetURL(std::wstring &url){
+        murl=url;
+        return true;
+    }
     bool SetAuthInfo(std::wstring &binfo)
     {
         this->base64Info=binfo;
         this->enableBase64=this->base64Info.size()>10?true:false;
         return this->enableBase64;
     }
-    int Start(unsigned times);
+    int Start(unsigned times,std::vector<std::wstring> &uv);
 };
 
 bool CloneStep::RequestGET()
@@ -369,11 +385,12 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     client.SendHttpRequest(L"POST");
     client.SetAdditionalDataToSend(content,len);
     wstring httpResponseHeader = client.GetResponseHeader();
-    wstring httpResponseContent = client.GetResponseContent();
+    auto raw=client.GetRawResponseContent();
+    auto size=client.GetRawResponseContentLength();
     return true;
 }
 
-int CloneStep::Start(unsigned times)
+int CloneStep::Start(unsigned times,std::vector<std::wstring> &uv)
 {
     if(times>500&&times<10000){
         printf("Task number is too large\nYou must run this task ? Y/N(defualt No):");
@@ -387,6 +404,16 @@ int CloneStep::Start(unsigned times)
         printf("Task number is too large,we not enable it.");
         return 1;
     }
+    ///
+    unsigned i=0;
+    while(i>times){
+        Print(NOTICE_HL,L"Has been running %d times:\n",i);
+        for(auto &i:uv){
+            this->SetURL(i);
+            this->RequestGET();
+        }
+    }
+
     return 0;
 }
 
@@ -414,6 +441,8 @@ static bool SplitParentDir(const wchar_t *filePath)
     return true;
 }
 
+/////========================================================
+///<U
 #define USAGE_STR "Usage: git-clone-stress [option]...\n\
 create clone task and run it.\n\
 \x20\x20-h,--help\tPrint usage and exit.\n\
@@ -438,13 +467,32 @@ static void PrintVersion()
     printf(VERSION_STR);
 }
 
+/////Only USE UTF8 Save Encoding
+static bool LoadURLVerctor(const wchar_t *file,std::vector<std::wstring> &uv){
+    std::wifstream infile(file);
+    std::wstring line;
+    unsigned number=0;
+    size_t pos=0;
+    while(getline(infile,line)){
+        if(line.at(0)=='#'&&line.at(0)=='/'&&line.at(0)=='/'){
+            //break;
+        }else{
+            uv.push_back(line);
+        }
+    }
+    return uv.size()>1?true:false;
+}
+
 //git-clone-stress --input(-i) repo.list -e some@site.com -p password
 int wmain(int argc,wchar_t **argv)
 {
     ///Initialize Environment ,support wchar_t output
     //PrintError(L"Argv[0]:%s\nError Report\n",argv[0]);
-	const wchar_t *email=nullptr;
+    const wchar_t *email=nullptr;
     const wchar_t *password=nullptr;
+    const wchar_t *input=nullptr;
+    const wchar_t *times;
+    unsigned itimes=1;
     std::wstring base64text;
     Initialize();
     int ch;
@@ -455,6 +503,7 @@ int wmain(int argc,wchar_t **argv)
         {L"input",required_argument ,NULL,'i'},
         {L"email",required_argument ,NULL,'e'},
         {L"log",required_argument,NULL,'l'},
+        {L"times",required_argument,NULL,'t'},
         {L"password",required_argument ,NULL,'p'},
         {0,0,0,0}
     };
@@ -476,7 +525,10 @@ int wmain(int argc,wchar_t **argv)
             email=optarg;
             break;
             case 'i':
-            wprintf(L"Input: %s\n",optarg);
+            input=optarg;
+            break;
+            case 't':
+            times=optarg;
             break;
             case 'l':
             {
@@ -500,12 +552,24 @@ int wmain(int argc,wchar_t **argv)
     CloneStep cloneStep;
     if(email&&password)
     {
-		if (PasswordEncodingBase64(email, password, base64text))
-		{
-			base64text = L"Basic " + base64text;
-			wprintf(L"Basic Info: %s\n", base64text.c_str());
-			cloneStep.SetAuthInfo(base64text);
-		}
+        if (PasswordEncodingBase64(email, password, base64text)){
+            base64text = L"Basic " + base64text;
+            cloneStep.SetAuthInfo(base64text);
+        }
+    }
+    if(times){
+        bool bRet;
+        itimes=ToUInt32(times,1,10,&bRet);
+        if(!bRet)
+            itimes=1;
+    }
+    if(input){
+        Print(NORMAL_HL,L"Your well run git-clone-stress\nInput URLs from %s, found it.",input);
+    }
+    std::vector<std::wstring> uv;
+    if(LoadURLVerctor(input,uv))
+    {
+        cloneStep.Start(itimes,uv);
     }
     return 0;
 }
