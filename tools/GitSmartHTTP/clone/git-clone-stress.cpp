@@ -40,11 +40,13 @@ bool URLParse(const wchar_t* uri,
 class CharGet{
 private:
    char *cPtr;
-   static char *TranslateEncoding(const wchar_t *wstr){
+   size_t msize;
+   static char *TranslateEncoding(const wchar_t *wstr,size_t &sz){
        char *pElementText;
        int iTextLen=WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
        pElementText=new char[iTextLen+1];
        memset((void*)pElementText,0,sizeof(char)*(iTextLen+1));
+       sz=iTextLen;
        auto Ret=::WideCharToMultiByte(CP_UTF8, 0, wstr, -1, pElementText, iTextLen,NULL, NULL);
        if(Ret=0){
            delete[] pElementText;
@@ -54,10 +56,10 @@ private:
    }
 public:
    CharGet(std::wstring &wstr){
-       cPtr=TranslateEncoding(wstr.c_str());
+       cPtr=TranslateEncoding(wstr.c_str(),msize);
    }
    CharGet(const wchar_t *wstr){
-       cPtr=TranslateEncoding(wstr);
+       cPtr=TranslateEncoding(wstr,msize);
    }
    ~CharGet(){
        if(cPtr){
@@ -66,6 +68,9 @@ public:
    }
    char* get() const{
        return this->cPtr;
+   }
+   size_t size() const{
+       return this->msize;
    }
 };
 
@@ -190,6 +195,9 @@ BOOL WINAPI PasswordEncodingBase64(const wchar_t* name,const wchar_t* pwd,std::w
     CharGet cname(name);
     CharGet cpwd(pwd);
     wchar_t receivebuf[1024]={0};
+	if (cname.size() + cpwd.size() > 384){
+		return FALSE;
+	}
     sprintf_s(buffer,512,"%s:%s",cname.get(),cpwd.get());
     auto size=strlen(buffer);
     DWORD  pcchString;
@@ -370,7 +378,7 @@ int CloneStep::Start(unsigned times)
     if(times>500&&times<10000){
         printf("Task number is too large\nYou must run this task ? Y/N(defualt No):");
         char ch;
-        scanf("%c",&ch);
+        scanf_s("%c",&ch);
         if(ch!='Y'&&ch!='y'){
             printf("Your restart git-clone-stress with -t 100 \n");
             return 2;
@@ -435,20 +443,20 @@ int wmain(int argc,wchar_t **argv)
 {
     ///Initialize Environment ,support wchar_t output
     //PrintError(L"Argv[0]:%s\nError Report\n",argv[0]);
-    std::wstring email;
-    std::wstring password;
+	const wchar_t *email=nullptr;
+    const wchar_t *password=nullptr;
     std::wstring base64text;
     Initialize();
     int ch;
-    const wchar_t *short_opts=L"hvi:e:l:p";
+    const wchar_t *short_opts=L"hvi:e:l:p:";
     const option option_long_opt[]={
-     {L"help",no_argument,NULL,'h'},
-     {L"version",no_argument,NULL,'v'},
-     {L"input",required_argument ,NULL,'i'},
-     {L"email",required_argument ,NULL,'e'},
-     {L"log",required_argument,NULL,'l'},
-     {L"password",required_argument ,NULL,'p'},
-     {0,0,0,0}
+        {L"help",no_argument,NULL,'h'},
+        {L"version",no_argument,NULL,'v'},
+        {L"input",required_argument ,NULL,'i'},
+        {L"email",required_argument ,NULL,'e'},
+        {L"log",required_argument,NULL,'l'},
+        {L"password",required_argument ,NULL,'p'},
+        {0,0,0,0}
     };
     while((ch=getopt_long(argc,argv,short_opts,option_long_opt,NULL))!=-1)
     {
@@ -490,15 +498,14 @@ int wmain(int argc,wchar_t **argv)
         }
     }
     CloneStep cloneStep;
-    if(!(email.empty()||password.empty()))
+    if(email&&password)
     {
-        if(email.size()+password.size()<340){
-            if(PasswordEncodingBase64(email.c_str(),password.c_str(),base64text))
-            {
-                base64text=L"Basic "+base64text;
-                cloneStep.SetAuthInfo(base64text);
-            }
-        }
+		if (PasswordEncodingBase64(email, password, base64text))
+		{
+			base64text = L"Basic " + base64text;
+			wprintf(L"Basic Info: %s\n", base64text.c_str());
+			cloneStep.SetAuthInfo(base64text);
+		}
     }
     return 0;
 }
