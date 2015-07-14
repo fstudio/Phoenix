@@ -5,18 +5,11 @@
 #define HTTP_HEADERS_HPP
 #include <string>
 #include <unordered_map>
-
-
-/*
-
-HTTP 200 OK\r\n
-Content-Type: text/plan\r\n
-*/
+#include <string.h>
 
 
 class HTTPHeaders{
 private:
-    int responseCode;
     typedef std::unordered_map<std::wstring,std::wstring> StoreMap;
     std::unordered_map<std::wstring,std::wstring> umap;
     static bool inline HeaderKVSplit(const wchar_t *buffer,StoreMap &um)

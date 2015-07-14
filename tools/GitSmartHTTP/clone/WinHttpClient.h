@@ -18,6 +18,11 @@ using namespace std;
 
 typedef bool (*PROGRESSPROC)(double);
 
+/*
+* https://msdn.microsoft.com/en-us/library/windows/desktop/aa384070(v=vs.85).aspx
+* https://msdn.microsoft.com/en-us/library/windows/desktop/aa383887(v=vs.85).aspx
+*/
+
 static const unsigned int INT_RETRYTIMES = 3;
 static wchar_t *SZ_AGENT = L"git/2.5.0.Simulator.0";
 static const int INT_BUFFERSIZE = 10240;    // Initial 10 KB temporary buffer, double if it is not enough.
@@ -33,7 +38,7 @@ public:
     inline wstring GetResponseHeader(void);
     inline wstring GetResponseContent(void);
     inline wstring GetResponseCharset(void);
-    inline wstring GetResponseStatusCode(void);
+    inline int GetResponseStatusCode(void);
     inline wstring GetResponseLocation(void);
     inline wstring GetRequestHost(void);
     inline const BYTE *GetRawResponseContent(void);
@@ -81,7 +86,7 @@ private:
     wstring m_additionalRequestHeaders;
     wstring m_proxy;
     DWORD m_dwLastError;
-    wstring m_statusCode;
+    int m_statusCode;
     wstring m_userAgent;
     bool m_bForceCharset;
     wstring m_proxyUsername;
@@ -111,7 +116,7 @@ WinHttpClient::WinHttpClient(const wstring &url, PROGRESSPROC progressProc)
       m_dataToSendSize(0),
       m_proxy(L""),
       m_dwLastError(0),
-      m_statusCode(L""),
+      m_statusCode(0),
       m_userAgent(SZ_AGENT),
       m_bForceCharset(false),
       m_proxyUsername(L""),
@@ -467,32 +472,13 @@ bool WinHttpClient::SendHttpRequest(const wstring &httpVerb, bool disableAutoRed
                                 }
                             }
                             
-                            dwSize = 0;
-                            bResult = ::WinHttpQueryHeaders(hRequest,
-                                                            WINHTTP_QUERY_STATUS_CODE,
-                                                            WINHTTP_HEADER_NAME_BY_INDEX,
-                                                            NULL,
-                                                            &dwSize,
-                                                            WINHTTP_NO_HEADER_INDEX);
-                            if (bResult || (!bResult && (::GetLastError() == ERROR_INSUFFICIENT_BUFFER)))
-                            {
-                                wchar_t *szStatusCode = new wchar_t[dwSize];
-                                if (szStatusCode != NULL)
-                                {
-                                    memset(szStatusCode, 0, dwSize* sizeof(wchar_t));
-                                    if (::WinHttpQueryHeaders(hRequest,
-                                                              WINHTTP_QUERY_STATUS_CODE,
-                                                              WINHTTP_HEADER_NAME_BY_INDEX,
-                                                              szStatusCode,
-                                                              &dwSize,
-                                                              WINHTTP_NO_HEADER_INDEX))
-                                    {
-                                        m_statusCode = szStatusCode;
-                                    }
-                                    delete[] szStatusCode;
-                                }
-                            }
-
+                            DWORD dwStatusCode = 0;
+                            DWORD dwSize = sizeof(dwStatusCode);
+                            WinHttpQueryHeaders(hRequest, 
+                                WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, 
+                                WINHTTP_HEADER_NAME_BY_INDEX, 
+                                &dwStatusCode, &dwSize, WINHTTP_NO_HEADER_INDEX);
+                            m_statusCode=dwStatusCode;
                             unsigned int iMaxBufferSize = INT_BUFFERSIZE;
                             unsigned int iCurrentBufferSize = 0;
                             if (m_pResponse != NULL)
@@ -788,7 +774,7 @@ DWORD WinHttpClient::GetLastError(void)
     return m_dwLastError;
 }
 
-wstring WinHttpClient::GetResponseStatusCode(void)
+int WinHttpClient::GetResponseStatusCode(void)
 {
     return m_statusCode;
 }

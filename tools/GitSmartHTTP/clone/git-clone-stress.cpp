@@ -334,6 +334,46 @@ bool CloneStep::RequestGET()
     client.SetRequireValidSslCertificates(urlAtom.isSSL);
     client.SetAdditionalRequestHeaders(headers);
     client.SendHttpRequest();
+    auto status=client.GetResponseStatusCode();
+    switch(status){
+        case HTTP_STATUS_OK:
+        break;
+        case HTTP_STATUS_REDIRECT:
+        {
+            //Should Update URL and Redirect
+        }
+        break;
+        case HTTP_STATUS_NOT_FOUND:
+        {
+            PrintError(L"Repository %s not found\n",this->murl.c_str());
+            return false;
+        }
+        break;
+        case HTTP_STATUS_BAD_REQUEST:
+        {
+            PrintError(L"Bad Request");
+            return false;
+        }
+        break;
+        case HTTP_STATUS_DENIED:
+        {
+            PrintError(L"Authentication Failed: %s\n",this->murl.c_str());
+            return false;
+        }
+        break;
+        case HTTP_STATUS_SERVER_ERROR:
+        {
+            PrintError(L"Server Error: %s\n",this->murl.c_str());
+            RecordError(L"GET Request,get repository refs with service (git-upload-pack).\nInternal Server Error, URL: %s\n",this->murl.c_str());
+            return false;
+        }
+        break;
+        default:
+        {
+            PrintError(L"Server response code: %d\n",status);
+        }
+        break;
+    }
     std::wstring httpResponseHeader=client.GetResponseHeader();
     auto raw=client.GetRawResponseContent();
     auto size=client.GetRawResponseContentLength();
@@ -384,6 +424,36 @@ bool CloneStep::RequestPOST(URLStruct &us,BYTE* content,unsigned len)
     client.SetAdditionalRequestHeaders(headers);
     client.SendHttpRequest(L"POST");
     client.SetAdditionalDataToSend(content,len);
+    auto status=client.GetResponseStatusCode();
+    switch(status){
+        case HTTP_STATUS_OK:
+        break;
+        case HTTP_STATUS_BAD_REQUEST:
+        {
+            PrintError(L"Bad Request\n");
+            return false;
+        }
+        case HTTP_STATUS_NOT_FOUND:
+        {
+            PrintError(L"Repository %s not found\n",this->murl.c_str());
+            return false;
+        }
+        break;
+        case HTTP_STATUS_DENIED:
+        {
+            PrintError(L"Authentication Failed: %s\n",this->murl.c_str());
+            return false;
+        }
+        case HTTP_STATUS_SERVER_ERROR:
+        {
+            PrintError(L"Server Error: %s\n",this->murl.c_str());
+            RecordError(L"POST Receive Data (git-upload-pack)\nInternal Server Error, URL: %s\n",this->murl.c_str());
+            return false;
+        }
+        break;
+        default:
+        break;
+    }
     wstring httpResponseHeader = client.GetResponseHeader();
     auto raw=client.GetRawResponseContent();
     auto size=client.GetRawResponseContentLength();
