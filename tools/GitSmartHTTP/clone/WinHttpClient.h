@@ -471,13 +471,13 @@ bool WinHttpClient::SendHttpRequest(const wstring &httpVerb, bool disableAutoRed
                                     delete[] szHeader;
                                 }
                             }
-                            
+                            ////
                             DWORD dwStatusCode = 0;
-                            DWORD dwSize = sizeof(dwStatusCode);
-                            WinHttpQueryHeaders(hRequest, 
-                                WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, 
-                                WINHTTP_HEADER_NAME_BY_INDEX, 
-                                &dwStatusCode, &dwSize, WINHTTP_NO_HEADER_INDEX);
+                            DWORD dwStatusSize = sizeof(dwStatusCode);
+                            WinHttpQueryHeaders(hRequest,
+                                WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+                                WINHTTP_HEADER_NAME_BY_INDEX,
+                                &dwStatusCode, &dwStatusSize, WINHTTP_NO_HEADER_INDEX);
                             m_statusCode=dwStatusCode;
                             unsigned int iMaxBufferSize = INT_BUFFERSIZE;
                             unsigned int iCurrentBufferSize = 0;

@@ -40,9 +40,6 @@ public:
             }
         }
     }
-    int GetResponseCode(){
-        return this->responseCode;
-    }
     std::wstring header_in(const wchar_t *key){
         return umap[key];
     }
