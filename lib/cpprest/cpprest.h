@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <Winhttp.h>
 
-#define DEFAULT_AGENT L"Phoenix/1.0.0.Simulator";
+#define DEFAULT_AGENT L"Hero/1.0.0.Simulator";
 
 
 enum HTTPMethod{
