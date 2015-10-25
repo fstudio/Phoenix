@@ -1,13 +1,10 @@
-// Windows Template Library - WTL version 9.0
+// Windows Template Library - WTL version 9.10
 // Copyright (C) Microsoft Corporation, WTL Team. All rights reserved.
 //
 // This file is a part of the Windows Template Library.
 // The use and distribution terms for this software are covered by the
-// Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-// which can be found in the file CPL.TXT at the root of this distribution.
-// By using this software in any fashion, you are agreeing to be bound by
-// the terms of this license. You must not remove this notice, or
-// any other, from this software.
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
+// which can be found in the file MS-PL.txt at the root folder.
 
 #ifndef __ATLRIBBON_H__
 #define __ATLRIBBON_H__
@@ -553,17 +550,17 @@ private:
 	// Put functions
 	void PutMaskEffect(WORD dwMaskVal, WORD dwEffectVal, REFPROPERTYKEY key, IPropertyStore* pStore)
 	{
-		PROPVARIANT propvar;
+		PROPVARIANT var;
 		UI_FONTPROPERTIES uProp = UI_FONTPROPERTIES_NOTAVAILABLE;
 		if ((dwMask & dwMaskVal) != 0)
 			uProp = dwEffects & dwEffectVal ? UI_FONTPROPERTIES_SET : UI_FONTPROPERTIES_NOTSET;
-		SetPropertyVal(key, uProp, &propvar);
-		pStore->SetValue(key, propvar);
+		SetPropertyVal(key, uProp, &var);
+		pStore->SetValue(key, var);
 	}
 
 	void PutVerticalPos(IPropertyStore* pStore)
 	{
-		PROPVARIANT propvar;
+		PROPVARIANT var;
 		UI_FONTVERTICALPOSITION uProp = UI_FONTVERTICALPOSITION_NOTAVAILABLE;
 
 		if ((dwMask & CFE_SUBSCRIPT) != 0)
@@ -581,21 +578,21 @@ private:
 				uProp = UI_FONTVERTICALPOSITION_SUBSCRIPT;
 		}
 
-		SetPropertyVal(UI_PKEY_FontProperties_VerticalPositioning, uProp, &propvar);
-		pStore->SetValue(UI_PKEY_FontProperties_VerticalPositioning, propvar);
+		SetPropertyVal(UI_PKEY_FontProperties_VerticalPositioning, uProp, &var);
+		pStore->SetValue(UI_PKEY_FontProperties_VerticalPositioning, var);
 	}
 
 	void PutFace(IPropertyStore* pStore)
 	{
-		PROPVARIANT propvar;
+		PROPVARIANT var;
 		SetPropertyVal(UI_PKEY_FontProperties_Family, 
-			dwMask & CFM_FACE ? szFaceName : L"", &propvar);
-		pStore->SetValue(UI_PKEY_FontProperties_Family, propvar);
+			dwMask & CFM_FACE ? szFaceName : L"", &var);
+		pStore->SetValue(UI_PKEY_FontProperties_Family, var);
 	}
 
 	void PutSize(IPropertyStore* pStore)
 	{
-		PROPVARIANT propvar;
+		PROPVARIANT var;
 		DECIMAL decVal;
 
 		if ((dwMask & CFM_SIZE) != 0)
@@ -603,8 +600,8 @@ private:
 		else
 			VarDecFromI4(0, &decVal);
 
-		SetPropertyVal(UI_PKEY_FontProperties_Size, &decVal, &propvar);
-		pStore->SetValue(UI_PKEY_FontProperties_Size, propvar);
+		SetPropertyVal(UI_PKEY_FontProperties_Size, &decVal, &var);
+		pStore->SetValue(UI_PKEY_FontProperties_Size, var);
 	}
 
 	void PutColor(IPropertyStore* pStore)

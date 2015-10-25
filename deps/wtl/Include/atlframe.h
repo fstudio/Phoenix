@@ -1,13 +1,10 @@
-// Windows Template Library - WTL version 9.0
+// Windows Template Library - WTL version 9.10
 // Copyright (C) Microsoft Corporation, WTL Team. All rights reserved.
 //
 // This file is a part of the Windows Template Library.
 // The use and distribution terms for this software are covered by the
-// Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-// which can be found in the file CPL.TXT at the root of this distribution.
-// By using this software in any fashion, you are agreeing to be bound by
-// the terms of this license. You must not remove this notice, or
-// any other, from this software.
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
+// which can be found in the file MS-PL.txt at the root folder.
 
 #ifndef __ATLFRAME_H__
 #define __ATLFRAME_H__
@@ -612,7 +609,7 @@ public:
 		int nBtnCount = (int)::SendMessage(hWndBand, TB_BUTTONCOUNT, 0, 0L);
 
 		// Set band info structure
-		REBARBANDINFO rbBand = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO() };
+		REBARBANDINFO rbBand = { RunTimeHelper::SizeOf_REBARBANDINFO() };
 #if (_WIN32_IE >= 0x0400)
 		rbBand.fMask = RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE | RBBIM_ID | RBBIM_SIZE | RBBIM_IDEALSIZE;
 #else
@@ -703,7 +700,7 @@ public:
 
 		for(int i = 0; i < nCount; i++)
 		{
-			REBARBANDINFO rbBand = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO() };
+			REBARBANDINFO rbBand = { RunTimeHelper::SizeOf_REBARBANDINFO() };
 			rbBand.fMask = RBBIM_SIZE;
 			BOOL bRet = (BOOL)::SendMessage(m_hWndToolBar, RB_GETBANDINFO, i, (LPARAM)&rbBand);
 			ATLASSERT(bRet);
@@ -993,7 +990,7 @@ public:
 	bool PrepareChevronMenu(_ChevronMenuInfo& cmi)
 	{
 		// get rebar and toolbar
-		REBARBANDINFO rbbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO() };
+		REBARBANDINFO rbbi = { RunTimeHelper::SizeOf_REBARBANDINFO() };
 		rbbi.fMask = RBBIM_CHILD;
 		BOOL bRet = (BOOL)::SendMessage(cmi.lpnm->hdr.hwndFrom, RB_GETBANDINFO, cmi.lpnm->uBand, (LPARAM)&rbbi);
 		ATLASSERT(bRet);
@@ -2951,6 +2948,9 @@ public:
 		{
 			if(m_arrUIMap[i].m_nID == nID)
 			{
+				if((m_arrUIData[i].m_wState & UPDUI_TEXT) != 0)
+					delete [] m_arrUIData[i].m_lpstrText;
+
 				BOOL bRet = m_arrUIMap.RemoveAt(i);
 				ATLASSERT(bRet);
 				bRet = m_arrUIData.RemoveAt(i);

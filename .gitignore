@@ -57,6 +57,7 @@ dlldata.c
 *.svclog
 *.scc
 
+deps/svnforeach.bat
 # Chutzpah Test files
 _Chutzpah*
 

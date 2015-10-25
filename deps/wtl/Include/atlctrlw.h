@@ -1,13 +1,10 @@
-// Windows Template Library - WTL version 9.0
+// Windows Template Library - WTL version 9.10
 // Copyright (C) Microsoft Corporation, WTL Team. All rights reserved.
 //
 // This file is a part of the Windows Template Library.
 // The use and distribution terms for this software are covered by the
-// Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
-// which can be found in the file CPL.TXT at the root of this distribution.
-// By using this software in any fashion, you are agreeing to be bound by
-// the terms of this license. You must not remove this notice, or
-// any other, from this software.
+// Microsoft Public License (http://opensource.org/licenses/MS-PL)
+// which can be found in the file MS-PL.txt at the root folder.
 
 #ifndef __ATLCTRLW_H__
 #define __ATLCTRLW_H__
@@ -1097,6 +1094,12 @@ public:
 #ifdef _CMDBAR_EXTRA_TRACE
 		ATLTRACE2(atlTraceUI, 0, _T("CmdBar - OnKeyDown\n"));
 #endif
+		if(m_bAttachedMenu)   // nothing to do in this mode
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
 		bHandled = FALSE;
 		// Simulate Alt+Space for the parent
 		if(wParam == VK_SPACE)
@@ -1131,8 +1134,15 @@ public:
 #ifdef _CMDBAR_EXTRA_TRACE
 		ATLTRACE2(atlTraceUI, 0, _T("CmdBar - OnKeyUp\n"));
 #endif
+		if(m_bAttachedMenu)   // nothing to do in this mode
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
 		if(wParam != VK_SPACE)
 			bHandled = FALSE;
+
 		return 0;
 	}
 
@@ -1141,6 +1151,12 @@ public:
 #ifdef _CMDBAR_EXTRA_TRACE
 		ATLTRACE2(atlTraceUI, 0, _T("CmdBar - OnChar\n"));
 #endif
+		if(m_bAttachedMenu)   // nothing to do in this mode
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
 		if(wParam != VK_SPACE)
 			bHandled = FALSE;
 		else
@@ -2960,7 +2976,7 @@ public:
 		bool bRet = false;
 		for(int i = 0; i < nCount; i++)
 		{
-			REBARBANDINFO rbbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_STYLE };
+			REBARBANDINFO rbbi = { RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_STYLE };
 			BOOL bRetBandInfo = (BOOL)::SendMessage(hWndReBar, RB_GETBANDINFO, i, (LPARAM)&rbbi);
 			if(bRetBandInfo && rbbi.hwndChild == m_hWnd)
 			{
@@ -2980,7 +2996,7 @@ public:
 	void GetSystemSettings()
 	{
 		// refresh our font
-		NONCLIENTMETRICS info = { (UINT)RunTimeHelper::SizeOf_NONCLIENTMETRICS() };
+		NONCLIENTMETRICS info = { RunTimeHelper::SizeOf_NONCLIENTMETRICS() };
 		BOOL bRet = ::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(info), &info, 0);
 		ATLASSERT(bRet);
 		if(bRet)
@@ -3874,7 +3890,7 @@ public:
 		int nCount = (int)::SendMessage(GetParent(), RB_GETBANDCOUNT, 0, 0L);
 		for(int i = 0; i < nCount; i++)
 		{
-			REBARBANDINFO rbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE };
+			REBARBANDINFO rbi = { RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE };
 			::SendMessage(GetParent(), RB_GETBANDINFO, i, (LPARAM)&rbi);
 			if(rbi.hwndChild == m_hWnd)
 			{
@@ -3945,7 +3961,7 @@ public:
 			for(int i = 0; i < nCount; i++)
 			{
 #if (_WIN32_IE >= 0x0500)
-				REBARBANDINFO rbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE | RBBIM_STYLE };
+				REBARBANDINFO rbi = { RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE | RBBIM_STYLE };
 				::SendMessage(GetParent(), RB_GETBANDINFO, i, (LPARAM)&rbi);
 				if(rbi.hwndChild == m_hWnd)
 				{
@@ -3959,7 +3975,7 @@ public:
 					break;
 				}
 #elif (_WIN32_IE >= 0x0400)
-				REBARBANDINFO rbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE };
+				REBARBANDINFO rbi = { RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_IDEALSIZE };
 				::SendMessage(GetParent(), RB_GETBANDINFO, i, (LPARAM)&rbi);
 				if(rbi.hwndChild == m_hWnd)
 				{
@@ -3970,7 +3986,7 @@ public:
 					break;
 				}
 #else // (_WIN32_IE < 0x0400)
-				REBARBANDINFO rbi = { (UINT)RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE };
+				REBARBANDINFO rbi = { RunTimeHelper::SizeOf_REBARBANDINFO(), RBBIM_CHILD | RBBIM_CHILDSIZE };
 				::SendMessage(GetParent(), RB_GETBANDINFO, i, (LPARAM)&rbi);
 				if(rbi.hwndChild == m_hWnd)
 				{
@@ -4005,7 +4021,7 @@ public:
 #endif
 		_baseClass::GetSystemSettings();
 
-		NONCLIENTMETRICS info = { (UINT)RunTimeHelper::SizeOf_NONCLIENTMETRICS() };
+		NONCLIENTMETRICS info = { RunTimeHelper::SizeOf_NONCLIENTMETRICS() };
 		BOOL bRet = ::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(info), &info, 0);
 		ATLASSERT(bRet);
 		if(bRet)

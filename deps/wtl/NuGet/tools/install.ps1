@@ -75,8 +75,15 @@ try {
     elseif ($vsVersion -eq "11.0") {
         $verTitle = "2012";
     }
-    else {
+    elseif ($vsVersion -eq "12.0") {
         $verTitle = "2013";
+    }
+    elseif ($vsVersion -eq "14.0") {
+        $verTitle = "2015";
+    }
+    else {
+        echo "install.ps1: Unsupported Visual Studio version.";
+        exit;
     }
     if ($vsEdition.Contains("Express")) {
         $verTitle += " Express";
