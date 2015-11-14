@@ -1,24 +1,27 @@
-[submodule "deps/rapidjson"]
-	path = deps/rapidjson
+[submodule "vendor/rapidjson"]
+	path = vendor/rapidjson
 	url = https://github.com/miloyip/rapidjson.git
-[submodule "deps/tinyxml2"]
-	path = deps/tinyxml2
+[submodule "vendor/tinyxml2"]
+	path = vendor/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git
-[submodule "deps/libsass"]
-	path = deps/libsass
+[submodule "vendor/libsass"]
+	path = vendor/libsass
 	url = https://github.com/sass/libsass.git
-[submodule "deps/cpptoml"]
-	path = deps/cpptoml
+[submodule "vendor/cpptoml"]
+	path = vendor/cpptoml
 	url = https://github.com/skystrife/cpptoml.git
-[submodule "deps/snappy"]
-	path = deps/snappy
+[submodule "vendor/snappy"]
+	path = vendor/snappy
 	url = https://github.com/fstudio/snappy.git
 [submodule "tools/nmake"]
 	path = tools/nmake
 	url = https://github.com/fstudio/nmake.git
-[submodule "deps/cmark"]
-	path = deps/cmark
+[submodule "vendor/cmark"]
+	path = vendor/cmark
 	url = https://github.com/jgm/cmark.git
-[submodule "deps/http-parser"]
-	path = deps/http-parser
+[submodule "vendor/http-parser"]
+	path = vendor/http-parser
 	url = https://github.com/joyent/http-parser.git
+[submodule "vendor/re2"]
+	path = vendor/re2
+	url = https://github.com/google/RE2.git
