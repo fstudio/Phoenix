@@ -39,8 +39,8 @@ $(TINYXMLOBJ):$(TINYXMLFILE)
 	$(CC) $(CXXFLAGS) -c tinyxml2.cpp
 	
 $(TINYXMLFILE):
-	@copy ..\..\deps\tinyxml2\tinyxml2.cpp tinyxml2.cpp /Y
-	@copy ..\..\deps\tinyxml2\tinyxml2.h tinyxml2.h /Y
+	@copy ..\..\vendor\tinyxml2\tinyxml2.cpp tinyxml2.cpp /Y
+	@copy ..\..\vendor\tinyxml2\tinyxml2.h tinyxml2.h /Y
 
 clean:
 	@-if exist *.obj del /s /q *.obj >nul 2>nul
