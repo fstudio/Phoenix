@@ -247,7 +247,7 @@ int UniversalChardetFromFilePath(std::string filePath,bool &mark)
     if(fopen_s(&fp,filePath.c_str(),"r")!=0)
         return -1;
     char buffer[65536]={0};
-    if(fread_s(buffer,65536,1,65536,fp)<0)
+    if(fread_s(buffer,1,65536,65536,fp)<0)
     {
         fclose(fp);
         return -2;
